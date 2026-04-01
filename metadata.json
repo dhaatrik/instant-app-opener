@@ -1,0 +1,5 @@
+{
+  "name": "Instant App Opener",
+  "description": "High-performance deep-linking web application to convert social URLs to mobile app URIs.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,200 @@
+export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'unknown';
+
+export interface ParsedUrl {
+  platform: Platform;
+  id: string;
+  originalUrl: string;
+  deepLink: string;
+  fallbackUrl: string;
+  color: string;
+  glowClass: string;
+}
+
+export function parseUrl(url: string): ParsedUrl {
+  try {
+    let urlToParse = url.trim();
+    if (!urlToParse.startsWith('http://') && !urlToParse.startsWith('https://')) {
+      urlToParse = 'https://' + urlToParse;
+    }
+    const parsed = new URL(urlToParse);
+    const hostname = parsed.hostname.toLowerCase();
+    const pathname = parsed.pathname;
+
+    // YouTube
+    if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+      let id = '';
+      if (hostname.includes('youtu.be')) {
+        id = pathname.slice(1).split('?')[0];
+      } else if (pathname.includes('/shorts/')) {
+        id = pathname.split('/shorts/')[1].split('/')[0].split('?')[0];
+      } else if (pathname.includes('/live/')) {
+        id = pathname.split('/live/')[1].split('/')[0].split('?')[0];
+      } else if (pathname.includes('/watch')) {
+        id = parsed.searchParams.get('v') || '';
+      } else if (pathname.includes('/v/')) {
+        id = pathname.split('/v/')[1].split('/')[0].split('?')[0];
+      }
+      
+      if (id) {
+        return {
+          platform: 'youtube',
+          id,
+          originalUrl: url,
+          deepLink: `vnd.youtube://${id}`,
+          fallbackUrl: url,
+          color: '#FF0000',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(255,0,0,0.6)] border-red-500/50',
+        };
+      }
+    }
+
+    // X / Twitter
+    if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
+      const match = pathname.match(/\/(?:#!\/)?[\w]+\/status(?:es)?\/(\d+)/);
+      if (match) {
+        return {
+          platform: 'x',
+          id: match[1],
+          originalUrl: url,
+          deepLink: `twitter://status?id=${match[1]}`,
+          fallbackUrl: url,
+          color: '#FFFFFF',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(255,255,255,0.6)] border-white/50',
+        };
+      }
+    }
+
+    // LinkedIn
+    if (hostname.includes('linkedin.com')) {
+      // Profiles, Companies, Schools
+      const profileMatch = pathname.match(/\/(?:in|company|school)\/([^/?]+)/);
+      if (profileMatch) {
+        return {
+          platform: 'linkedin',
+          id: profileMatch[1],
+          originalUrl: url,
+          deepLink: `linkedin://profile/${profileMatch[1]}`,
+          fallbackUrl: url,
+          color: '#0A66C2',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(10,102,194,0.6)] border-blue-600/50',
+        };
+      }
+      // Posts / Feed
+      const postMatch = pathname.match(/\/(?:posts|feed\/update)\/([^/?]+)/);
+      if (postMatch) {
+        const id = postMatch[1].includes('urn:li:activity:') ? postMatch[1].split('urn:li:activity:')[1] : postMatch[1];
+        return {
+          platform: 'linkedin',
+          id,
+          originalUrl: url,
+          deepLink: `linkedin://posts/${id}`, // Fallback to posts if profile doesn't fit
+          fallbackUrl: url,
+          color: '#0A66C2',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(10,102,194,0.6)] border-blue-600/50',
+        };
+      }
+    }
+
+    // Instagram
+    if (hostname.includes('instagram.com')) {
+      // Posts, Reels, TV
+      const mediaMatch = pathname.match(/\/(?:p|reel|tv)\/([^/?]+)/);
+      if (mediaMatch) {
+        return {
+          platform: 'instagram',
+          id: mediaMatch[1],
+          originalUrl: url,
+          deepLink: `instagram://media?id=${mediaMatch[1]}`,
+          fallbackUrl: url,
+          color: '#E1306C',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(225,48,108,0.6)] border-fuchsia-500/50',
+        };
+      }
+      // Stories
+      const storyMatch = pathname.match(/\/stories\/[^/]+\/(\d+)/);
+      if (storyMatch) {
+        return {
+          platform: 'instagram',
+          id: storyMatch[1],
+          originalUrl: url,
+          deepLink: `instagram://media?id=${storyMatch[1]}`,
+          fallbackUrl: url,
+          color: '#E1306C',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(225,48,108,0.6)] border-fuchsia-500/50',
+        };
+      }
+    }
+
+    // Facebook
+    if (hostname.includes('facebook.com') || hostname.includes('fb.com') || hostname.includes('fb.watch')) {
+      let id = parsed.searchParams.get('id') || parsed.searchParams.get('story_fbid') || parsed.searchParams.get('v');
+      
+      if (!id) {
+        if (hostname.includes('fb.watch')) {
+          const watchMatch = pathname.match(/\/(?:v\/)?([^/?]+)/);
+          if (watchMatch) {
+            id = watchMatch[1];
+          }
+        } else {
+          // Check for /posts/ID or /permalink/ID or /watch/ID
+          const postMatch = pathname.match(/\/(?:posts|permalink|videos|watch)\/([^/?]+)/);
+          if (postMatch) {
+            id = postMatch[1];
+          } else {
+            // Profile username
+            const match = pathname.match(/\/([^/?]+)/);
+            if (match && !['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v'].includes(match[1])) {
+              id = match[1];
+            }
+          }
+        }
+      }
+      
+      if (id) {
+        return {
+          platform: 'facebook',
+          id,
+          originalUrl: url,
+          deepLink: `fb://profile/${id}`,
+          fallbackUrl: url,
+          color: '#1877F2',
+          glowClass: 'shadow-[0_0_40px_-10px_rgba(24,119,242,0.6)] border-blue-500/50',
+        };
+      }
+    }
+  } catch (e) {
+    // Invalid URL, fall through to unknown
+  }
+
+  return {
+    platform: 'unknown',
+    id: '',
+    originalUrl: url,
+    deepLink: '',
+    fallbackUrl: url,
+    color: 'transparent',
+    glowClass: 'shadow-none border-white/10',
+  };
+}
+
+export function encodeDeepLinkId(parsed: ParsedUrl): string {
+  const data = JSON.stringify({ p: parsed.platform, i: parsed.id, u: parsed.originalUrl, d: parsed.deepLink });
+  return btoa(encodeURIComponent(data)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+export function decodeDeepLinkId(encoded: string): any {
+  try {
+    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+    const decoded = JSON.parse(decodeURIComponent(atob(padded)));
+    return {
+      p: decoded.p,
+      i: decoded.i,
+      u: decoded.u,
+      d: decoded.d || decoded.u // Fallback to original URL if deep link is missing
+    };
+  } catch (e) {
+    return null;
+  }
+}
