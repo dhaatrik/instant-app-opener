@@ -1,5 +1,6 @@
 {
   "name": "Instant App Opener",
+  "author": "Dhaatrik Chowdhury"
   "description": "High-performance deep-linking web application to convert social URLs to mobile app URIs.",
   "requestFramePermissions": []
 }
