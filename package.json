@@ -1,7 +1,7 @@
 {
   "name": "instant-app-opener",
   "version": "0.1.0",
-  "author": "Dhaatrik Chowdhury"
+  "author": "Dhaatrik Chowdhury",
   "private": true,
   "scripts": {
     "dev": "next dev",
