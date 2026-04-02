@@ -1,111 +1,124 @@
-# Instant App Opener
+# 📱 Instant App Opener
 
-## 1. Project Title & Description
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css)
+![CI Status](https://github.com/DhaatuTheGamer/instant-app-opener/actions/workflows/ci.yml/badge.svg)
 
-**Instant App Opener** is a modern web application designed to seamlessly convert standard social media URLs into mobile-app-compatible URI schemes (deep links). 
+## 📖 Overview
 
-**The Problem:** When users click standard social media links on their mobile devices, they are often redirected to the mobile web browser instead of the native app. This leads to a degraded user experience, often requiring them to log in again or navigate clunky mobile web interfaces.
+**Instant App Opener** is a modern, lightweight web application designed to seamlessly convert standard social media URLs into mobile-app-compatible URI schemes (deep links). 
 
-**The Solution:** This project instantly generates deep links that force the native app (YouTube, X, LinkedIn, Instagram, Facebook) to open, providing a frictionless experience.
+**The Problem:** When users click standard social media links (like a YouTube video or X post) on their mobile devices, they are often frustratingly redirected to the mobile web browser instead of the native app. This degrades the user experience, forcing unnecessary logins and clunky navigation.
 
-**Why these technologies:** Next.js and React were chosen for their robust performance and component-based architecture. Tailwind CSS allows for rapid, utility-first styling to match the premium dark glassmorphic theme, while Framer Motion provides fluid, satisfying animations.
+**The Solution:** This application instantly generates deep links that bypass the browser and force the native application to open. It provides a frictionless bridge between web sharing and native mobile consumption. 
 
----
-
-## 2. Table of Contents
-
-- [1. Project Title & Description](#1-project-title--description)
-- [3. Installation & Requirements](#3-installation--requirements)
-- [4. Usage Instructions & Examples](#4-usage-instructions--examples)
-- [5. Technologies Used (Tech Stack)](#5-technologies-used-tech-stack)
-- [6. Contribution Guidelines](#6-contribution-guidelines)
-- [7. Testing Instructions](#7-testing-instructions)
-- [8. License Information](#8-license-information)
+Built with a focus on performance and UI/UX, the app features a premium dark glassmorphic theme and fluid animations, ensuring the link-generation process is as satisfying as it is functional.
 
 ---
 
-## 3. Installation & Requirements
+## 📑 Table of Contents
 
-To run this project locally, you need Node.js (v18 or higher) installed on your machine.
-
-**Step-by-step Installation:**
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/DhaatuTheGamer/instant-app-opener.git
-   cd instant-app-opener
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-
-4. **Open your browser** and navigate to `http://localhost:3000`.
+- [Overview](#-overview)
+- [Tech Stack](#-tech-stack)
+- [Installation & Requirements](#-installation--requirements)
+- [Usage Instructions](#-usage-instructions)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## 4. Usage Instructions & Examples
+## 🛠 Tech Stack
 
-Using Instant App Opener is incredibly straightforward:
+This project leverages a modern React ecosystem for optimal performance and developer experience:
 
-1. **Copy a Link:** Copy any standard URL from a supported platform (e.g., `https://www.youtube.com/watch?v=dQw4w9WgXcQ`).
-2. **Paste & Convert:** Paste the link into the central input field on the web app. The app will automatically detect the platform and generate a deep link.
-3. **Share or Copy:** 
-   - Click **Copy Link** to save the generated deep link to your clipboard.
-   - Click **Share** to use your device's native sharing menu (on supported mobile devices).
-
----
-
-## 5. Technologies Used (Tech Stack)
-
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router & Standalone Export)
 - **Library:** [React 19](https://react.dev/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations:** [Framer Motion](https://motion.dev/)
+- **Animations:** [Motion](https://motion.dev/) (Framer Motion)
+- **Testing:** [Vitest](https://vitest.dev/) & React Testing Library
 - **Icons:** [Lucide React](https://lucide.dev/)
 - **Language:** TypeScript
 
 ---
 
-## 6. Contribution Guidelines
+## 🚀 Installation & Requirements
 
-We welcome contributions from the community! If you'd like to help improve Instant App Opener, please follow these steps:
+To run this project locally, ensure you have **Node.js (v20.x or higher)** installed.
 
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/DhaatuTheGamer/instant-app-opener.git
+   cd instant-app-opener
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
----
+2.  **Install dependencies:**
 
-## 7. Testing Instructions
+    ```bash
+    npm install
+    ```
 
-This project includes a continuous integration pipeline (GitHub Actions) that automatically runs linting, testing, and build checks on every push and pull request.
+3.  **Start the development server:**
 
-To run the tests locally, execute:
+    ```bash
+    npm run dev
+    ```
+
+4.  **View the app:** Open your browser and navigate to `http://localhost:3000`.
+
+-----
+
+## 💡 Usage Instructions
+
+Using Instant App Opener is straightforward and requires no backend database:
+
+1.  **Copy a Link:** Grab any standard URL from a supported platform (Currently supports: *YouTube, X/Twitter, LinkedIn, Instagram, Facebook*).
+    > Example: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
+2.  **Paste & Convert:** Paste the link into the central input field. The app automatically detects the platform, validates the URL, and generates a mobile-ready deep link.
+3.  **Share or Copy:** - Click **Copy Link** (or use `Cmd/Ctrl + C`) to save the generated URL to your clipboard.
+      - Click **Share** (or use `Cmd/Ctrl + S`) to trigger your device's native Web Share API for instant distribution.
+
+-----
+
+## 🧪 Testing
+
+This project maintains high code quality through automated continuous integration (CI) via GitHub Actions.
+
+The application uses **Vitest** and **React Testing Library** to test URL parsing logic, custom hooks, and component rendering without relying on a browser engine.
+
+To run the test suite locally:
+
 ```bash
+# Run tests once
 npm test
-```
-*(Note: Currently, the test suite is a placeholder. Contributions adding Jest or Cypress tests are highly encouraged!)*
 
-To run the linter:
-```bash
+# Run the linter to check for code formatting issues
 npm run lint
 ```
 
----
+-----
 
-## 8. License Information
+## 🤝 Contributing
 
-This project is licensed under the **MIT License**. 
+Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, provided that the original copyright notice and permission notice are included in all copies or substantial portions of the Software.
+This project and everyone participating in it is governed by the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Ensure your code passes all tests (`npm test`)
+4.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+5.  Push to the Branch (`git push origin feature/AmazingFeature`)
+6.  Open a Pull Request
+
+For more detailed instructions, please read our [CONTRIBUTING.md](https://www.google.com/search?q=CONTRIBUTING.md).
+
+-----
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+Copyright (c) 2026 Dhaatrik Chowdhury
