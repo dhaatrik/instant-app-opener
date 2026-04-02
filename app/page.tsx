@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2 } from 'lucide-react';
 import { parseUrl, encodeDeepLinkId, ParsedUrl, Platform } from '@/lib/url-parser';
@@ -95,7 +95,7 @@ export default function Home() {
     processInput();
   }, [debouncedInput]);
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     if (!parsed) return;
     const encoded = encodeDeepLinkId(parsed);
     const link = `${appUrl}/open/${encoded}`;
@@ -108,9 +108,9 @@ export default function Home() {
     
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [parsed, appUrl]);
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     if (!parsed) return;
     const encoded = encodeDeepLinkId(parsed);
     const link = `${appUrl}/open/${encoded}`;
@@ -132,7 +132,7 @@ export default function Home() {
       // Fallback to copy if share is not supported
       handleCopy();
     }
-  };
+  }, [parsed, appUrl, handleCopy]);
 
   const handleClear = () => {
     setInput('');
@@ -140,6 +140,31 @@ export default function Home() {
     setParsed(null);
     setError(null);
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!parsed) return;
+
+      // Check if Ctrl or Cmd is pressed
+      const isModifierPressed = e.ctrlKey || e.metaKey;
+
+      if (isModifierPressed) {
+        if (e.key.toLowerCase() === 'c') {
+          // Prevent default copy if we have a parsed link to copy instead
+          e.preventDefault();
+          handleCopy();
+        } else if (e.key.toLowerCase() === 's') {
+          // Prevent default save
+          e.preventDefault();
+          handleShare();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [parsed, handleCopy, handleShare]);
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col p-4 font-sans selection:bg-white/20 relative">
@@ -305,6 +330,9 @@ export default function Home() {
                           <>
                             <Copy className="w-5 h-5" />
                             <span>Copy Link</span>
+                            <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-black/40 bg-black/5 rounded border border-black/10">
+                              ⌘C
+                            </span>
                           </>
                         )}
                       </div>
@@ -326,6 +354,11 @@ export default function Home() {
                       <div className="relative z-10 flex items-center gap-2">
                         {shared ? <Check className="w-5 h-5 text-green-400" /> : <Share2 className="w-5 h-5" />}
                         <span>Share</span>
+                        {!shared && (
+                          <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
+                            ⌘S
+                          </span>
+                        )}
                       </div>
                     </motion.button>
                   </div>

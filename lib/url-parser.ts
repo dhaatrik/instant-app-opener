@@ -43,7 +43,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `vnd.youtube://${id}`,
           fallbackUrl: url,
           color: '#FF0000',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(255,0,0,0.6)] border-red-500/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(255,0,0,0.3)] border-red-500/30',
         };
       }
     }
@@ -59,7 +59,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `twitter://status?id=${match[1]}`,
           fallbackUrl: url,
           color: '#FFFFFF',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(255,255,255,0.6)] border-white/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(255,255,255,0.2)] border-white/30',
         };
       }
     }
@@ -76,7 +76,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `linkedin://profile/${profileMatch[1]}`,
           fallbackUrl: url,
           color: '#0A66C2',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(10,102,194,0.6)] border-blue-600/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(10,102,194,0.3)] border-blue-600/30',
         };
       }
       // Posts / Feed
@@ -90,7 +90,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `linkedin://posts/${id}`, // Fallback to posts if profile doesn't fit
           fallbackUrl: url,
           color: '#0A66C2',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(10,102,194,0.6)] border-blue-600/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(10,102,194,0.3)] border-blue-600/30',
         };
       }
     }
@@ -107,7 +107,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `instagram://media?id=${mediaMatch[1]}`,
           fallbackUrl: url,
           color: '#E1306C',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(225,48,108,0.6)] border-fuchsia-500/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(225,48,108,0.3)] border-fuchsia-500/30',
         };
       }
       // Stories
@@ -120,7 +120,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `instagram://media?id=${storyMatch[1]}`,
           fallbackUrl: url,
           color: '#E1306C',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(225,48,108,0.6)] border-fuchsia-500/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(225,48,108,0.3)] border-fuchsia-500/30',
         };
       }
     }
@@ -158,7 +158,7 @@ export function parseUrl(url: string): ParsedUrl {
           deepLink: `fb://profile/${id}`,
           fallbackUrl: url,
           color: '#1877F2',
-          glowClass: 'shadow-[0_0_40px_-10px_rgba(24,119,242,0.6)] border-blue-500/50',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(24,119,242,0.3)] border-blue-500/30',
         };
       }
     }
