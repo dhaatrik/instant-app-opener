@@ -4,7 +4,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css)
-![CI Status](https://github.com/DhaatuTheGamer/instant-app-opener/actions/workflows/ci.yml/badge.svg)
+![CI Status](https://github.com/dhaatrik/instant-app-opener/actions/workflows/ci.yml/badge.svg)
 
 ## 📖 Overview
 
@@ -50,7 +50,7 @@ To run this project locally, ensure you have **Node.js (v20.x or higher)** insta
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/DhaatuTheGamer/instant-app-opener.git
+   git clone https://github.com/dhaatrik/instant-app-opener.git
    cd instant-app-opener
 
 
