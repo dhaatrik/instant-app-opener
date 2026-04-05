@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2 } from 'lucide-react';
+import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2, Github, MessageSquare } from 'lucide-react';
 import { parseUrl, encodeDeepLinkId, ParsedUrl, Platform } from '@/lib/url-parser';
 
 function XLogo({ className = "w-6 h-6" }: { className?: string }) {
@@ -39,6 +40,11 @@ export default function Home() {
   });
   const [error, setError] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [previewData, setPreviewData] = useState<{ title?: string, description?: string, image?: string } | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [copyFallback, setCopyFallback] = useState<string | null>(null);
+  const fallbackInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -83,6 +89,8 @@ export default function Home() {
         if (result.platform !== 'unknown') {
           setParsed(result);
           setError(null);
+          setIsLoadingPreview(true);
+          setPreviewData(null);
           
           // Subtle haptic feedback when a valid URL is detected
           if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -101,19 +109,51 @@ export default function Home() {
     processInput();
   }, [debouncedInput]);
 
+  useEffect(() => {
+    if (parsed) {
+      fetch(`/api/preview?url=${encodeURIComponent(parsed.originalUrl)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setPreviewData(data);
+          }
+        })
+        .catch(err => console.error('Failed to fetch preview:', err))
+        .finally(() => setIsLoadingPreview(false));
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPreviewData(null);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLoadingPreview(false);
+    }
+  }, [parsed]);
+
   const handleCopy = useCallback(async () => {
     if (!parsed) return;
     const encoded = encodeDeepLinkId(parsed);
     const link = `${appUrl}/open/${encoded}`;
-    await navigator.clipboard.writeText(link);
     
-    // Satisfying haptic feedback pattern for supported mobile devices
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate([40, 30, 40]);
+    try {
+      await navigator.clipboard.writeText(link);
+      
+      // Satisfying haptic feedback pattern for supported mobile devices
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([40, 30, 40]);
+      }
+      
+      setCopied(true);
+      setCopyFallback(null);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      setCopyFallback(link);
+      // Focus the input in the next tick
+      setTimeout(() => {
+        if (fallbackInputRef.current) {
+          fallbackInputRef.current.select();
+        }
+      }, 0);
     }
-    
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   }, [parsed, appUrl]);
 
   const handleShare = useCallback(async () => {
@@ -194,6 +234,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col p-4 font-sans selection:bg-white/20 relative">
+      {/* GitHub Icon */}
+      <a 
+        href="https://github.com/dhaatrik/instant-app-opener" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors"
+        aria-label="GitHub Repository"
+      >
+        <Github className="w-6 h-6" />
+      </a>
+
       {/* Background ambient light */}
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <motion.div 
@@ -306,8 +357,14 @@ export default function Home() {
                   
                   <div className="flex items-center gap-5 z-10 w-full md:w-auto overflow-hidden">
                     <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 shadow-xl backdrop-blur-md relative overflow-hidden" style={{ color: parsed.color }}>
-                      <div className="absolute inset-0 opacity-20" style={{ backgroundColor: parsed.color }} />
-                      <PlatformIcon platform={parsed.platform} className="w-10 h-10 relative z-10 drop-shadow-md" />
+                      {previewData?.image ? (
+                        <img src={previewData.image} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 opacity-20" style={{ backgroundColor: parsed.color }} />
+                          <PlatformIcon platform={parsed.platform} className="w-10 h-10 relative z-10 drop-shadow-md" />
+                        </>
+                      )}
                       
                       {/* Animated Success Indicator */}
                       <span className="absolute -top-1 -right-1 flex h-4 w-4 z-20">
@@ -320,7 +377,13 @@ export default function Home() {
                         <h3 className="font-semibold text-2xl capitalize tracking-wide text-white/90">{parsed.platform}</h3>
                         <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] uppercase tracking-wider font-semibold border border-green-500/20">App Ready</span>
                       </div>
-                      <p className="text-white/40 text-sm truncate">{parsed.originalUrl}</p>
+                      {isLoadingPreview ? (
+                        <div className="h-4 w-32 bg-white/10 rounded animate-pulse mt-2" />
+                      ) : previewData?.title ? (
+                        <p className="text-white/80 text-sm truncate font-medium">{previewData.title}</p>
+                      ) : (
+                        <p className="text-white/40 text-sm truncate">{parsed.originalUrl}</p>
+                      )}
                     </div>
                   </div>
 
@@ -389,24 +452,101 @@ export default function Home() {
                     </motion.button>
                   </div>
                 </div>
+
+                {/* Copy Fallback UI */}
+                <AnimatePresence>
+                  {copyFallback && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
+                        <p className="text-sm text-yellow-400 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          Automatic copy failed. Please copy the link manually:
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            ref={fallbackInputRef}
+                            type="text"
+                            readOnly
+                            value={copyFallback}
+                            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Share App Section */}
-      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10">
-        <p className="text-white/40 text-sm mb-4 text-center max-w-md">
-          Do you like the &quot;Instant App Opener&quot;? Wanna spread it with friends and other professionals?
-        </p>
-        <button
-          onClick={handleShareApp}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
-        >
-          {appShared ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
-          {appShared ? 'Shared!' : 'Share Instant App Opener'}
-        </button>
+      {/* Share App & Feedback Section */}
+      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10 gap-6">
+        <div className="flex flex-col items-center">
+          <p className="text-white/40 text-sm mb-4 text-center max-w-md">
+            Do you like the &quot;Instant App Opener&quot;? Wanna spread it with friends and other professionals?
+          </p>
+          <button
+            onClick={handleShareApp}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
+          >
+            {appShared ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+            {appShared ? 'Shared!' : 'Share Instant App Opener'}
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center w-full max-w-md">
+          <button
+            onClick={() => setShowFeedback(!showFeedback)}
+            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Send Feedback
+          </button>
+          
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="overflow-hidden w-full"
+              >
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4">
+                  <p className="text-sm text-white/60 text-center">
+                    Have a suggestion or found a bug? Reach out to the developer directly.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <a 
+                      href="https://x.com/dhaatrik" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all"
+                      aria-label="X (Twitter)"
+                    >
+                      <XLogo className="w-5 h-5" />
+                    </a>
+                    <a 
+                      href="https://www.linkedin.com/in/dhaatrik/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all"
+                      aria-label="LinkedIn"
+                    >
+                      <Linkedin className="w-5 h-5" />
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Footer */}
