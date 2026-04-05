@@ -13,6 +13,11 @@ Object.assign(navigator, {
 describe('Home Page', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ error: true }),
+      })
+    ) as any;
   });
 
   afterEach(() => {
@@ -48,6 +53,11 @@ describe('Home Page', () => {
     await act(async () => {
       fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } });
       vi.advanceTimersByTime(250); // Fast-forward debounce
+    });
+
+    // Wait for fetch to resolve
+    await act(async () => {
+      await Promise.resolve();
     });
 
     expect(screen.getByText('youtube')).toBeInTheDocument();
