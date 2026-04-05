@@ -1,4 +1,4 @@
-export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'unknown';
+export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'spotify' | 'unknown';
 
 export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
   youtube: {
@@ -20,6 +20,14 @@ export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } 
   facebook: {
     ios: 'https://apps.apple.com/app/facebook/id284882215',
     android: 'https://play.google.com/store/apps/details?id=com.facebook.katana'
+  },
+  tiktok: {
+    ios: 'https://apps.apple.com/app/tiktok/id835599320',
+    android: 'https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically'
+  },
+  spotify: {
+    ios: 'https://apps.apple.com/app/spotify-music-and-podcasts/id324684580',
+    android: 'https://play.google.com/store/apps/details?id=com.spotify.music'
   },
   unknown: null
 };
@@ -183,6 +191,51 @@ export function parseUrl(url: string): ParsedUrl {
           fallbackUrl: url,
           color: '#1877F2',
           glowClass: 'shadow-[0_0_30px_-5px_rgba(24,119,242,0.3)] border-blue-500/30',
+        };
+      }
+    }
+
+    // TikTok
+    if (hostname.includes('tiktok.com')) {
+      let id = '';
+      const videoMatch = pathname.match(/\/video\/(\d+)/);
+      if (videoMatch) {
+        id = videoMatch[1];
+      } else {
+        // Handle short links like vm.tiktok.com/ZMxxxxxx/
+        const shortMatch = pathname.match(/\/([^/?]+)/);
+        if (shortMatch) {
+          id = shortMatch[1];
+        }
+      }
+
+      if (id) {
+        return {
+          platform: 'tiktok',
+          id,
+          originalUrl: url,
+          deepLink: `snssdk1233://aweme/detail/${id}`, // TikTok deep link format
+          fallbackUrl: url,
+          color: '#00f2fe', // TikTok cyan-ish
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(0,242,254,0.3)] border-cyan-400/30',
+        };
+      }
+    }
+
+    // Spotify
+    if (hostname.includes('spotify.com')) {
+      const match = pathname.match(/\/(track|album|playlist|episode|show)\/([^/?]+)/);
+      if (match) {
+        const type = match[1];
+        const id = match[2];
+        return {
+          platform: 'spotify',
+          id,
+          originalUrl: url,
+          deepLink: `spotify:${type}:${id}`,
+          fallbackUrl: url,
+          color: '#1DB954',
+          glowClass: 'shadow-[0_0_30px_-5px_rgba(29,185,84,0.3)] border-green-500/30',
         };
       }
     }
