@@ -50,7 +50,9 @@ describe('Browser API Interactions', () => {
     expect(screen.getByText('Copy Link')).toBeInTheDocument();
 
     const copyButton = screen.getByText('Copy Link').closest('button');
-    fireEvent.click(copyButton!);
+    await act(async () => {
+      fireEvent.click(copyButton!);
+    });
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('/open/mock-encoded-id'));
   });
@@ -62,16 +64,17 @@ describe('Browser API Interactions', () => {
     render(<Home />);
     const input = screen.getByPlaceholderText(/Paste YouTube, X, LinkedIn URL.../i);
 
-    fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=123' } });
-    
-    act(() => {
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=123' } });
       vi.advanceTimersByTime(250);
     });
 
     expect(screen.getByText('Share')).toBeInTheDocument();
 
     const shareButton = screen.getByText('Share').closest('button');
-    fireEvent.click(shareButton!);
+    await act(async () => {
+      fireEvent.click(shareButton!);
+    });
 
     // Should call clipboard.writeText as a fallback
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('/open/mock-encoded-id'));

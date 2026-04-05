@@ -10,9 +10,13 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock url-parser
-vi.mock('@/lib/url-parser', () => ({
-  decodeDeepLinkId: vi.fn(),
-}));
+vi.mock('@/lib/url-parser', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/url-parser')>();
+  return {
+    ...actual,
+    decodeDeepLinkId: vi.fn(),
+  };
+});
 
 describe('OpenPage', () => {
   let originalLocation: Location;
@@ -75,7 +79,7 @@ describe('OpenPage', () => {
     expect(window.location.href).toBe('https://youtube.com/watch?v=123');
   });
 
-  it('should attempt deep link and fallback after timeout on mobile', () => {
+  it('should attempt deep link and fallback to app store after timeout on mobile', () => {
     vi.mocked(navigation.useParams).mockReturnValue({ id: 'valid-id' });
     vi.mocked(urlParser.decodeDeepLinkId).mockReturnValue({
       p: 'youtube',
@@ -98,7 +102,7 @@ describe('OpenPage', () => {
       vi.advanceTimersByTime(2000);
     });
 
-    expect(screen.getByText('App not found. Redirecting to web...')).toBeInTheDocument();
-    expect(window.location.href).toBe('https://youtube.com/watch?v=123');
+    expect(screen.getByText('App not found. Redirecting...')).toBeInTheDocument();
+    expect(window.location.href).toBe('https://apps.apple.com/app/youtube/id544007664');
   });
 });

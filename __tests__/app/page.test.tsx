@@ -37,7 +37,7 @@ describe('Home Page', () => {
       vi.advanceTimersByTime(250); // Fast-forward debounce
     });
 
-    expect(screen.getByText('Platform not supported.')).toBeInTheDocument();
+    expect(screen.getByText('Platform not supported. We currently support YouTube, X, LinkedIn, Instagram, and Facebook.')).toBeInTheDocument();
   });
 
   it('should show platform details for supported URLs', async () => {

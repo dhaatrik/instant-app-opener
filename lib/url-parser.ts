@@ -1,5 +1,29 @@
 export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'unknown';
 
+export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
+  youtube: {
+    ios: 'https://apps.apple.com/app/youtube/id544007664',
+    android: 'https://play.google.com/store/apps/details?id=com.google.android.youtube'
+  },
+  x: {
+    ios: 'https://apps.apple.com/app/x/id333903271',
+    android: 'https://play.google.com/store/apps/details?id=com.twitter.android'
+  },
+  linkedin: {
+    ios: 'https://apps.apple.com/app/linkedin/id288429040',
+    android: 'https://play.google.com/store/apps/details?id=com.linkedin.android'
+  },
+  instagram: {
+    ios: 'https://apps.apple.com/app/instagram/id389801252',
+    android: 'https://play.google.com/store/apps/details?id=com.instagram.android'
+  },
+  facebook: {
+    ios: 'https://apps.apple.com/app/facebook/id284882215',
+    android: 'https://play.google.com/store/apps/details?id=com.facebook.katana'
+  },
+  unknown: null
+};
+
 export interface ParsedUrl {
   platform: Platform;
   id: string;

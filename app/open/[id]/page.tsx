@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { decodeDeepLinkId } from '@/lib/url-parser';
+import { decodeDeepLinkId, APP_STORE_LINKS, Platform } from '@/lib/url-parser';
 import { motion } from 'motion/react';
 import { Loader2 } from 'lucide-react';
 
@@ -27,18 +27,30 @@ export default function OpenPage() {
       setFallbackUrl(data.u);
 
       const deepLink = data.d || data.u;
+      const platform = data.p as Platform;
 
       // Attempt to open deep link
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+      const isAndroid = /android/i.test(userAgent);
+      const isMobile = isIOS || isAndroid;
 
       if (isMobile) {
         // Try to open app
         window.location.href = deepLink;
 
-        // Fallback to web after 2 seconds if app didn't open
+        // Fallback to app store or web after 2 seconds if app didn't open
         const timeout = setTimeout(() => {
-          setStatus('App not found. Redirecting to web...');
-          window.location.href = data.u;
+          setStatus('App not found. Redirecting...');
+          const storeLinks = APP_STORE_LINKS[platform];
+          
+          if (isIOS && storeLinks?.ios) {
+            window.location.href = storeLinks.ios;
+          } else if (isAndroid && storeLinks?.android) {
+            window.location.href = storeLinks.android;
+          } else {
+            window.location.href = data.u;
+          }
         }, 2000);
 
         return timeout;
