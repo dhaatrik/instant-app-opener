@@ -30,6 +30,7 @@ export default function Home() {
   const [parsed, setParsed] = useState<ParsedUrl | null>(null);
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const [appShared, setAppShared] = useState(false);
   const [appUrl, setAppUrl] = useState(() => {
     if (typeof window !== 'undefined') {
       return process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
@@ -74,7 +75,7 @@ export default function Home() {
         
         if (!isSupportedDomain) {
           setParsed(null);
-          setError("Platform not supported.");
+          setError("Platform not supported. We currently support YouTube, X, LinkedIn, Instagram, and Facebook.");
           return;
         }
 
@@ -82,13 +83,18 @@ export default function Home() {
         if (result.platform !== 'unknown') {
           setParsed(result);
           setError(null);
+          
+          // Subtle haptic feedback when a valid URL is detected
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(15);
+          }
         } else {
           setParsed(null);
-          setError("Could not extract ID from this URL.");
+          setError("Could not extract ID from this URL. Please ensure it's a valid post or profile link.");
         }
       } catch {
         setParsed(null);
-        setError("Invalid URL format.");
+        setError("Invalid URL format. Please enter a valid link.");
       }
     };
 
@@ -134,6 +140,26 @@ export default function Home() {
     }
   }, [parsed, appUrl, handleCopy]);
 
+  const handleShareApp = useCallback(async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Instant App Opener',
+          text: 'Open social media links directly in their native apps instead of the browser!',
+          url: appUrl,
+        });
+        setAppShared(true);
+        setTimeout(() => setAppShared(false), 2000);
+      } catch (err) {
+        console.log('Share cancelled or failed', err);
+      }
+    } else {
+      await navigator.clipboard.writeText(appUrl);
+      setAppShared(true);
+      setTimeout(() => setAppShared(false), 2000);
+    }
+  }, [appUrl]);
+
   const handleClear = () => {
     setInput('');
     setDebouncedInput('');
@@ -173,7 +199,7 @@ export default function Home() {
         <motion.div 
           className="w-[800px] h-[800px] rounded-full blur-[120px] opacity-20 transition-colors duration-1000"
           animate={{
-            backgroundColor: parsed ? parsed.color : error ? '#ef4444' : 'transparent'
+            backgroundColor: parsed ? parsed.color : error ? '#ef4444' : 'rgba(0,0,0,0)'
           }}
         />
       </div>
@@ -369,8 +395,22 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Share App Section */}
+      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10">
+        <p className="text-white/40 text-sm mb-4 text-center max-w-md">
+          Do you like the &quot;Instant App Opener&quot;? Wanna spread it with friends and other professionals?
+        </p>
+        <button
+          onClick={handleShareApp}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
+        >
+          {appShared ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+          {appShared ? 'Shared!' : 'Share Instant App Opener'}
+        </button>
+      </div>
+
       {/* Footer */}
-      <div className="mt-auto pb-4 pt-8 text-white/20 text-xs font-mono tracking-widest uppercase text-center px-4 z-10">
+      <div className="pb-4 pt-4 text-white/20 text-xs font-mono tracking-widest uppercase text-center px-4 z-10">
         Currently supports YouTube, X, LinkedIn, Instagram & Facebook
       </div>
     </div>
