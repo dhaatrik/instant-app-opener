@@ -189,7 +189,7 @@ export default function Home() {
 
   useEffect(() => {
     if (parsed) {
-      fetch(`/api/preview?url=${encodeURIComponent(parsed.originalUrl)}`)
+      fetch(`${appUrl}/api/preview?url=${encodeURIComponent(parsed.originalUrl)}`)
         .then(res => res.json())
         .then(data => {
           if (!data.error) {
@@ -204,7 +204,7 @@ export default function Home() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoadingPreview(false);
     }
-  }, [parsed]);
+  }, [parsed, appUrl]);
 
   const triggerConfetti = useCallback((color: string) => {
     confetti({
@@ -217,7 +217,7 @@ export default function Home() {
 
   const addToRecentDrops = useCallback((url: string) => {
     setRecentDrops(prev => {
-      const newDrops = [url, ...prev.filter(d => d !== url)].slice(0, 5);
+      const newDrops = [url, ...prev.filter(d => d !== url)].slice(0, 10);
       return newDrops;
     });
   }, []);
@@ -537,9 +537,9 @@ export default function Home() {
                           <p className="text-white/60 text-sm font-medium">{loadingText}</p>
                         </div>
                       ) : previewData?.title ? (
-                        <p className="text-white/80 text-sm truncate font-medium">{previewData.title}</p>
+                        <p className="text-white/80 text-sm line-clamp-2 font-medium">{previewData.title}</p>
                       ) : (
-                        <p className="text-white/40 text-sm truncate">{parsed.originalUrl}</p>
+                        <p className="text-white/40 text-sm line-clamp-2">{parsed.originalUrl}</p>
                       )}
                     </div>
                   </div>
@@ -636,8 +636,35 @@ export default function Home() {
                         >
                           <X className="w-5 h-5" />
                         </button>
-                        <QRCodeSVG value={`${appUrl}/open/${encodeDeepLinkId(parsed)}`} size={200} />
+                        <div id="qr-code-container">
+                          <QRCodeSVG value={`${appUrl}/open/${encodeDeepLinkId(parsed)}`} size={200} />
+                        </div>
                         <p className="text-black/60 text-sm font-medium">Scan the Sauce</p>
+                        <button
+                          onClick={() => {
+                            const svg = document.querySelector('#qr-code-container svg');
+                            if (svg) {
+                              const svgData = new XMLSerializer().serializeToString(svg);
+                              const canvas = document.createElement('canvas');
+                              const ctx = canvas.getContext('2d');
+                              const img = new Image();
+                              img.onload = () => {
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                ctx?.drawImage(img, 0, 0);
+                                const pngFile = canvas.toDataURL('image/png');
+                                const downloadLink = document.createElement('a');
+                                downloadLink.download = 'instant-app-opener-qr.png';
+                                downloadLink.href = `${pngFile}`;
+                                downloadLink.click();
+                              };
+                              img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                            }
+                          }}
+                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
+                        >
+                          Download QR
+                        </button>
                       </div>
                     </motion.div>
                   )}
@@ -665,6 +692,20 @@ export default function Home() {
                             value={copyFallback}
                             className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
                           />
+                          <button
+                            onClick={() => {
+                              if (fallbackInputRef.current) {
+                                fallbackInputRef.current.select();
+                                document.execCommand('copy');
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 2000);
+                              }
+                            }}
+                            className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white text-sm font-medium transition-colors flex items-center gap-2"
+                          >
+                            <Copy className="w-4 h-4" />
+                            Copy
+                          </button>
                         </div>
                       </div>
                     </motion.div>
