@@ -51,7 +51,7 @@ describe('Home Page', () => {
     });
 
     expect(screen.getByText('youtube')).toBeInTheDocument();
-    expect(screen.getByText('App Ready')).toBeInTheDocument();
+    expect(screen.getByText('Certified App')).toBeInTheDocument();
     expect(screen.getByText('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBeInTheDocument();
   });
 

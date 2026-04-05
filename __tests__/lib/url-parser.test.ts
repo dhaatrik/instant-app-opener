@@ -80,6 +80,34 @@ describe('url-parser', () => {
       });
     });
 
+    it('should parse valid TikTok URLs', () => {
+      const urls = [
+        { url: 'https://www.tiktok.com/@user/video/1234567890', id: '1234567890', deepLink: 'snssdk1233://aweme/detail/1234567890' },
+        { url: 'https://vm.tiktok.com/ZMxxxxxx/', id: 'ZMxxxxxx', deepLink: 'snssdk1233://aweme/detail/ZMxxxxxx' },
+      ];
+
+      urls.forEach(({ url, id, deepLink }) => {
+        const result = parseUrl(url);
+        expect(result.platform).toBe('tiktok');
+        expect(result.id).toBe(id);
+        expect(result.deepLink).toBe(deepLink);
+      });
+    });
+
+    it('should parse valid Spotify URLs', () => {
+      const urls = [
+        { url: 'https://open.spotify.com/track/1234567890', id: '1234567890', deepLink: 'spotify:track:1234567890' },
+        { url: 'https://open.spotify.com/album/1234567890', id: '1234567890', deepLink: 'spotify:album:1234567890' },
+      ];
+
+      urls.forEach(({ url, id, deepLink }) => {
+        const result = parseUrl(url);
+        expect(result.platform).toBe('spotify');
+        expect(result.id).toBe(id);
+        expect(result.deepLink).toBe(deepLink);
+      });
+    });
+
     it('should handle invalid URLs gracefully', () => {
       const invalidUrls = [
         'not-a-url',

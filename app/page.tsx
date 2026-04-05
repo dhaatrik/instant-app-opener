@@ -1,14 +1,33 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2 } from 'lucide-react';
+import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2, Github, MessageSquare, QrCode, ClipboardPaste } from 'lucide-react';
 import { parseUrl, encodeDeepLinkId, ParsedUrl, Platform } from '@/lib/url-parser';
+import { QRCodeSVG } from 'qrcode.react';
+import confetti from 'canvas-confetti';
 
 function XLogo({ className = "w-6 h-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 3.827H5.078z"></path>
+    </svg>
+  );
+}
+
+function TikTokLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.13 4.49-2.92 5.89-1.72 1.34-4.08 1.83-6.18 1.25-2.09-.58-3.8-2.12-4.66-4.11-.86-2-1.02-4.32-.42-6.39.6-2.07 2.14-3.77 4.13-4.63 1.99-.86 4.31-1.02 6.38-.42v4.01c-1.05-.38-2.25-.33-3.25.13-1 .46-1.78 1.31-2.16 2.33-.38 1.02-.33 2.25.13 3.25.46 1 1.31 1.78 2.33 2.16 1.02.38 2.25.33 3.25-.13 1-.46 1.78-1.31 2.16-2.33.15-.4.24-.83.26-1.27V.02z" />
+    </svg>
+  );
+}
+
+function SpotifyLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.54.659.301 1.02zm1.44-3.3c-.301.42-.84.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.84.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.781-.18-.6.18-1.2.78-1.38 4.2-1.32 11.28-1.02 15.72 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.599-1.619.3z" />
     </svg>
   );
 }
@@ -20,6 +39,8 @@ function PlatformIcon({ platform, className = "w-6 h-6" }: { platform: Platform,
     case 'linkedin': return <Linkedin className={className} />;
     case 'instagram': return <Instagram className={className} />;
     case 'facebook': return <Facebook className={className} />;
+    case 'tiktok': return <TikTokLogo className={className} />;
+    case 'spotify': return <SpotifyLogo className={className} />;
     default: return <Link2 className={className} />;
   }
 }
@@ -39,6 +60,16 @@ export default function Home() {
   });
   const [error, setError] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [previewData, setPreviewData] = useState<{ title?: string, description?: string, image?: string } | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [copyFallback, setCopyFallback] = useState<string | null>(null);
+  const fallbackInputRef = useRef<HTMLInputElement>(null);
+  const [recentDrops, setRecentDrops] = useState<string[]>([]);
+  const [dodges, setDodges] = useState(0);
+  const [placeholderText, setPlaceholderText] = useState('Paste YouTube, X, LinkedIn URL...');
+  const [loadingText, setLoadingText] = useState('Cooking...');
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -47,6 +78,59 @@ export default function Home() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // Load local storage
+  useEffect(() => {
+    try {
+      const savedDrops = localStorage.getItem('recentDrops');
+      if (savedDrops) setRecentDrops(JSON.parse(savedDrops));
+      
+      const savedDodges = localStorage.getItem('dodges');
+      if (savedDodges) setDodges(parseInt(savedDodges, 10));
+    } catch (e) {
+      console.error('Failed to load from local storage', e);
+    }
+  }, []);
+
+  // Save local storage
+  useEffect(() => {
+    try {
+      localStorage.setItem('recentDrops', JSON.stringify(recentDrops));
+      localStorage.setItem('dodges', dodges.toString());
+    } catch (e) {
+      console.error('Failed to save to local storage', e);
+    }
+  }, [recentDrops, dodges]);
+
+  // Typewriter placeholder
+  useEffect(() => {
+    const placeholders = [
+      "Paste YouTube, X, LinkedIn URL...",
+      "Drop the IG reel here...",
+      "Paste that viral X thread...",
+      "Link the 3-hour YouTube essay...",
+      "Drop the TikTok here...",
+      "Paste the Spotify track..."
+    ];
+    let i = 0;
+    const interval = setInterval(() => {
+      i = (i + 1) % placeholders.length;
+      setPlaceholderText(placeholders[i]);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Loading text cycler
+  useEffect(() => {
+    if (!isLoadingPreview) return;
+    const texts = ["Cooking...", "Checking the vibes...", "Summoning the app..."];
+    let i = 0;
+    const interval = setInterval(() => {
+      i = (i + 1) % texts.length;
+      setLoadingText(texts[i]);
+    }, 800);
+    return () => clearInterval(interval);
+  }, [isLoadingPreview]);
 
   // Debounce input to optimize performance
   useEffect(() => {
@@ -83,6 +167,8 @@ export default function Home() {
         if (result.platform !== 'unknown') {
           setParsed(result);
           setError(null);
+          setIsLoadingPreview(true);
+          setPreviewData(null);
           
           // Subtle haptic feedback when a valid URL is detected
           if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -101,20 +187,72 @@ export default function Home() {
     processInput();
   }, [debouncedInput]);
 
+  useEffect(() => {
+    if (parsed) {
+      fetch(`/api/preview?url=${encodeURIComponent(parsed.originalUrl)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setPreviewData(data);
+          }
+        })
+        .catch(err => console.error('Failed to fetch preview:', err))
+        .finally(() => setIsLoadingPreview(false));
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPreviewData(null);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLoadingPreview(false);
+    }
+  }, [parsed]);
+
+  const triggerConfetti = useCallback((color: string) => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: [color, '#ffffff']
+    });
+  }, []);
+
+  const addToRecentDrops = useCallback((url: string) => {
+    setRecentDrops(prev => {
+      const newDrops = [url, ...prev.filter(d => d !== url)].slice(0, 5);
+      return newDrops;
+    });
+  }, []);
+
   const handleCopy = useCallback(async () => {
     if (!parsed) return;
     const encoded = encodeDeepLinkId(parsed);
     const link = `${appUrl}/open/${encoded}`;
-    await navigator.clipboard.writeText(link);
     
-    // Satisfying haptic feedback pattern for supported mobile devices
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate([40, 30, 40]);
+    try {
+      await navigator.clipboard.writeText(link);
+      
+      // Satisfying haptic feedback pattern for supported mobile devices
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([40, 30, 40]);
+      }
+      
+      triggerConfetti(parsed.color);
+      setDodges(prev => prev + 1);
+      addToRecentDrops(parsed.originalUrl);
+      
+      setCopied(true);
+      setCopyFallback(null);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      setCopyFallback(link);
+      // Focus the input in the next tick
+      setTimeout(() => {
+        if (fallbackInputRef.current) {
+          fallbackInputRef.current.select();
+        }
+      }, 0);
     }
-    
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [parsed, appUrl]);
+  }, [parsed, appUrl, triggerConfetti, addToRecentDrops]);
 
   const handleShare = useCallback(async () => {
     if (!parsed) return;
@@ -128,6 +266,11 @@ export default function Home() {
           text: 'Click to open this link directly in the app!',
           url: link,
         });
+        
+        triggerConfetti(parsed.color);
+        setDodges(prev => prev + 1);
+        addToRecentDrops(parsed.originalUrl);
+        
         setShared(true);
         setTimeout(() => setShared(false), 2000);
       } catch (err) {
@@ -138,7 +281,20 @@ export default function Home() {
       // Fallback to copy if share is not supported
       handleCopy();
     }
-  }, [parsed, appUrl, handleCopy]);
+  }, [parsed, appUrl, handleCopy, triggerConfetti, addToRecentDrops]);
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setInput(text);
+      }
+    } catch (err) {
+      console.error('Failed to read clipboard contents: ', err);
+      setError("Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).");
+      setTimeout(() => setError(null), 3000);
+    }
+  };
 
   const handleShareApp = useCallback(async () => {
     if (navigator.share) {
@@ -194,6 +350,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col p-4 font-sans selection:bg-white/20 relative">
+      {/* GitHub Icon */}
+      <a 
+        href="https://github.com/dhaatrik/instant-app-opener" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors"
+        aria-label="GitHub Repository"
+      >
+        <Github className="w-6 h-6" />
+      </a>
+
       {/* Background ambient light */}
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <motion.div 
@@ -224,7 +391,7 @@ export default function Home() {
             Open Links <br/> Directly in App
           </h1>
           <p className="text-white/40 text-lg md:text-xl max-w-xl mx-auto font-light tracking-wide">
-            The shared link opens in a browser? Paste it here and share the link to open in app.
+            Shared links opening in browser is an L. Paste it here to open directly in-app. No cap.
           </p>
         </motion.div>
 
@@ -243,12 +410,24 @@ export default function Home() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste YouTube, X, LinkedIn URL..."
+                placeholder={placeholderText}
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[110px] md:pr-[130px] outline-none placeholder:text-white/20 font-light"
               />
               {/* Icons inside input */}
               <div className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 flex items-center p-1.5 rounded-2xl bg-[#050505]/60 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <AnimatePresence>
+                  {!input && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.5, width: 0 }}
+                      animate={{ opacity: 1, scale: 1, width: 'auto' }}
+                      exit={{ opacity: 0, scale: 0.5, width: 0 }}
+                      onClick={handlePaste}
+                      className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0"
+                      title="Paste"
+                    >
+                      <ClipboardPaste className="w-5 h-5 shrink-0" />
+                    </motion.button>
+                  )}
                   {input && (
                     <motion.button
                       initial={{ opacity: 0, scale: 0.5, width: 0 }}
@@ -288,6 +467,32 @@ export default function Home() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Recent Drops */}
+            {recentDrops.length > 0 && !parsed && !error && (
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="flex flex-wrap items-center justify-center gap-2 mt-6"
+              >
+                <span className="text-xs text-white/40 uppercase tracking-widest mr-2">Recent Drops:</span>
+                {recentDrops.map((drop, idx) => {
+                  try {
+                    const url = new URL(drop);
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setInput(drop)}
+                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px]"
+                      >
+                        {url.hostname.replace('www.', '')}
+                      </button>
+                    );
+                  } catch {
+                    return null;
+                  }
+                })}
+              </motion.div>
+            )}
           </div>
 
           <AnimatePresence mode="wait">
@@ -306,8 +511,14 @@ export default function Home() {
                   
                   <div className="flex items-center gap-5 z-10 w-full md:w-auto overflow-hidden">
                     <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 shadow-xl backdrop-blur-md relative overflow-hidden" style={{ color: parsed.color }}>
-                      <div className="absolute inset-0 opacity-20" style={{ backgroundColor: parsed.color }} />
-                      <PlatformIcon platform={parsed.platform} className="w-10 h-10 relative z-10 drop-shadow-md" />
+                      {previewData?.image ? (
+                        <img src={previewData.image} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 opacity-20" style={{ backgroundColor: parsed.color }} />
+                          <PlatformIcon platform={parsed.platform} className="w-10 h-10 relative z-10 drop-shadow-md" />
+                        </>
+                      )}
                       
                       {/* Animated Success Indicator */}
                       <span className="absolute -top-1 -right-1 flex h-4 w-4 z-20">
@@ -318,9 +529,18 @@ export default function Home() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="font-semibold text-2xl capitalize tracking-wide text-white/90">{parsed.platform}</h3>
-                        <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] uppercase tracking-wider font-semibold border border-green-500/20">App Ready</span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] uppercase tracking-wider font-semibold border border-green-500/20">Certified App</span>
                       </div>
-                      <p className="text-white/40 text-sm truncate">{parsed.originalUrl}</p>
+                      {isLoadingPreview ? (
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="h-4 w-4 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
+                          <p className="text-white/60 text-sm font-medium">{loadingText}</p>
+                        </div>
+                      ) : previewData?.title ? (
+                        <p className="text-white/80 text-sm truncate font-medium">{previewData.title}</p>
+                      ) : (
+                        <p className="text-white/40 text-sm truncate">{parsed.originalUrl}</p>
+                      )}
                     </div>
                   </div>
 
@@ -387,6 +607,130 @@ export default function Home() {
                         )}
                       </div>
                     </motion.button>
+
+                    <motion.button
+                      whileHover={{ y: -4, scale: 1.02 }}
+                      whileTap={{ y: 2, scale: 0.98 }}
+                      onClick={() => setShowQR(true)}
+                      className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)]"
+                      title="Show QR Code"
+                    >
+                      <QrCode className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* QR Code Modal */}
+                <AnimatePresence>
+                  {showQR && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
+                    >
+                      <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative">
+                        <button 
+                          onClick={() => setShowQR(false)}
+                          className="absolute top-2 right-2 text-black/40 hover:text-black"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                        <QRCodeSVG value={`${appUrl}/open/${encodeDeepLinkId(parsed)}`} size={200} />
+                        <p className="text-black/60 text-sm font-medium">Scan the Sauce</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Copy Fallback UI */}
+                <AnimatePresence>
+                  {copyFallback && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
+                        <p className="text-sm text-yellow-400 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          Copy failed, that&apos;s an L. Do it manually, bestie:
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            ref={fallbackInputRef}
+                            type="text"
+                            readOnly
+                            value={copyFallback}
+                            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Share App & Feedback Section */}
+      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10 gap-6">
+        <div className="flex flex-col items-center">
+          <p className="text-white/40 text-sm mb-4 text-center max-w-md">
+            Vibing with Instant App Opener? Share the sauce with your friends and mutuals.
+          </p>
+          <button
+            onClick={handleShareApp}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
+          >
+            {appShared ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+            {appShared ? 'Shared!' : 'Share Instant App Opener'}
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center w-full max-w-md">
+          <button
+            onClick={() => setShowFeedback(!showFeedback)}
+            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Send Feedback
+          </button>
+          
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="overflow-hidden w-full"
+              >
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4">
+                  <p className="text-sm text-white/60 text-center">
+                    Got suggestions or found a bug? Slide into the developer&apos;s DMs.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <a 
+                      href="https://x.com/dhaatrik" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all"
+                      aria-label="X (Twitter)"
+                    >
+                      <XLogo className="w-5 h-5" />
+                    </a>
+                    <a 
+                      href="https://www.linkedin.com/in/dhaatrik/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all"
+                      aria-label="LinkedIn"
+                    >
+                      <Linkedin className="w-5 h-5" />
+                    </a>
                   </div>
                 </div>
               </motion.div>
@@ -395,23 +739,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Share App Section */}
-      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10">
-        <p className="text-white/40 text-sm mb-4 text-center max-w-md">
-          Do you like the &quot;Instant App Opener&quot;? Wanna spread it with friends and other professionals?
-        </p>
-        <button
-          onClick={handleShareApp}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
-        >
-          {appShared ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
-          {appShared ? 'Shared!' : 'Share Instant App Opener'}
-        </button>
-      </div>
-
       {/* Footer */}
-      <div className="pb-4 pt-4 text-white/20 text-xs font-mono tracking-widest uppercase text-center px-4 z-10">
-        Currently supports YouTube, X, LinkedIn, Instagram & Facebook
+      <div className="pb-4 pt-4 text-white/20 text-xs font-mono tracking-widest uppercase text-center px-4 z-10 flex flex-col gap-2">
+        <span>Currently supports YouTube, X, LinkedIn, Instagram, Facebook, TikTok & Spotify</span>
+        {dodges > 0 && (
+          <span className="text-white/40">You&apos;ve dodged the browser {dodges} {dodges === 1 ? 'time' : 'times'}.</span>
+        )}
       </div>
     </div>
   );
