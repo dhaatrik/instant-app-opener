@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css'; // Global styles
 
@@ -8,12 +8,15 @@ export const metadata: Metadata = {
   title: 'Instant App Opener | Open Social Links in App',
   description: 'Convert standard social media URLs into mobile-app-compatible URI schemes instantly.',
   manifest: '/manifest.json',
-  themeColor: '#050505',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'App Opener',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#050505',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
