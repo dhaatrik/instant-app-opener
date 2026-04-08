@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: 'Instant App Opener | Open Social Links in App',
   description: 'Convert standard social media URLs into mobile-app-compatible URI schemes instantly.',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

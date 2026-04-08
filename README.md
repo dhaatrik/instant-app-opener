@@ -1,5 +1,9 @@
 # 📱 Instant App Opener V2
 
+<div align="center">
+  <img src="public/icon.png" alt="Instant App Opener Logo" width="128" />
+</div>
+
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
