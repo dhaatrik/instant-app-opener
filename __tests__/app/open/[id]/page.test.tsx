@@ -28,13 +28,13 @@ describe('OpenPage', () => {
     
     // Mock window.location
     delete (window as any).location;
-    (window as any).location = { ...originalLocation, href: '' };
+    window.location = { ...originalLocation, href: '' } as Location;
     
     vi.useFakeTimers();
   });
 
   afterEach(() => {
-    (window as any).location = originalLocation;
+    window.location = originalLocation;
     Object.defineProperty(navigator, 'userAgent', {
       value: originalUserAgent,
       configurable: true,

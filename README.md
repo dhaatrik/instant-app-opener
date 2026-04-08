@@ -1,4 +1,4 @@
-# 📱 Instant App Opener
+# 📱 Instant App Opener V2
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
@@ -6,119 +6,136 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css)
 ![CI Status](https://github.com/dhaatrik/instant-app-opener/actions/workflows/ci.yml/badge.svg)
 
-## 📖 Overview
+## 1. Project Title & Description
 
-**Instant App Opener** is a modern, lightweight web application designed to seamlessly convert standard social media URLs into mobile-app-compatible URI schemes (deep links). 
+**Instant App Opener** is a high-performance web application designed to instantly convert standard social media URLs into mobile-app-compatible URI schemes (deep links). 
 
-**The Problem:** When users click standard social media links (like a YouTube video or X post) on their mobile devices, they are often frustratingly redirected to the mobile web browser instead of the native app. This degrades the user experience, forcing unnecessary logins and clunky navigation.
+**The Problem:** When mobile users click on standard social media links (such as a YouTube video or an X post) sent by friends, they are often frustratingly redirected to their mobile web browser rather than the native app. This degrades the user experience by forcing slow loads, unnecessary login prompts, and clunky navigation.
 
-**The Solution:** This application instantly generates deep links that bypass the browser and force the native application to open. It provides a frictionless bridge between web sharing and native mobile consumption. 
+**The Solution:** This application serves as a frictionless bridge. It automatically parses standard web URLs and generates appropriate deep links that bypass the browser, forcing the native application installed on the user's device to open the content directly.
 
-Built with a focus on performance and UI/UX, the app features a premium dark glassmorphic theme and fluid animations, ensuring the link-generation process is as satisfying as it is functional.
-
----
-
-## 📑 Table of Contents
-
-- [Overview](#-overview)
-- [Tech Stack](#-tech-stack)
-- [Installation & Requirements](#-installation--requirements)
-- [Usage Instructions](#-usage-instructions)
-- [Testing](#-testing)
-- [Contributing](#-contributing)
-- [License](#-license)
+**Why these technologies?**
+Built with Next.js and React 19 for optimal server-side and client-side performance, the app features a premium dark glassmorphic UI utilizing Tailwind CSS v4. Framer Motion is heavily integrated to provide fluid, engaging micro-animations that ensure the URL-generation process feels satisfying, instantaneous, and premium.
 
 ---
 
-## 🛠 Tech Stack
+## 2. Table of Contents
 
-This project leverages a modern React ecosystem for optimal performance and developer experience:
-
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router & Standalone Export)
-- **Library:** [React 19](https://react.dev/)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations:** [Motion](https://motion.dev/) (Framer Motion)
-- **Testing:** [Vitest](https://vitest.dev/) & React Testing Library
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Language:** TypeScript
+- [Project Title & Description](#1-project-title--description)
+- [Installation & Requirements](#3-installation--requirements)
+- [Usage Instructions & Examples](#4-usage-instructions--examples)
+- [Technologies Used (Tech Stack)](#5-technologies-used-tech-stack)
+- [Contribution Guidelines](#6-contribution-guidelines)
+- [Testing Instructions](#7-testing-instructions)
+- [License Information](#8-license-information)
 
 ---
 
-## 🚀 Installation & Requirements
+## 3. Installation & Requirements
 
-To run this project locally, ensure you have **Node.js (v20.x or higher)** installed.
+To run this project locally, ensure your environment meets the minimum requirements:
+- **Node.js**: v20.x or higher
+- **Package Manager**: npm (v9+ recommended)
+
+**Step-by-step Setup:**
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/dhaatrik/instant-app-opener.git
    cd instant-app-opener
+   ```
 
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-2.  **Install dependencies:**
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-    ```bash
-    npm install
-    ```
+4. **Access the application:** Open your browser and navigate to `http://localhost:3000`.
 
-3.  **Start the development server:**
+---
 
-    ```bash
-    npm run dev
-    ```
+## 4. Usage Instructions & Examples
 
-4.  **View the app:** Open your browser and navigate to `http://localhost:3000`.
+Using Instant App Opener is straightforward and requires no backend processing.
 
------
+1. **Copy a Link:** Grab any standard URL from a supported platform.
+   *Currently supported platforms: YouTube, X (Twitter), LinkedIn, Instagram, Facebook, TikTok, Spotify.*
+   
+   **Example Input:** `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
 
-## 💡 Usage Instructions
+2. **Paste & Convert:** Paste the link into the central input field on the homepage. The app automatically detects the platform, validates the URL, and instantly displays a preview card alongside sharing tools.
 
-Using Instant App Opener is straightforward and requires no backend database:
+3. **Open or Share:** 
+   - Click **Copy Link** (or use `Cmd/Ctrl + C`) to save the generated app deep link to your clipboard.
+   - Click **Share** (or use `Cmd/Ctrl + S`) to trigger your device's native Web Share API to send the deep-link directly to a friend.
+   - Click the **QR Code** button to generate a scannable QR code for the link.
 
-1.  **Copy a Link:** Grab any standard URL from a supported platform (Currently supports: *YouTube, X/Twitter, LinkedIn, Instagram, Facebook*).
-    > Example: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
-2.  **Paste & Convert:** Paste the link into the central input field. The app automatically detects the platform, validates the URL, and generates a mobile-ready deep link.
-3.  **Share or Copy:** - Click **Copy Link** (or use `Cmd/Ctrl + C`) to save the generated URL to your clipboard.
-      - Click **Share** (or use `Cmd/Ctrl + S`) to trigger your device's native Web Share API for instant distribution.
+---
 
------
+## 5. Technologies Used (Tech Stack)
 
-## 🧪 Testing
+This project leverages a cutting-edge React ecosystem to ensure high code quality, typing strictness, and a flawless user experience.
 
-This project maintains high code quality through automated continuous integration (CI) via GitHub Actions.
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router & Standalone Export)
+- **Library:** [React 19](https://react.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations:** [Motion](https://motion.dev/) (formerly Framer Motion)
+- **Testing:** [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/)
+- **Icons & Graphics:** [Lucide React](https://lucide.dev/) & Canvas Confetti
+- **Parsing:** Cheerio (for rich metadata extraction)
 
-The application uses **Vitest** and **React Testing Library** to test URL parsing logic, custom hooks, and component rendering without relying on a browser engine.
+---
 
-To run the test suite locally:
-
-```bash
-# Run tests once
-npm test
-
-# Run the linter to check for code formatting issues
-npm run lint
-```
-
------
-
-## 🤝 Contributing
+## 6. Contribution Guidelines
 
 Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-This project and everyone participating in it is governed by the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code.
+This project and everyone participating in it operates under the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code.
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Ensure your code passes all tests (`npm test`)
-4.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-5.  Push to the Branch (`git push origin feature/AmazingFeature`)
-6.  Open a Pull Request
+**How to Contribute:**
+1. Fork the Project by clicking the 'Fork' button on GitHub.
+2. Create your Feature Branch: `git checkout -b feature/AmazingFeature`
+3. Ensure your code passes all tests: `npm test`
+4. Commit your Changes: `git commit -m 'Add some AmazingFeature'`
+5. Push to the Branch: `git push origin feature/AmazingFeature`
+6. Open a Pull Request from your branch to the main repository.
 
-For more detailed instructions, please read our [CONTRIBUTING.md](https://www.google.com/search?q=CONTRIBUTING.md).
+If you find bugs or have feature requests, please use the GitHub Issues page first before submitting an unauthorized Pull Request.
 
------
+---
 
-## 📄 License
+## 7. Testing Instructions
 
-Distributed under the MIT License. See `LICENSE` for more information.
+This project maintains strict testing standards through automated continuous integration (CI) via GitHub Actions. We use **Vitest** for our test runner framework alongside **React Testing Library** for component validation.
 
-Copyright (c) 2026 Dhaatrik Chowdhury
+To run the test suite locally and verify your changes:
+
+```bash
+# Run all tests once
+npm run test
+
+# Run tests in UI mode for visual debugging
+npm run test -- --ui
+
+# Run the linter to verify code formatting issues
+npm run lint
+```
+*Note: We enforce a 100% pass rate. Pull requests with failing tests will not be merged.*
+
+---
+
+## 8. License Information
+
+Distributed under the **MIT License**. This allows anyone to use, modify, distribute, or sell the software, provided they include the original copyright and license notice in any copy of the software or substantial portion of it. 
+
+See the `LICENSE` file for more detailed information.
+
+---
+
+*Copyright (c) 2026 Dhaatrik Chowdhury*

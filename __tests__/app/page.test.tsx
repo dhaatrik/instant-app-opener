@@ -13,6 +13,11 @@ Object.assign(navigator, {
 describe('Home Page', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ error: true }),
+      })
+    ) as any;
   });
 
   afterEach(() => {
@@ -23,42 +28,47 @@ describe('Home Page', () => {
   it('should render the initial state correctly', () => {
     render(<Home />);
     
-    expect(screen.getByPlaceholderText('Paste YouTube, X, LinkedIn URL...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i)).toBeInTheDocument();
     expect(screen.getByText(/Open Links/)).toBeInTheDocument();
   });
 
   it('should show "Platform not supported" for unsupported URLs', async () => {
     render(<Home />);
     
-    const input = screen.getByPlaceholderText('Paste YouTube, X, LinkedIn URL...');
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
     
     await act(async () => {
       fireEvent.change(input, { target: { value: 'https://example.com' } });
       vi.advanceTimersByTime(250); // Fast-forward debounce
     });
 
-    expect(screen.getByText('Platform not supported. We currently support YouTube, X, LinkedIn, Instagram, and Facebook.')).toBeInTheDocument();
+    expect(screen.getByText('Platform not supported. We currently support YouTube, X, LinkedIn, Instagram, Facebook, TikTok, and Spotify.')).toBeInTheDocument();
   });
 
   it('should show platform details for supported URLs', async () => {
     render(<Home />);
     
-    const input = screen.getByPlaceholderText('Paste YouTube, X, LinkedIn URL...');
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
     
     await act(async () => {
       fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } });
       vi.advanceTimersByTime(250); // Fast-forward debounce
     });
 
+    // Wait for fetch to resolve
+    await act(async () => {
+      await Promise.resolve();
+    });
+
     expect(screen.getByText('youtube')).toBeInTheDocument();
-    expect(screen.getByText('App Ready')).toBeInTheDocument();
+    expect(screen.getByText('Certified App')).toBeInTheDocument();
     expect(screen.getByText('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBeInTheDocument();
   });
 
   it('should copy link to clipboard when "Copy Link" is clicked', async () => {
     render(<Home />);
     
-    const input = screen.getByPlaceholderText('Paste YouTube, X, LinkedIn URL...');
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
     
     await act(async () => {
       fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } });

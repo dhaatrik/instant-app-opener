@@ -39,7 +39,7 @@ describe('Browser API Interactions', () => {
 
   it('should successfully copy link to clipboard', async () => {
     render(<Home />);
-    const input = screen.getByPlaceholderText(/Paste YouTube, X, LinkedIn URL.../i);
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
 
     fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=123' } });
     
@@ -62,7 +62,7 @@ describe('Browser API Interactions', () => {
     Object.assign(navigator, { share: undefined });
 
     render(<Home />);
-    const input = screen.getByPlaceholderText(/Paste YouTube, X, LinkedIn URL.../i);
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
 
     await act(async () => {
       fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=123' } });
