@@ -16,5 +16,8 @@
 
 ## Utilities
 - **URL Parsing & DOM:** Cheerio for extracting metadata from links.
+- **Deep Link Schemes:**
+    - **TikTok:** `snssdk1233://aweme/detail/{id}` (Global)
+    - **Spotify:** `spotify:{type}:{id}` (e.g., `spotify:track:{id}`)
 - **QR Code Generation:** `qrcode.react` for simple shareability.
 - **Class Merging:** `tailwind-merge` and `clsx` for dynamic style application.

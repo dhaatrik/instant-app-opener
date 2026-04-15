@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add support for TikTok and Spotify deep links**
+- [~] **Track: Add support for TikTok and Spotify deep links**
   *Link: [./tracks/tiktok_spotify_20260416/](./tracks/tiktok_spotify_20260416/)*
