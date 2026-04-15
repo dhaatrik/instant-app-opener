@@ -8,7 +8,7 @@ Instant App Opener is a high-performance web application designed to instantly c
 - **Content Creators:** Influencers and creators looking for better link sharing and conversion rates.
 
 ## Core Features & Focus Areas
-- **Expanding Supported Platforms:** Adding support for more apps beyond YouTube, X, Instagram, LinkedIn, etc.
+- **Expanding Supported Platforms:** Adding support for more apps including YouTube, X, Instagram, LinkedIn, TikTok, and Spotify.
 - **Enhancing Analytics:** Providing data on click-through rates and usage to creators.
 - **Improving UI/UX:** Refining the dark glassmorphic design and Framer Motion animations to ensure a premium feel.
 
