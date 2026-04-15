@@ -16,13 +16,13 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: TikTok Deep Link Support' (Protocol in workflow.md) c4dcbf1
 
 ## Phase 3: Spotify Deep Link Support
-- [ ] Task: Implement Spotify URL parsing
-    - [ ] Write tests for Spotify URL parser covering track, album, and playlist URLs (Red Phase)
-    - [ ] Implement parser logic to construct `spotify://` links (Green Phase)
-- [ ] Task: Update UI for Spotify support
-    - [ ] Write component tests for Spotify preview card rendering (Red Phase)
-    - [ ] Implement UI updates to recognize and display Spotify links (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Spotify Deep Link Support' (Protocol in workflow.md)
+- [x] Task: Implement Spotify URL parsing 03:26
+    - [x] Write tests for Spotify URL parser covering track, album, and playlist URLs (Red Phase) 03:26
+    - [x] Implement parser logic to construct `spotify://` links (Green Phase) 03:26
+- [x] Update UI for Spotify support 03:27
+    - [x] Write component tests for Spotify preview card rendering (Red Phase) 03:27
+    - [x] Implement UI updates to recognize and display Spotify links (Green Phase) 03:27
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Spotify Deep Link Support' (Protocol in workflow.md)
 
 ## Phase 4: Integration and Review
 - [ ] Task: Final integration testing

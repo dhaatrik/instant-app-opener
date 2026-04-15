@@ -117,6 +117,8 @@ describe('url-parser', () => {
         { url: 'https://open.spotify.com/track/1234567890', id: '1234567890', deepLink: 'spotify:track:1234567890' },
         { url: 'https://open.spotify.com/album/1234567890', id: '1234567890', deepLink: 'spotify:album:1234567890' },
         { url: 'https://open.spotify.com/artist/1234567890', id: '1234567890', deepLink: 'spotify:artist:1234567890' },
+        { url: 'https://open.spotify.com/playlist/1234567890', id: '1234567890', deepLink: 'spotify:playlist:1234567890' },
+        { url: 'https://open.spotify.com/episode/1234567890', id: '1234567890', deepLink: 'spotify:episode:1234567890' },
       ];
 
       urls.forEach(({ url, id, deepLink }) => {
