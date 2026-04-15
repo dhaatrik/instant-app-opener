@@ -6,14 +6,14 @@
     - [x] Document discovered schemes in `tech-stack.md` if necessary
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Setup and Research' (Protocol in workflow.md) d8d1ede
 
-## Phase 2: TikTok Deep Link Support
-- [~] Task: Implement TikTok URL parsing
+## Phase 2: TikTok Deep Link Support [checkpoint: c4dcbf1]
+- [x] Task: Implement TikTok URL parsing
     - [x] Write tests for TikTok URL parser covering various URL formats (Red Phase) 03:17
     - [x] Implement parser logic to extract video/user IDs and construct `snssdk1233://` links (Green Phase) 03:18
 - [x] Update UI for TikTok support
     - [x] Write component tests for TikTok preview card rendering (Red Phase) 03:18
     - [x] Implement UI updates to recognize and display TikTok links (Green Phase) 03:19
-- [~] Task: Conductor - User Manual Verification 'Phase 2: TikTok Deep Link Support' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: TikTok Deep Link Support' (Protocol in workflow.md) c4dcbf1
 
 ## Phase 3: Spotify Deep Link Support
 - [ ] Task: Implement Spotify URL parsing
