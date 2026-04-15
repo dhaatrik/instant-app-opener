@@ -243,8 +243,12 @@ export function parseUrl(url: string): ParsedUrl {
     if (hostname.includes('tiktok.com') || hostname.includes('tiktok.t.me')) {
       let id = '';
       const videoMatch = pathname.match(/\/video\/(\d+)/);
+      const mobileVideoMatch = pathname.match(/\/v\/(\d+)/);
+      
       if (videoMatch) {
         id = videoMatch[1];
+      } else if (mobileVideoMatch) {
+        id = mobileVideoMatch[1];
       } else {
         // Handle short links like vm.tiktok.com/ZMxxxxxx/ or vt.tiktok.com
         const shortMatch = pathname.match(/\/([^/?]+)/);

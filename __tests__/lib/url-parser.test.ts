@@ -101,6 +101,7 @@ describe('url-parser', () => {
         { url: 'https://vm.tiktok.com/ZMxxxxxx/', id: 'ZMxxxxxx', deepLink: 'snssdk1233://aweme/detail/ZMxxxxxx' },
         { url: 'https://vt.tiktok.com/ZMxxxxxx/', id: 'ZMxxxxxx', deepLink: 'snssdk1233://aweme/detail/ZMxxxxxx' },
         { url: 'https://www.tiktok.com/@username', id: '@username', deepLink: 'snssdk1233://user/profile/username' },
+        { url: 'https://m.tiktok.com/v/1234567890.html', id: '1234567890', deepLink: 'snssdk1233://aweme/detail/1234567890' },
       ];
 
       urls.forEach(({ url, id, deepLink }) => {

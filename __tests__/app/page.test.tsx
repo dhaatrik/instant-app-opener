@@ -65,6 +65,32 @@ describe('Home Page', () => {
     expect(screen.getByText('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBeInTheDocument();
   });
 
+  it('should show TikTok details for valid TikTok URLs', async () => {
+    render(<Home />);
+    
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+    
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'https://www.tiktok.com/@user/video/1234567890' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    expect(screen.getByText('tiktok')).toBeInTheDocument();
+  });
+
+  it('should show Spotify details for valid Spotify URLs', async () => {
+    render(<Home />);
+    
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+    
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'https://open.spotify.com/track/1234567890' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    expect(screen.getByText('spotify')).toBeInTheDocument();
+  });
+
   it('should copy link to clipboard when "Copy Link" is clicked', async () => {
     render(<Home />);
     
