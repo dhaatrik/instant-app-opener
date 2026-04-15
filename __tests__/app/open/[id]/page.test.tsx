@@ -105,4 +105,50 @@ describe('OpenPage', () => {
     expect(screen.getByText('App not found. Redirecting...')).toBeInTheDocument();
     expect(window.location.href).toBe('https://apps.apple.com/app/youtube/id544007664');
   });
+
+  it('should fallback to play store on Android', () => {
+    vi.mocked(navigation.useParams).mockReturnValue({ id: 'valid-id' });
+    vi.mocked(urlParser.decodeDeepLinkId).mockReturnValue({
+      p: 'youtube',
+      u: 'https://youtube.com/watch?v=123',
+      d: 'vnd.youtube://123',
+    });
+
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (Linux; Android 10; SM-G973F)',
+      configurable: true,
+    });
+
+    render(<OpenPage />);
+
+    // Fast-forward 2 seconds
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(window.location.href).toBe('https://play.google.com/store/apps/details?id=com.google.android.youtube');
+  });
+
+  it('should fallback to web URL if no store link exists', () => {
+    vi.mocked(navigation.useParams).mockReturnValue({ id: 'valid-id' });
+    vi.mocked(urlParser.decodeDeepLinkId).mockReturnValue({
+      p: 'unknown' as any,
+      u: 'https://example.com',
+      d: 'https://example.com',
+    });
+
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+      configurable: true,
+    });
+
+    render(<OpenPage />);
+
+    // Fast-forward 2 seconds
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(window.location.href).toBe('https://example.com');
+  });
 });
