@@ -1,5 +1,6 @@
 {
   "name": "Instant App Opener",
+  "author": "Dhaatrik Chowdhury",
   "short_name": "App Opener",
   "description": "Open social media links directly in their native apps instead of the browser.",
   "start_url": "/",

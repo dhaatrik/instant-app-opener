@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata: Metadata = {
   title: 'Instant App Opener | Open Social Links in App',
   description: 'Convert standard social media URLs into mobile-app-compatible URI schemes instantly.',
+  authors: [{ name: 'Dhaatrik Chowdhury', url: 'https://github.com/dhaatrik' }],
   manifest: '/manifest.json',
   icons: {
     icon: '/icon.png',
