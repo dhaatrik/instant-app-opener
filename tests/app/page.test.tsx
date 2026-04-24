@@ -34,6 +34,19 @@ describe('Home Page', () => {
     expect(screen.getByText(/Open Links/)).toBeInTheDocument();
   });
 
+  it('should show "Invalid URL format" for invalid URLs', async () => {
+    render(<Home />);
+
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { value: ' https:// ' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    expect(screen.getByText('Invalid URL format. Please enter a valid link.')).toBeInTheDocument();
+  });
+
   it('should show "Platform not supported" for unsupported URLs', async () => {
     render(<Home />);
     
@@ -111,6 +124,76 @@ describe('Home Page', () => {
 
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
     expect(screen.getByText('Link Copied!')).toBeInTheDocument();
+  });
+
+
+  it('should show fallback UI when navigator.clipboard.writeText fails', async () => {
+    (navigator.clipboard.writeText as any).mockRejectedValueOnce(new Error('Clipboard error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<Home />);
+
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    const copyButton = screen.getByText('Copy Link');
+
+    await act(async () => {
+      fireEvent.click(copyButton);
+      await Promise.resolve(); // Wait for rejection
+      vi.advanceTimersByTime(0); // For the setTimeout in catch block
+    });
+
+    // Check if the fallback UI elements are present
+    expect(screen.getByDisplayValue(/http:\/\/localhost:3000\/open\/.+/)).toBeInTheDocument();
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should handle manual copy from fallback UI', async () => {
+    (navigator.clipboard.writeText as any).mockRejectedValueOnce(new Error('Clipboard error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    document.execCommand = vi.fn();
+
+    render(<Home />);
+
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    const copyButton = screen.getByText('Copy Link');
+
+    await act(async () => {
+      fireEvent.click(copyButton);
+      await Promise.resolve();
+      vi.advanceTimersByTime(0);
+    });
+
+    // Need to find the inner copy button in the fallback UI specifically
+    const fallbackCopyButton = screen.getAllByRole('button').find(
+      b => b.textContent?.includes('Copy') && !b.textContent?.includes('Copy Link')
+    );
+
+    if (fallbackCopyButton) {
+      await act(async () => {
+        fireEvent.click(fallbackCopyButton);
+      });
+      // Test sets copied state and shows 'Link Copied!' after execCommand
+      vi.advanceTimersByTime(0);
+      expect(document.execCommand).toHaveBeenCalledWith('copy');
+      expect(screen.getByText('Link Copied!')).toBeInTheDocument();
+    } else {
+      throw new Error('Fallback copy button not found');
+    }
+
+    consoleErrorSpy.mockRestore();
   });
 
   it('should clear the input when clear button is clicked', async () => {
@@ -235,5 +318,25 @@ describe('Home Page', () => {
     });
 
     expect(navigator.share).toHaveBeenCalled();
+  });
+
+  it('should handle localStorage read errors for dodges gracefully', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn((key) => {
+        if (key === 'dodges') {
+          throw new Error('localStorage is disabled');
+        }
+        return null;
+      }),
+      setItem: vi.fn(),
+    });
+
+    render(<Home />);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load from local storage', expect.any(Error));
+
+    consoleErrorSpy.mockRestore();
   });
 });
