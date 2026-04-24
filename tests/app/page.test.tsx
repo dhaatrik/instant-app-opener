@@ -34,6 +34,19 @@ describe('Home Page', () => {
     expect(screen.getByText(/Open Links/)).toBeInTheDocument();
   });
 
+  it('should show "Invalid URL format" for invalid URLs', async () => {
+    render(<Home />);
+
+    const input = screen.getByPlaceholderText(/Paste YouTube, X, TikTok, Spotify URL.../i);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { value: ' https:// ' } });
+      vi.advanceTimersByTime(250);
+    });
+
+    expect(screen.getByText('Invalid URL format. Please enter a valid link.')).toBeInTheDocument();
+  });
+
   it('should show "Platform not supported" for unsupported URLs', async () => {
     render(<Home />);
     
