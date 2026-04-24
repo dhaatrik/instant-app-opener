@@ -320,23 +320,31 @@ describe('Home Page', () => {
     expect(navigator.share).toHaveBeenCalled();
   });
 
-  it('should handle localStorage read errors for dodges gracefully', () => {
+  it('should show error message when pasting from clipboard fails', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    vi.stubGlobal('localStorage', {
-      getItem: vi.fn((key) => {
-        if (key === 'dodges') {
-          throw new Error('localStorage is disabled');
-        }
-        return null;
-      }),
-      setItem: vi.fn(),
-    });
+    (navigator.clipboard.readText as any) = vi.fn().mockRejectedValue(new Error('Clipboard blocked'));
+    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
     render(<Home />);
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load from local storage', expect.any(Error));
+    const pasteButton = screen.getByTitle('Paste');
+
+    await act(async () => {
+      fireEvent.click(pasteButton);
+    });
+
+    // Resolve the readText promise rejection
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(screen.getByText('Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).')).toBeInTheDocument();
+
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 3000);
 
     consoleErrorSpy.mockRestore();
+    setTimeoutSpy.mockRestore();
   });
+
 });
