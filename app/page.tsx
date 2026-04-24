@@ -108,7 +108,6 @@ export default function Home() {
     return "";
   });
   const [error, setError] = useState<string | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [previewData, setPreviewData] = useState<{
     title?: string;
     description?: string;
@@ -153,7 +152,8 @@ export default function Home() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setMousePos({ x: e.clientX, y: e.clientY });
+          document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+          document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
           ticking = false;
         });
         ticking = true;
@@ -473,7 +473,7 @@ export default function Home() {
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300 opacity-50"
         style={{
-          backgroundImage: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.06), transparent 40%)`,
+          backgroundImage: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255,255,255,0.06), transparent 40%)`,
         }}
       />
 
@@ -719,7 +719,7 @@ export default function Home() {
                       <div
                         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
                         style={{
-                          backgroundImage: `radial-gradient(120px circle at ${mousePos.x}px ${mousePos.y}px, rgba(0,0,0,0.08), transparent 100%)`,
+                          backgroundImage: `radial-gradient(120px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(0,0,0,0.08), transparent 100%)`,
                           backgroundAttachment: "fixed",
                         }}
                       />
@@ -750,7 +750,7 @@ export default function Home() {
                       <div
                         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
                         style={{
-                          backgroundImage: `radial-gradient(120px circle at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent 100%)`,
+                          backgroundImage: `radial-gradient(120px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255,255,255,0.15), transparent 100%)`,
                           backgroundAttachment: "fixed",
                         }}
                       />
