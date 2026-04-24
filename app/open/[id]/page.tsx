@@ -31,8 +31,8 @@ export default function OpenPage() {
       const platform = data.p as Platform;
 
       // Attempt to open deep link
-      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
       const isAndroid = /android/i.test(userAgent);
       const isMobile = isIOS || isAndroid;
 
