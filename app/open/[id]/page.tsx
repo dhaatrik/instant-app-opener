@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { decodeDeepLinkId, APP_STORE_LINKS, Platform } from '@/lib/url-parser';
+import { isSafeUrl } from '@/lib/safe-url';
 import { motion } from 'motion/react';
 import { Loader2 } from 'lucide-react';
 
@@ -30,10 +31,17 @@ export default function OpenPage() {
       const platform = data.p as Platform;
 
       // Attempt to open deep link
-      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
       const isAndroid = /android/i.test(userAgent);
       const isMobile = isIOS || isAndroid;
+
+      // Security: Validate URLs before redirecting
+      if (!isSafeUrl(deepLink) || !isSafeUrl(data.u)) {
+        setStatus('Invalid or unsafe link');
+        setFallbackUrl('');
+        return;
+      }
 
       if (isMobile) {
         // Try to open app
@@ -44,6 +52,9 @@ export default function OpenPage() {
           setStatus('App not found. Redirecting...');
           const storeLinks = APP_STORE_LINKS[platform];
           
+          if (!isSafeUrl(data.u)) return;
+          if (storeLinks && (!isSafeUrl(storeLinks.ios) || !isSafeUrl(storeLinks.android))) return;
+
           if (isIOS && storeLinks?.ios) {
             window.location.href = storeLinks.ios;
           } else if (isAndroid && storeLinks?.android) {
@@ -57,7 +68,9 @@ export default function OpenPage() {
       } else {
         // On desktop, just redirect to web URL
         setStatus('Redirecting to web...');
-        window.location.href = data.u;
+        if (isSafeUrl(data.u)) {
+            window.location.href = data.u;
+        }
         return null;
       }
     };
