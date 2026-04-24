@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import { isSafeUrlForFetch } from '@/lib/security';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,6 +8,10 @@ export async function GET(request: Request) {
 
   if (!url) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+  }
+
+  if (!isSafeUrlForFetch(url)) {
+    return NextResponse.json({ error: 'Invalid or unsafe URL' }, { status: 400 });
   }
 
   try {
