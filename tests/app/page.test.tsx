@@ -209,7 +209,7 @@ describe('Home Page', () => {
     expect(input.value).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ');
 
     // Find the button containing the X icon
-    const clearButton = screen.getByRole('button', { name: '' }).parentElement?.querySelector('svg.lucide-x')?.parentElement;
+    const clearButton = screen.getByRole('button', { name: 'Clear input' });
     
     if (clearButton) {
       await act(async () => {
