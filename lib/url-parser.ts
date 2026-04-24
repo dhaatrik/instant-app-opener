@@ -313,7 +313,7 @@ export function parseUrl(url: string): ParsedUrl {
         };
       }
     }
-  } catch (e) {
+  } catch {
     // Invalid URL, fall through to unknown
   }
 
@@ -345,7 +345,7 @@ export function decodeDeepLinkId(encoded: string): any {
       u: decoded.u,
       d: decoded.d || decoded.u // Fallback to original URL if deep link is missing
     };
-  } catch (e) {
+  } catch {
     return null;
   }
 }
