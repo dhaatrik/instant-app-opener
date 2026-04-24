@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Youtube, Linkedin, Instagram, Facebook, Link2, Copy, Check, AlertCircle, X, Share2, Github, MessageSquare, QrCode, ClipboardPaste } from 'lucide-react';
 import { parseUrl, encodeDeepLinkId, ParsedUrl, Platform } from '@/lib/url-parser';
 import { QRCodeSVG } from 'qrcode.react';
+import { getLocalStorage, setLocalStorage } from '@/lib/localStorage';
+
 import confetti from 'canvas-confetti';
 
 function XLogo({ className = "w-6 h-6" }: { className?: string }) {
@@ -65,30 +67,8 @@ export default function Home() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [copyFallback, setCopyFallback] = useState<string | null>(null);
   const fallbackInputRef = useRef<HTMLInputElement>(null);
-  const [recentDrops, setRecentDrops] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedDrops = localStorage.getItem('recentDrops');
-        return savedDrops ? JSON.parse(savedDrops) : [];
-      } catch (e) {
-        console.error('Failed to load from local storage', e);
-        return [];
-      }
-    }
-    return [];
-  });
-  const [dodges, setDodges] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedDodges = localStorage.getItem('dodges');
-        return savedDodges ? parseInt(savedDodges, 10) : 0;
-      } catch (e) {
-        console.error('Failed to load from local storage', e);
-        return 0;
-      }
-    }
-    return 0;
-  });
+  const [recentDrops, setRecentDrops] = useState<string[]>(() => getLocalStorage('recentDrops', []));
+  const [dodges, setDodges] = useState(() => getLocalStorage('dodges', 0));
   const [placeholderText, setPlaceholderText] = useState('Paste YouTube, X, TikTok, Spotify URL...');
   const [loadingText, setLoadingText] = useState('Cooking...');
   const [showQR, setShowQR] = useState(false);
@@ -103,12 +83,8 @@ export default function Home() {
 
   // Save local storage
   useEffect(() => {
-    try {
-      localStorage.setItem('recentDrops', JSON.stringify(recentDrops));
-      localStorage.setItem('dodges', dodges.toString());
-    } catch (e) {
-      console.error('Failed to save to local storage', e);
-    }
+    setLocalStorage('recentDrops', recentDrops);
+    setLocalStorage('dodges', dodges);
   }, [recentDrops, dodges]);
 
   // Typewriter placeholder
