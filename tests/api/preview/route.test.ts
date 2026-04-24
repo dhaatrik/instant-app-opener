@@ -66,4 +66,26 @@ describe('Preview API Route', () => {
     expect(response.status).toBe(500);
     expect(data.error).toBe('Failed to fetch preview');
   });
+
+  it('should return 400 for local/internal URLs (SSRF protection)', async () => {
+    const internalUrls = [
+      'http://localhost/api/preview',
+      'http://127.0.0.1/api/preview',
+      'http://169.254.169.254/latest/meta-data/',
+      'http://192.168.1.1',
+      'http://10.0.0.1',
+      'http://172.16.0.1',
+      'file:///etc/passwd',
+      'ftp://example.com',
+    ];
+
+    for (const url of internalUrls) {
+      const request = new Request(`http://localhost/api/preview?url=${encodeURIComponent(url)}`);
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status, `Failed for URL: ${url}`).toBe(400);
+      expect(data.error).toBe('Invalid or forbidden URL');
+    }
+  });
 });
