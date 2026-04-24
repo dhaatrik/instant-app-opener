@@ -514,6 +514,7 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={placeholderText}
+                aria-label="Paste app link URL here"
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
               />
               {/* Icons inside input */}
@@ -527,6 +528,7 @@ export default function Home() {
                       onClick={handlePaste}
                       className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0"
                       title="Paste"
+                      aria-label="Paste URL"
                     >
                       <ClipboardPaste className="w-5 h-5 shrink-0" />
                     </motion.button>
@@ -538,6 +540,7 @@ export default function Home() {
                       exit={{ opacity: 0, scale: 0.5, width: 0 }}
                       onClick={handleClear}
                       className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0"
+                      aria-label="Clear input"
                     >
                       <X className="w-5 h-5 shrink-0" />
                     </motion.button>
@@ -775,6 +778,7 @@ export default function Home() {
                       onClick={() => setShowQR(true)}
                       className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)]"
                       title="Show QR Code"
+                      aria-label="Show QR Code"
                     >
                       <QrCode className="w-5 h-5" />
                     </motion.button>
@@ -794,6 +798,7 @@ export default function Home() {
                         <button
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black"
+                          aria-label="Close QR Code"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -863,6 +868,7 @@ export default function Home() {
                             type="text"
                             readOnly
                             value={copyFallback}
+                            aria-label="Fallback deep link URL"
                             className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
                           />
                           <button
