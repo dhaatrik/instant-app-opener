@@ -333,7 +333,14 @@ export function encodeDeepLinkId(parsed: ParsedUrl): string {
   return btoa(encodeURIComponent(data)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-export function decodeDeepLinkId(encoded: string): any {
+export interface DecodedDeepLinkId {
+  p: string;
+  i: string;
+  u: string;
+  d: string;
+}
+
+export function decodeDeepLinkId(encoded: string): DecodedDeepLinkId | null {
   try {
     const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
     const pad = base64.length % 4;
