@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import { isSafeUrlForFetch } from '@/lib/security';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,6 +8,10 @@ export async function GET(request: Request) {
 
   if (!url) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+  }
+
+  if (!isSafeUrlForFetch(url)) {
+    return NextResponse.json({ error: 'Invalid or unsafe URL' }, { status: 400 });
   }
 
   try {
@@ -29,11 +34,26 @@ export async function GET(request: Request) {
     const html = await response.text();
     const $ = cheerio.load(html);
 
+    const metaProperties: Record<string, string> = {};
+    const metaNames: Record<string, string> = {};
+
+    $('meta').each((_, el) => {
+      const $el = $(el);
+      const content = $el.attr('content');
+      if (!content) return;
+
+      const property = $el.attr('property');
+      const name = $el.attr('name');
+
+      if (property && !metaProperties[property]) metaProperties[property] = content;
+      if (name && !metaNames[name]) metaNames[name] = content;
+    });
+
     const getMetaTag = (name: string) => 
-      $(`meta[property="${name}"]`).attr('content') || 
-      $(`meta[name="${name}"]`).attr('content') || 
-      $(`meta[property="twitter:${name}"]`).attr('content') ||
-      $(`meta[name="twitter:${name}"]`).attr('content');
+      metaProperties[name] ||
+      metaNames[name] ||
+      metaProperties[`twitter:${name}`] ||
+      metaNames[`twitter:${name}`];
 
     const title = getMetaTag('og:title') || getMetaTag('title') || $('title').text();
     const description = getMetaTag('og:description') || getMetaTag('description');
