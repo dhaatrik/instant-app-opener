@@ -1,0 +1,4 @@
+## 2026-04-24 - [SSRF Mitigation in URL Preview Endpoint]
+**Vulnerability:** Server-Side Request Forgery (SSRF) risk in `/api/preview/route.ts` where it fetches arbitrary user-supplied URLs without validation.
+**Learning:** The existing `isSafeUrl` function only mitigates XSS (blocks javascript/vbscript/data protocols) but does not mitigate SSRF. A separate function specifically validating against private IP ranges and localhost is necessary before making backend HTTP requests. Furthermore, prefix matching on hostnames for private IPs (e.g. `startsWith('10.')`) can result in false positives for public domains (e.g. `10.example.com`).
+**Prevention:** Use a dedicated validation function like `isSafeUrlForFetch` that enforces `http:`/`https:` protocols, blocks `.local`/`localhost`, and properly regex-matches IPv4 string patterns before checking for private/loopback IP prefixes.
