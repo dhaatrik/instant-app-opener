@@ -15,7 +15,14 @@ export function isSafeUrl(urlString: string): boolean {
     const hostname = url.hostname.toLowerCase();
 
     // Block localhost and common local hostnames
-    if (hostname === 'localhost' || hostname.endsWith('.local') || hostname === '0.0.0.0' || hostname === '::1' || hostname === '::') {
+    if (
+      hostname === 'localhost' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      hostname === '0.0.0.0' ||
+      hostname === '::1' ||
+      hostname === '::'
+    ) {
       return false;
     }
 

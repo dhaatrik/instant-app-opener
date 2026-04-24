@@ -27,7 +27,7 @@ describe('OpenPage', () => {
     originalUserAgent = navigator.userAgent;
     
     // Mock window.location
-    delete (window as Partial<Window>).location;
+    delete (window as any).location;
     window.location = { ...originalLocation, href: '' } as Location;
     
     vi.useFakeTimers();
