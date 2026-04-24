@@ -236,4 +236,24 @@ describe('Home Page', () => {
 
     expect(navigator.share).toHaveBeenCalled();
   });
+
+  it('should handle localStorage read errors for dodges gracefully', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn((key) => {
+        if (key === 'dodges') {
+          throw new Error('localStorage is disabled');
+        }
+        return null;
+      }),
+      setItem: vi.fn(),
+    });
+
+    render(<Home />);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load from local storage', expect.any(Error));
+
+    consoleErrorSpy.mockRestore();
+  });
 });
