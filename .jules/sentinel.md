@@ -1,6 +1,6 @@
-## 2024-05-18 - SSRF Protection Enhancement
+## 2026-04-25 - SSRF Protection Enhancement
 **Vulnerability:** IP address formats like decimal (http://2130706433) and hex (http://0x7f000001) were not explicitly checked in `isSafeUrlForFetch`, potentially allowing bypass of the IPv4 checks. Wait, let's verify if `new URL("http://2130706433").hostname` resolves to `127.0.0.1` and gets caught.
-## 2024-05-18 - SSRF DNS Rebinding & Resolver Protection
+## 2026-04-25 - SSRF DNS Rebinding & Resolver Protection
 **Vulnerability:** The `isSafeUrlForFetch` function only checks the hostname string and does not resolve DNS records. This leaves it vulnerable to DNS-based SSRF, such as domains resolving to `127.0.0.1` (e.g., `localtest.me` or `127.0.0.1.nip.io`). Also, integer IP formats (`http://2130706433`) bypass the IP string checks but are resolved to `127.0.0.1` by node-fetch.
 **Learning:** Checking hostnames string properties is insufficient to prevent SSRF because node-fetch/Next.js resolve IP addresses natively and DNS lookup can resolve seemingly safe domains to internal IPs.
 **Prevention:** In Next.js, doing async DNS resolution inside a synchronous `isSafeUrlForFetch` is problematic (it changes signature to async). Alternatively, relying strictly on an established SSRF protection library or doing async DNS lookups before fetching.
