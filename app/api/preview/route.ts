@@ -10,11 +10,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
-  if (!isSafeUrlForFetch(url)) {
+  if (!(await isSafeUrlForFetch(url))) {
     return NextResponse.json({ error: 'Invalid or unsafe URL' }, { status: 400 });
   }
 
   try {
+    // Note: To fully protect against DNS rebinding, we'd ideally use an undici Agent
+    // that validates IPs on connect. However, Next.js fetch polyfill doesn't expose dispatcher.
+    // The await isSafeUrlForFetch catches many static bypasses.
+
     // For YouTube and X, we can try oEmbed first or just fetch
     // Note: Some platforms block automated requests, so this is a best-effort approach.
     const response = await fetch(url, {

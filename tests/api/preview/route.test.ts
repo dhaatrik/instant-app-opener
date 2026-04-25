@@ -2,6 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '@/app/api/preview/route';
 import { NextRequest } from 'next/server';
 
+import dns from 'node:dns/promises';
+
+// Mock DNS lookup to return valid IP for youtube to pass the security check in tests
+vi.mock('node:dns/promises', () => ({
+  default: {
+    lookup: vi.fn().mockResolvedValue([{ address: '142.250.190.46', family: 4 }])
+  }
+}));
+
+
 describe('Preview API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
