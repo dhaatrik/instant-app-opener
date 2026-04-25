@@ -34,6 +34,7 @@ describe('Browser API Interactions', () => {
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 

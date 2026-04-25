@@ -503,7 +503,7 @@ export default function Home() {
         <div className="w-full space-y-6">
           <div className="relative">
             <motion.div
-              className={`relative w-full rounded-3xl transition-all duration-700 ease-out bg-white/5 backdrop-blur-2xl border hover:bg-white/10 ${
+              className={`relative w-full rounded-3xl transition-all duration-700 ease-out bg-white/5 backdrop-blur-2xl border hover:bg-white/10 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/30 ${
                 parsed
                   ? parsed.glowClass
                   : error
@@ -532,7 +532,7 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1, width: "auto" }}
                       exit={{ opacity: 0, scale: 0.5, width: 0 }}
                       onClick={handlePaste}
-                      className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0"
+                      className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       title="Paste"
                       aria-label="Paste URL"
                     >
@@ -545,7 +545,7 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1, width: "auto" }}
                       exit={{ opacity: 0, scale: 0.5, width: 0 }}
                       onClick={handleClear}
-                      className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0"
+                      className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       aria-label="Clear input"
                     >
                       <X className="w-5 h-5 shrink-0" />
@@ -588,6 +588,8 @@ export default function Home() {
                   animate={{ opacity: 1, y: 16, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
                   className="absolute left-0 right-0 text-red-400 font-medium tracking-wide flex items-start md:items-center justify-center gap-2 px-4"
+                  role="alert"
+                  aria-live="polite"
                 >
                   <AlertCircle className="w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-0" />
                   <span className="text-left md:text-center text-sm md:text-base leading-snug">
