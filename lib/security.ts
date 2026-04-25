@@ -1,4 +1,7 @@
-export function isSafeUrlForFetch(url: string): boolean {
+import dns from 'node:dns/promises';
+import { isIP } from 'node:net';
+
+export async function isSafeUrlForFetch(url: string): Promise<boolean> {
   try {
     const parsedUrl = new URL(url);
 
@@ -18,35 +21,56 @@ export function isSafeUrlForFetch(url: string): boolean {
       return false;
     }
 
-    // Check if the hostname is an IPv4 address
-    const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
-
-    if (isIPv4) {
-      // Block IPv4 private/loopback/link-local ranges
-      if (
-        hostname.startsWith('127.') || // Loopback
-        hostname.startsWith('10.') ||  // Class A private
-        hostname.startsWith('192.168.') || // Class C private
-        hostname.startsWith('169.254.') || // Link-local
-        hostname.startsWith('0.') // Current network
-      ) {
-        return false;
-      }
-
-      // Block Class B private network (172.16.x.x - 172.31.x.x)
-      if (hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+    let addresses: string[] = [];
+    if (isIP(hostname)) {
+      addresses = [hostname];
+    } else {
+      try {
+        const lookup = await dns.lookup(hostname, { all: true });
+        addresses = lookup.map(res => res.address);
+      } catch {
+        // If DNS resolution fails, consider it unsafe
         return false;
       }
     }
 
-    // Block IPv6 localhost and unspecified
-    if (
-      hostname === '[::1]' ||
-      hostname === '[::]' ||
-      hostname === '::1' ||
-      hostname === '::'
-    ) {
-      return false;
+    // Check if the hostname or any resolved IP is an IPv4 or IPv6 address
+    for (const address of addresses) {
+      const isIPv4 = address.includes('.');
+
+      if (isIPv4) {
+        // Block IPv4 private/loopback/link-local ranges
+        if (
+          address.startsWith('127.') || // Loopback
+          address.startsWith('10.') ||  // Class A private
+          address.startsWith('192.168.') || // Class C private
+          address.startsWith('169.254.') || // Link-local
+          address.startsWith('0.') // Current network
+        ) {
+          return false;
+        }
+
+        // Block Class B private network (172.16.x.x - 172.31.x.x)
+        if (address.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+          return false;
+        }
+      } else {
+        // Block IPv6 localhost and unspecified or private
+        if (
+          address === '[::1]' ||
+          address === '[::]' ||
+          address === '::1' ||
+          address === '::' ||
+          address.toLowerCase().startsWith('fc') ||
+          address.toLowerCase().startsWith('fd') ||
+          address.toLowerCase().startsWith('fe8') ||
+          address.toLowerCase().startsWith('fe9') ||
+          address.toLowerCase().startsWith('fea') ||
+          address.toLowerCase().startsWith('feb')
+        ) {
+          return false;
+        }
+      }
     }
 
     // If it passed all checks, it's considered safe for fetch

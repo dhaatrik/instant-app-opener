@@ -1,4 +1,6 @@
-## 2026-04-24 - [SSRF Mitigation in URL Preview Endpoint]
-**Vulnerability:** Server-Side Request Forgery (SSRF) risk in `/api/preview/route.ts` where it fetches arbitrary user-supplied URLs without validation.
-**Learning:** The existing `isSafeUrl` function only mitigates XSS (blocks javascript/vbscript/data protocols) but does not mitigate SSRF. A separate function specifically validating against private IP ranges and localhost is necessary before making backend HTTP requests. Furthermore, prefix matching on hostnames for private IPs (e.g. `startsWith('10.')`) can result in false positives for public domains (e.g. `10.example.com`).
-**Prevention:** Use a dedicated validation function like `isSafeUrlForFetch` that enforces `http:`/`https:` protocols, blocks `.local`/`localhost`, and properly regex-matches IPv4 string patterns before checking for private/loopback IP prefixes.
+## 2024-05-18 - SSRF Protection Enhancement
+**Vulnerability:** IP address formats like decimal (http://2130706433) and hex (http://0x7f000001) were not explicitly checked in `isSafeUrlForFetch`, potentially allowing bypass of the IPv4 checks. Wait, let's verify if `new URL("http://2130706433").hostname` resolves to `127.0.0.1` and gets caught.
+## 2024-05-18 - SSRF DNS Rebinding & Resolver Protection
+**Vulnerability:** The `isSafeUrlForFetch` function only checks the hostname string and does not resolve DNS records. This leaves it vulnerable to DNS-based SSRF, such as domains resolving to `127.0.0.1` (e.g., `localtest.me` or `127.0.0.1.nip.io`). Also, integer IP formats (`http://2130706433`) bypass the IP string checks but are resolved to `127.0.0.1` by node-fetch.
+**Learning:** Checking hostnames string properties is insufficient to prevent SSRF because node-fetch/Next.js resolve IP addresses natively and DNS lookup can resolve seemingly safe domains to internal IPs.
+**Prevention:** In Next.js, doing async DNS resolution inside a synchronous `isSafeUrlForFetch` is problematic (it changes signature to async). Alternatively, relying strictly on an established SSRF protection library or doing async DNS lookups before fetching.
