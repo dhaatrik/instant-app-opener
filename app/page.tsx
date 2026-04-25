@@ -25,8 +25,11 @@ import {
   ParsedUrl,
   Platform,
 } from "@/lib/url-parser";
-import { QRCodeSVG } from "qrcode.react";
-import confetti from "canvas-confetti";
+import dynamic from "next/dynamic";
+
+// ⚡ Bolt: Dynamically import QRCodeSVG to reduce initial bundle size
+// It's only needed when the user explicitly clicks the QR code button.
+const QRCodeSVG = dynamic(() => import("qrcode.react").then((mod) => mod.QRCodeSVG), { ssr: false });
 
 function XLogo({ className = "w-6 h-6" }: { className?: string }) {
   return (
@@ -303,7 +306,10 @@ export default function Home() {
     }
   }, [parsed, appUrl]);
 
-  const triggerConfetti = useCallback((color: string) => {
+  const triggerConfetti = useCallback(async (color: string) => {
+    // ⚡ Bolt: Dynamically import canvas-confetti to reduce initial bundle size
+    // It's only needed when a successful drop action occurs.
+    const confetti = (await import("canvas-confetti")).default;
     confetti({
       particleCount: 100,
       spread: 70,
