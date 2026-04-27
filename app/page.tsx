@@ -455,7 +455,7 @@ export default function Home() {
         href="https://github.com/dhaatrik/instant-app-opener"
         target="_blank"
         rel="noopener noreferrer"
-        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors"
+        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] rounded-full"
         aria-label="GitHub Repository"
       >
         <Github className="w-6 h-6" />
@@ -803,7 +803,12 @@ export default function Home() {
                       exit={{ opacity: 0, scale: 0.95 }}
                       className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
                     >
-                      <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative">
+                      <div
+                        className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="qr-modal-title"
+                      >
                         <button
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full p-1"
@@ -817,7 +822,7 @@ export default function Home() {
                             size={200}
                           />
                         </div>
-                        <p className="text-black/60 text-sm font-medium">
+                        <p id="qr-modal-title" className="text-black/60 text-sm font-medium">
                           Scan the Sauce
                         </p>
                         <button
