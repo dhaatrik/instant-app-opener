@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     // Note: Some platforms block automated requests, so this is a best-effort approach.
 
     let currentUrl = url;
-    let response: Response;
+    let fetchResponse: Response;
     let redirectCount = 0;
     const MAX_REDIRECTS = 5;
 
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
         throw new Error('Too many redirects');
       }
 
-      response = await fetch(currentUrl, {
+      fetchResponse = await fetch(currentUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -43,8 +43,8 @@ export async function GET(request: Request) {
         signal: AbortSignal.timeout(5000)
       });
 
-      if ([301, 302, 303, 307, 308].includes(response.status)) {
-        const location = response.headers.get('location');
+      if ([301, 302, 303, 307, 308].includes(fetchResponse.status)) {
+        const location = fetchResponse.headers.get('location');
         if (!location) {
           throw new Error('Redirect with no location header');
         }
@@ -63,56 +63,11 @@ export async function GET(request: Request) {
       break;
     }
 
-    let currentUrl = url;
-    let response: Response | null = null;
-    let maxRedirects = 5;
-    let redirects = 0;
-
-    while (redirects <= maxRedirects) {
-      response = await fetch(currentUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-        },
-        redirect: 'manual',
-        // Timeout after 5 seconds
-        signal: AbortSignal.timeout(5000)
-      });
-
-      // Handle redirects manually to validate the new location against SSRF
-      if ([301, 302, 303, 307, 308].includes(response.status)) {
-        const location = response.headers.get('location');
-        if (!location) {
-          throw new Error('Redirect with no location header');
-        }
-
-        // Handle relative redirects
-        const nextUrl = new URL(location, currentUrl).toString();
-
-        if (!(await isSafeUrlForFetch(nextUrl))) {
-           return NextResponse.json({ error: 'Redirected to invalid or unsafe URL' }, { status: 400 });
-        }
-
-        currentUrl = nextUrl;
-        redirects++;
-
-        // Consume response body to free up memory before next fetch
-        await response.text().catch(() => {});
-      } else {
-        break; // Not a redirect, break the loop
-      }
+    if (!fetchResponse.ok) {
+      throw new Error(`Failed to fetch: ${fetchResponse.status}`);
     }
 
-    if (redirects > maxRedirects) {
-      throw new Error('Too many redirects');
-    }
-
-    if (!response || !response.ok) {
-      throw new Error(`Failed to fetch: ${response?.status}`);
-    }
-
-    const html = await response.text();
+    const html = await fetchResponse.text();
     const $ = cheerio.load(html);
 
     const metaProperties: Record<string, string> = {};
