@@ -144,11 +144,11 @@ export default function Home() {
     }
     return 0;
   });
+  const [placeholderText, setPlaceholderText] = useState(
+    "Paste YouTube, X, TikTok, Spotify URL...",
+  );
+  const [loadingText, setLoadingText] = useState("Cooking...");
   const [showQR, setShowQR] = useState(false);
-
-  // ⚡ Bolt: Use refs for frequent text updates to prevent full component re-renders
-  const mainInputRef = useRef<HTMLInputElement>(null);
-  const loadingTextRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -189,9 +189,7 @@ export default function Home() {
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % placeholders.length;
-      if (mainInputRef.current) {
-        mainInputRef.current.placeholder = placeholders[i];
-      }
+      setPlaceholderText(placeholders[i]);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -207,9 +205,7 @@ export default function Home() {
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % texts.length;
-      if (loadingTextRef.current) {
-        loadingTextRef.current.textContent = texts[i];
-      }
+      setLoadingText(texts[i]);
     }, 800);
     return () => clearInterval(interval);
   }, [isLoadingPreview]);
@@ -520,11 +516,10 @@ export default function Home() {
               whileHover={{ scale: parsed ? 1.03 : error ? 0.99 : 1.01 }}
             >
               <input
-                ref={mainInputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste YouTube, X, TikTok, Spotify URL..."
+                placeholder={placeholderText}
                 aria-label="Paste app link URL here"
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
               />
@@ -698,8 +693,8 @@ export default function Home() {
                       {isLoadingPreview ? (
                         <div className="flex items-center gap-3 mt-3">
                           <div className="h-5 w-5 rounded-full border-2 border-white/20 border-t-white/90 animate-spin" />
-                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium">
-                            Cooking...
+                          <p className="text-white/70 text-base font-medium">
+                            {loadingText}
                           </p>
                         </div>
                       ) : previewData?.title ? (
