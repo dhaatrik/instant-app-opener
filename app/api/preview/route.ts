@@ -21,15 +21,47 @@ export async function GET(request: Request) {
 
     // For YouTube and X, we can try oEmbed first or just fetch
     // Note: Some platforms block automated requests, so this is a best-effort approach.
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-      // Timeout after 5 seconds
-      signal: AbortSignal.timeout(5000)
-    });
+
+    let currentUrl = url;
+    let response: Response;
+    let redirectCount = 0;
+    const MAX_REDIRECTS = 5;
+
+    while (true) {
+      if (redirectCount > MAX_REDIRECTS) {
+        throw new Error('Too many redirects');
+      }
+
+      response = await fetch(currentUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+        redirect: 'manual',
+        // Timeout after 5 seconds
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if ([301, 302, 303, 307, 308].includes(response.status)) {
+        const location = response.headers.get('location');
+        if (!location) {
+          throw new Error('Redirect with no location header');
+        }
+
+        // Resolve relative URLs
+        currentUrl = new URL(location, currentUrl).toString();
+
+        if (!(await isSafeUrlForFetch(currentUrl))) {
+           return NextResponse.json({ error: 'Redirected to invalid or unsafe URL' }, { status: 400 });
+        }
+
+        redirectCount++;
+        continue;
+      }
+
+      break;
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
