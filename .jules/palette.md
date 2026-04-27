@@ -1,3 +1,0 @@
-## 2026-04-27 - Keyboard Navigation Focus States and QR Modal Accessibility
-**Learning:** Many interactive elements, including utility buttons and dynamic components like modals, often lack native focus states and ARIA dialog roles out-of-the-box in heavily styled applications. Specifically, Framer Motion elements (`AnimatePresence` + modal rendering) do not inherently map to `role="dialog"`.
-**Action:** When adding or auditing floating interactive elements, always ensure they are paired with `focus-visible` to allow clear keyboard navigation without imposing focus rings on mouse users. When implementing modals, manually ensure `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` are mapped to a descriptive title ID.
