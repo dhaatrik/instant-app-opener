@@ -4,7 +4,7 @@
 **Vulnerability:** The `isSafeUrlForFetch` function only checks the hostname string and does not resolve DNS records. This leaves it vulnerable to DNS-based SSRF, such as domains resolving to `127.0.0.1` (e.g., `localtest.me` or `127.0.0.1.nip.io`). Also, integer IP formats (`http://2130706433`) bypass the IP string checks but are resolved to `127.0.0.1` by node-fetch.
 **Learning:** Checking hostnames string properties is insufficient to prevent SSRF because node-fetch/Next.js resolve IP addresses natively and DNS lookup can resolve seemingly safe domains to internal IPs.
 **Prevention:** In Next.js, doing async DNS resolution inside a synchronous `isSafeUrlForFetch` is problematic (it changes signature to async). Alternatively, relying strictly on an established SSRF protection library or doing async DNS lookups before fetching.
-## 2025-04-26 - [SSRF bypass via Open Redirects in Next.js fetch]
+## 2026-04-27 - [SSRF bypass via Open Redirects in Next.js fetch]
 **Vulnerability:** The API preview route `app/api/preview/route.ts` used Next.js `fetch` with the default `redirect: 'follow'` behavior. An attacker could supply a URL that passes initial SSRF validation but then redirects to an internal/private endpoint, leading to an SSRF vulnerability.
 **Learning:** Initial validation of user-provided URLs is insufficient if the HTTP client automatically follows redirects without re-validating the subsequent targets.
 **Prevention:** Configure fetch calls in server endpoints with `redirect: 'manual'`, handle HTTP 3xx responses manually by extracting the `Location` header, resolve relative URLs, and re-validate each new URL against `isSafeUrlForFetch` before continuing the fetch loop up to a predefined limit.
