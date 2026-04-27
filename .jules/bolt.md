@@ -1,6 +1,6 @@
 ## 2026-04-24 - [Replaced React State with CSS Variables for Mouse Tracking]
 **Learning:** Tying mouse position updates (`mousemove`) directly to React state in a top-level component (`Home` in `app/page.tsx`) causes expensive and continuous full-component re-renders, even when throttled by `requestAnimationFrame`. This is a significant performance bottleneck for animations and large components.
 **Action:** Use native DOM updates to set CSS variables (`document.documentElement.style.setProperty('--mouse-x', ...)`). The CSS effects (like `radial-gradient` backgrounds) should reference these variables (`var(--mouse-x)`). This completely bypasses the React reconciliation cycle for smooth, high-performance global visual effects.
-## 2026-04-24 - [Bypass React State for High-Frequency Text Updates]
+## 2026-04-27 - [Bypass React State for High-Frequency Text Updates]
 **Learning:** Using `useState` for simple, high-frequency string updates (like cycling placeholder text or loading messages) inside the main top-level component (`Home` in `app/page.tsx`) causes unnecessary full-component re-renders, wasting CPU cycles and potentially degrading animation performance.
 **Action:** For simple DOM text changes that don't affect layout or complex UI logic, use `useRef` to get a reference to the element and directly mutate its properties (e.g., `ref.current.placeholder = ...` or `ref.current.textContent = ...`). This completely bypasses the React reconciliation cycle, resulting in significantly better performance.
