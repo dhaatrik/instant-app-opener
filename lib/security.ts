@@ -35,7 +35,15 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
     }
 
     // Check if the hostname or any resolved IP is an IPv4 or IPv6 address
-    for (const address of addresses) {
+    for (let address of addresses) {
+      // Normalize IPv4-mapped IPv6 addresses (e.g., ::ffff:127.0.0.1 or 0:0:0:0:0:ffff:127.0.0.1)
+      const lowerAddress = address.toLowerCase();
+      if (lowerAddress.startsWith('::ffff:')) {
+        address = address.substring(7);
+      } else if (lowerAddress.startsWith('0:0:0:0:0:ffff:')) {
+        address = address.substring(15);
+      }
+
       const isIPv4 = address.includes('.');
 
       if (isIPv4) {
