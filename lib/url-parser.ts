@@ -52,10 +52,12 @@ export function parseUrl(url: string): ParsedUrl {
     const hostname = parsed.hostname.toLowerCase();
     const pathname = parsed.pathname;
 
+    const isDomain = (d: string) => hostname === d || hostname.endsWith(`.${d}`);
+
     // YouTube
-    if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+    if (isDomain('youtube.com') || isDomain('youtu.be')) {
       let id = '';
-      if (hostname.includes('youtu.be')) {
+      if (isDomain('youtu.be')) {
         id = pathname.slice(1).split('?')[0];
       } else if (pathname.includes('/shorts/')) {
         id = pathname.split('/shorts/')[1].split('/')[0].split('?')[0];
@@ -83,7 +85,7 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // X / Twitter
-    if (hostname.includes('twitter.com') || hostname.includes('x.com') || hostname.includes('t.co')) {
+    if (isDomain('twitter.com') || isDomain('x.com') || isDomain('t.co')) {
       const match = pathname.match(/\/(?:#!\/)?[\w]+\/status(?:es)?\/(\d+)/);
       if (match) {
         return {
@@ -95,7 +97,7 @@ export function parseUrl(url: string): ParsedUrl {
           color: '#FFFFFF',
           glowClass: 'shadow-[0_0_30px_-5px_rgba(255,255,255,0.2)] border-white/30',
         };
-      } else if (hostname.includes('t.co')) {
+      } else if (isDomain('t.co')) {
         // For t.co shortlinks, we can't extract the ID without expanding, 
         // but we can try to open the shortlink in the app
         const shortId = pathname.slice(1);
@@ -114,8 +116,8 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // LinkedIn
-    if (hostname.includes('linkedin.com') || hostname.includes('lnkd.in')) {
-      if (hostname.includes('lnkd.in')) {
+    if (isDomain('linkedin.com') || isDomain('lnkd.in')) {
+      if (isDomain('lnkd.in')) {
         const shortId = pathname.slice(1);
         if (shortId) {
           return {
@@ -159,7 +161,7 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // Instagram
-    if (hostname.includes('instagram.com') || hostname.includes('instagr.am')) {
+    if (isDomain('instagram.com') || isDomain('instagr.am')) {
       // Posts, Reels, TV
       const mediaMatch = pathname.match(/\/(?:p|reel|tv)\/([^/?]+)/);
       if (mediaMatch) {
@@ -202,11 +204,11 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // Facebook
-    if (hostname.includes('facebook.com') || hostname.includes('fb.com') || hostname.includes('fb.watch')) {
+    if (isDomain('facebook.com') || isDomain('fb.com') || isDomain('fb.watch')) {
       let id = parsed.searchParams.get('id') || parsed.searchParams.get('story_fbid') || parsed.searchParams.get('v');
       
       if (!id) {
-        if (hostname.includes('fb.watch')) {
+        if (isDomain('fb.watch')) {
           const watchMatch = pathname.match(/\/(?:v\/)?([^/?]+)/);
           if (watchMatch) {
             id = watchMatch[1];
@@ -240,7 +242,7 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // TikTok
-    if (hostname.includes('tiktok.com') || hostname.includes('tiktok.t.me')) {
+    if (isDomain('tiktok.com') || isDomain('tiktok.t.me')) {
       let id = '';
       const videoMatch = pathname.match(/\/video\/(\d+)/);
       const mobileVideoMatch = pathname.match(/\/v\/(\d+)/);
@@ -283,8 +285,8 @@ export function parseUrl(url: string): ParsedUrl {
     }
 
     // Spotify
-    if (hostname.includes('spotify.com') || hostname.includes('spotify.link')) {
-      if (hostname.includes('spotify.link')) {
+    if (isDomain('spotify.com') || isDomain('spotify.link')) {
+      if (isDomain('spotify.link')) {
         const shortId = pathname.slice(1);
         if (shortId) {
           return {
@@ -346,11 +348,24 @@ export function decodeDeepLinkId(encoded: string): DecodedDeepLinkId | null {
     const pad = base64.length % 4;
     const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
     const decoded = JSON.parse(decodeURIComponent(atob(padded)));
+
+    // Re-validate the URL to ensure it wasn't tampered with
+    const parsedOriginal = parseUrl(decoded.u);
+
+    // Check if the platform and original URL match our expected parsing
+    // We only enforce platform matching to prevent arbitrary URI scheme injection
+    // while still allowing the same original URL to be processed securely
+    if (parsedOriginal.platform !== decoded.p || parsedOriginal.platform === 'unknown') {
+      return null;
+    }
+
     return {
       p: decoded.p,
       i: decoded.i,
       u: decoded.u,
-      d: decoded.d || decoded.u // Fallback to original URL if deep link is missing
+      // Always regenerate the deep link from the trusted parser
+      // rather than trusting the one in the payload
+      d: parsedOriginal.deepLink || decoded.u
     };
   } catch {
     return null;
