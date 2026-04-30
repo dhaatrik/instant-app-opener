@@ -430,6 +430,10 @@ export default function Home() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowQR(false);
+      }
+
       if (!parsed) return;
 
       // Check if Ctrl or Cmd is pressed
@@ -806,8 +810,15 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
+                      onClick={() => setShowQR(false)}
                     >
-                      <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative">
+                      <div
+                        className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="QR Code"
+                      >
                         <button
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
