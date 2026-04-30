@@ -144,7 +144,6 @@ export default function Home() {
     }
     return 0;
   });
-  // ⚡ Bolt: Use refs for frequent text updates to bypass React state and prevent full-component re-renders
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
@@ -186,6 +185,7 @@ export default function Home() {
       "Paste the Spotify track...",
     ];
     let i = 0;
+
     const interval = setInterval(() => {
       i = (i + 1) % placeholders.length;
       if (inputRef.current) {
@@ -204,6 +204,7 @@ export default function Home() {
       "Summoning the app...",
     ];
     let i = 0;
+
     const interval = setInterval(() => {
       i = (i + 1) % texts.length;
       if (loadingTextRef.current) {
@@ -458,7 +459,7 @@ export default function Home() {
         href="https://github.com/dhaatrik/instant-app-opener"
         target="_blank"
         rel="noopener noreferrer"
-        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors"
+        className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full"
         aria-label="GitHub Repository"
       >
         <Github className="w-6 h-6" />
@@ -620,7 +621,7 @@ export default function Home() {
                       <button
                         key={idx}
                         onClick={() => setInput(drop)}
-                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px]"
+                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       >
                         {url.hostname.replace("www.", "")}
                       </button>
@@ -661,7 +662,7 @@ export default function Home() {
                         {previewData?.image ? (
                           <img
                             src={previewData.image}
-                            alt="Preview"
+                            alt={previewData.title ? `Preview for ${previewData.title}` : "Link preview"}
                             className="absolute inset-0 w-full h-full object-contain opacity-90"
                           />
                         ) : (
@@ -809,7 +810,7 @@ export default function Home() {
                       <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative">
                         <button
                           onClick={() => setShowQR(false)}
-                          className="absolute top-2 right-2 text-black/40 hover:text-black"
+                          className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
                           aria-label="Close QR Code"
                         >
                           <X className="w-5 h-5" />
@@ -892,7 +893,7 @@ export default function Home() {
                                 setTimeout(() => setCopied(false), 2000);
                               }
                             }}
-                            className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white text-sm font-medium transition-colors flex items-center gap-2"
+                            className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white text-sm font-medium transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                           >
                             <Copy className="w-4 h-4" />
                             Copy
@@ -917,7 +918,7 @@ export default function Home() {
           </p>
           <button
             onClick={handleShareApp}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
             {appShared ? (
               <Check className="w-4 h-4 text-green-400" />
@@ -931,7 +932,7 @@ export default function Home() {
         <div className="flex flex-col items-center w-full max-w-md">
           <button
             onClick={() => setShowFeedback(!showFeedback)}
-            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
           >
             <MessageSquare className="w-4 h-4" />
             Send Feedback
@@ -955,7 +956,7 @@ export default function Home() {
                       href="https://x.com/dhaatrik"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       aria-label="X (Twitter)"
                     >
                       <XLogo className="w-5 h-5" />
@@ -964,7 +965,7 @@ export default function Home() {
                       href="https://www.linkedin.com/in/dhaatrik/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all"
+                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       aria-label="LinkedIn"
                     >
                       <Linkedin className="w-5 h-5" />
