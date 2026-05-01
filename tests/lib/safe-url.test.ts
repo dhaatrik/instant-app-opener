@@ -12,6 +12,10 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('fb://profile/123')).toBe(true);
     expect(isSafeUrl('intent://abc')).toBe(true);
     expect(isSafeUrl('vnd.youtube://123')).toBe(true);
+    expect(isSafeUrl('linkedin://profile/123')).toBe(true);
+    expect(isSafeUrl('instagram://media?id=123')).toBe(true);
+    expect(isSafeUrl('snssdk1233://aweme/detail/123')).toBe(true);
+    expect(isSafeUrl('spotify:track:123')).toBe(true);
   });
 
   it('should allow relative paths', () => {
@@ -34,6 +38,12 @@ describe('isSafeUrl', () => {
 
   it('should block data: urls', () => {
     expect(isSafeUrl('data:text/html,<script>alert(1)</script>')).toBe(false);
+  });
+
+  it('should block control characters bypasses', () => {
+    expect(isSafeUrl('javascript\0:alert(1)')).toBe(false);
+    expect(isSafeUrl('java\0script:alert(1)')).toBe(false);
+    expect(isSafeUrl('javascript\x01:alert(1)')).toBe(false);
   });
 });
 
