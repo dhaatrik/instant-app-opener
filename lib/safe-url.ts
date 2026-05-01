@@ -1,14 +1,20 @@
 export function isSafeUrl(url: string): boolean {
+  if (/[\x00-\x1F\x7F]/.test(String(url))) {
+    return false;
+  }
+
   try {
     const parsed = new URL(url, 'http://fallback.com');
     const protocol = parsed.protocol.toLowerCase();
-    return !['javascript:', 'vbscript:', 'data:'].includes(protocol);
+
+    const allowedProtocols = [
+      'http:', 'https:', 'mailto:', 'tel:',
+      'vnd.youtube:', 'twitter:', 'linkedin:', 'instagram:', 'fb:', 'snssdk1233:', 'spotify:', 'intent:'
+    ];
+
+    return allowedProtocols.includes(protocol);
   } catch (e) {
-    const lowerUrl = String(url).toLowerCase().trim();
-    if (lowerUrl.startsWith('javascript:') || lowerUrl.startsWith('vbscript:') || lowerUrl.startsWith('data:')) {
-      return false;
-    }
-    return true;
+    return false;
   }
 }
 

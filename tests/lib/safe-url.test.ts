@@ -2,9 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { isSafeUrl, getSafeUrl } from '../../lib/safe-url';
 
 describe('isSafeUrl', () => {
-  it('should allow http and https urls', () => {
+  it('should allow http, https, mailto, and tel urls', () => {
     expect(isSafeUrl('http://example.com')).toBe(true);
     expect(isSafeUrl('https://example.com')).toBe(true);
+    expect(isSafeUrl('mailto:test@example.com')).toBe(true);
+    expect(isSafeUrl('tel:+1234567890')).toBe(true);
   });
 
   it('should allow deep link schemas', () => {
@@ -28,12 +30,21 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('JaVaScRiPt:alert(1)')).toBe(false);
   });
 
-  it('should block vbscript: urls', () => {
-    expect(isSafeUrl('vbscript:msgbox(1)')).toBe(false);
+  it('should block control characters to prevent bypasses', () => {
+    expect(isSafeUrl('\x00javascript:alert(1)')).toBe(false);
+    expect(isSafeUrl(' \x00javascript:alert(1)')).toBe(false);
+    expect(isSafeUrl('java\x00script:alert(1)')).toBe(false);
+    expect(isSafeUrl('javascript:alert(1)\x00')).toBe(false);
+    expect(isSafeUrl('\x14javascript:alert(1)')).toBe(false);
+    expect(isSafeUrl('http://example.com/\x00')).toBe(false);
   });
 
-  it('should block data: urls', () => {
+  it('should block unknown or unsafe protocols', () => {
+    expect(isSafeUrl('vbscript:msgbox(1)')).toBe(false);
     expect(isSafeUrl('data:text/html,<script>alert(1)</script>')).toBe(false);
+    expect(isSafeUrl('file:///etc/passwd')).toBe(false);
+    expect(isSafeUrl('ftp://example.com')).toBe(false);
+    expect(isSafeUrl('unknown://example.com')).toBe(false);
   });
 });
 
