@@ -5,3 +5,7 @@
 ## 2026-04-29 - [Bypass React State for Frequent Text Updates]
 **Learning:** Updating text nodes (like cycling placeholders or loading states) via React state (e.g., `useState`) in large components triggers full re-renders, causing a severe performance bottleneck. This occurs even for simple text changes if the state is managed high up in the component tree.
 **Action:** Use `useRef` to directly mutate DOM properties (such as `inputRef.current.placeholder` or `loadingTextRef.current.textContent`) for fast-changing text like typewriters and animated loaders. This bypasses the React reconciliation cycle entirely, providing a significant performance boost without sacrificing functionality.
+
+## 2026-04-30 - [Avoid Array Re-creation in Loops]
+**Learning:** Defining array constants inside loops or request handlers causes the array to be re-allocated and re-initialized on every execution. While small, these allocations can add up in high-frequency paths.
+**Action:** Move static array constants outside of functions or loops to the module level. This ensures the array is created only once when the module is loaded, reducing memory pressure and allocation overhead.
