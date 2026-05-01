@@ -97,6 +97,34 @@ function PlatformIcon({
   }
 }
 
+const SUPPORTED_DOMAINS = [
+  "youtube.com",
+  "youtu.be",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "instagram.com",
+  "facebook.com",
+  "fb.com",
+  "tiktok.com",
+  "spotify.com",
+];
+
+const PLACEHOLDERS = [
+  "Paste YouTube, X, LinkedIn URL...",
+  "Drop the IG reel here...",
+  "Paste that viral X thread...",
+  "Link the 3-hour YouTube essay...",
+  "Drop the TikTok here...",
+  "Paste the Spotify track...",
+];
+
+const LOADING_TEXTS = [
+  "Cooking...",
+  "Checking the vibes...",
+  "Summoning the app...",
+];
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [debouncedInput, setDebouncedInput] = useState("");
@@ -176,20 +204,12 @@ export default function Home() {
 
   // Typewriter placeholder
   useEffect(() => {
-    const placeholders = [
-      "Paste YouTube, X, LinkedIn URL...",
-      "Drop the IG reel here...",
-      "Paste that viral X thread...",
-      "Link the 3-hour YouTube essay...",
-      "Drop the TikTok here...",
-      "Paste the Spotify track...",
-    ];
     let i = 0;
 
     const interval = setInterval(() => {
-      i = (i + 1) % placeholders.length;
+      i = (i + 1) % PLACEHOLDERS.length;
       if (inputRef.current) {
-        inputRef.current.placeholder = placeholders[i];
+        inputRef.current.placeholder = PLACEHOLDERS[i];
       }
     }, 3000);
     return () => clearInterval(interval);
@@ -198,17 +218,12 @@ export default function Home() {
   // Loading text cycler
   useEffect(() => {
     if (!isLoadingPreview) return;
-    const texts = [
-      "Cooking...",
-      "Checking the vibes...",
-      "Summoning the app...",
-    ];
     let i = 0;
 
     const interval = setInterval(() => {
-      i = (i + 1) % texts.length;
+      i = (i + 1) % LOADING_TEXTS.length;
       if (loadingTextRef.current) {
-        loadingTextRef.current.textContent = texts[i];
+        loadingTextRef.current.textContent = LOADING_TEXTS[i];
       }
     }, 800);
     return () => clearInterval(interval);
@@ -238,20 +253,8 @@ export default function Home() {
 
       try {
         const urlObj = new URL(urlToTest);
-        const supportedDomains = [
-          "youtube.com",
-          "youtu.be",
-          "twitter.com",
-          "x.com",
-          "linkedin.com",
-          "instagram.com",
-          "facebook.com",
-          "fb.com",
-          "tiktok.com",
-          "spotify.com",
-        ];
 
-        const isSupportedDomain = supportedDomains.some((domain) =>
+        const isSupportedDomain = SUPPORTED_DOMAINS.some((domain) =>
           urlObj.hostname.toLowerCase().includes(domain),
         );
 
