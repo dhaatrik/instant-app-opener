@@ -147,6 +147,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
+  const [qrDownloaded, setQrDownloaded] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -857,15 +858,25 @@ export default function Home() {
                                   "instant-app-opener-qr.png";
                                 downloadLink.href = `${pngFile}`;
                                 downloadLink.click();
+                                setQrDownloaded(true);
+                                setTimeout(() => setQrDownloaded(false), 2000);
                               };
                               img.src =
                                 "data:image/svg+xml;base64," +
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
+                          className={`mt-2 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${qrDownloaded ? "bg-green-500 text-white hover:bg-green-600" : "bg-black text-white hover:bg-black/80"}`}
+                          aria-live="polite"
                         >
-                          Download QR
+                          {qrDownloaded ? (
+                            <>
+                              <Check className="w-4 h-4" aria-hidden="true" />
+                              <span>Downloaded!</span>
+                            </>
+                          ) : (
+                            <span>Download QR</span>
+                          )}
                         </button>
                       </div>
                     </motion.div>
