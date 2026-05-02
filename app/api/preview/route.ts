@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import { isSafeUrlForFetch } from '@/lib/security';
 
+// ⚡ Bolt: Hoist static array to a module-level Set for O(1) lookups
+const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
@@ -43,7 +46,7 @@ export async function GET(request: Request) {
         signal: AbortSignal.timeout(5000)
       });
 
-      if ([301, 302, 303, 307, 308].includes(fetchResponse.status)) {
+      if (REDIRECT_STATUS_CODES.has(fetchResponse.status)) {
         const location = fetchResponse.headers.get('location');
         if (!location) {
           throw new Error('Redirect with no location header');
