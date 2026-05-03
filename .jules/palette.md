@@ -7,3 +7,6 @@
 ## 2026-05-03 - Ensure screen readers announce dynamic text updates on success states
 **Learning:** When buttons temporarily update their text or states to signal visual success (like "Copy Link" changing to "Link Copied!"), screen readers do not announce these changes by default, missing critical feedback.
 **Action:** Always add `aria-live="polite"` to interactive elements where text or internal visual success indicators dynamically change to guarantee screen readers are notified of the new state without being overly disruptive.
+## 2026-05-02 - [QR Code Download Accessibility & Feedback]
+**Learning:** Found that modal interactions, like downloading a QR code, frequently lack both interactive feedback (success state) and keyboard accessibility (`focus-visible` styling). Without feedback, users (especially those relying on screen readers or keyboards) may not know if their action succeeded.
+**Action:** Always verify that interactive buttons within modals provide clear success feedback upon action completion, and strictly ensure that they include explicit `focus-visible` styles for reliable keyboard navigation.
