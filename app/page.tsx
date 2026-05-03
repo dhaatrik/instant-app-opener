@@ -97,7 +97,6 @@ function PlatformIcon({
   }
 }
 
-// ⚡ Bolt: Hoist supported domains array outside of the component to prevent reallocation on every render
 const SUPPORTED_DOMAINS = [
   "youtube.com",
   "youtu.be",
@@ -176,7 +175,6 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
-  const [qrDownloaded, setQrDownloaded] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -739,7 +737,6 @@ export default function Home() {
                         ease: "easeInOut",
                       }}
                       onClick={handleCopy}
-                      aria-live="polite"
                       className={`group relative overflow-hidden flex shrink-0 items-center gap-2 px-6 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.3)] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] ${copied ? "bg-green-500 text-white hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(34,197,94,0.4)]" : "bg-white text-black hover:bg-gray-50"}`}
                     >
                       <div
@@ -771,7 +768,6 @@ export default function Home() {
                       whileHover={{ y: -4, scale: 1.02 }}
                       whileTap={{ y: 2, scale: 0.98 }}
                       onClick={handleShare}
-                      aria-live="polite"
                       className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-6 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                     >
                       <div
@@ -783,18 +779,15 @@ export default function Home() {
                       />
                       <div className="relative z-10 flex items-center gap-2">
                         {shared ? (
-                          <>
-                            <Check className="w-5 h-5 text-green-400" />
-                            <span>Shared!</span>
-                          </>
+                          <Check className="w-5 h-5 text-green-400" />
                         ) : (
-                          <>
-                            <Share2 className="w-5 h-5" />
-                            <span>Share</span>
-                            <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
-                              ⌘S
-                            </span>
-                          </>
+                          <Share2 className="w-5 h-5" />
+                        )}
+                        <span>Share</span>
+                        {!shared && (
+                          <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
+                            ⌘S
+                          </span>
                         )}
                       </div>
                     </motion.button>
@@ -867,25 +860,15 @@ export default function Home() {
                                   "instant-app-opener-qr.png";
                                 downloadLink.href = `${pngFile}`;
                                 downloadLink.click();
-                                setQrDownloaded(true);
-                                setTimeout(() => setQrDownloaded(false), 2000);
                               };
                               img.src =
                                 "data:image/svg+xml;base64," +
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className={`mt-2 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${qrDownloaded ? "bg-green-500 text-white hover:bg-green-600" : "bg-black text-white hover:bg-black/80"}`}
-                          aria-live="polite"
+                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
                         >
-                          {qrDownloaded ? (
-                            <>
-                              <Check className="w-4 h-4" aria-hidden="true" />
-                              <span>Downloaded!</span>
-                            </>
-                          ) : (
-                            <span>Download QR</span>
-                          )}
+                          Download QR
                         </button>
                       </div>
                     </motion.div>
@@ -949,7 +932,6 @@ export default function Home() {
           </p>
           <button
             onClick={handleShareApp}
-            aria-live="polite"
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
             {appShared ? (
