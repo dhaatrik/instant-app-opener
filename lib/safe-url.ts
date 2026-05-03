@@ -1,4 +1,4 @@
-// ⚡ Bolt: Hoist static array to module-level Set for O(1) lookups
+// ⚡ Bolt: Hoist static array to a module-level Set for O(1) lookups
 const UNSAFE_PROTOCOLS = new Set(['javascript:', 'vbscript:', 'data:']);
 
 export function isSafeUrl(url: string): boolean {
