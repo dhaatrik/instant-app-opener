@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import { isSafeUrlForFetch } from '@/lib/security';
 
+// ⚡ Bolt: Hoist static array to a module-level Set for O(1) lookups
 const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
 
 export async function GET(request: Request) {
