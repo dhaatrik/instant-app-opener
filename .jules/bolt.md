@@ -6,6 +6,6 @@
 **Learning:** Updating text nodes (like cycling placeholders or loading states) via React state (e.g., `useState`) in large components triggers full re-renders, causing a severe performance bottleneck. This occurs even for simple text changes if the state is managed high up in the component tree.
 **Action:** Use `useRef` to directly mutate DOM properties (such as `inputRef.current.placeholder` or `loadingTextRef.current.textContent`) for fast-changing text like typewriters and animated loaders. This bypasses the React reconciliation cycle entirely, providing a significant performance boost without sacrificing functionality.
 
-## 2026-05-15 - [Hoist Static Structures to Module-Level Sets]
+## 2026-05-03 - [Hoist Static Structures to Module-Level Sets]
 **Learning:** Re-allocating static arrays inside frequently executed functions (like URL parsing utilities or React component render cycles) causes unnecessary memory churn. Furthermore, using `Array.includes()` for lookups is O(N), which can become a micro-bottleneck in high-traffic paths.
 **Action:** Hoist static structures (like allowed platforms, domains, or protocols) to module-level constants. Convert arrays to `Set`s and use `Set.has()` to achieve O(1) lookups and prevent redundant memory allocation.
