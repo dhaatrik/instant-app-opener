@@ -36,6 +36,10 @@ export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } 
   unknown: null
 };
 
+// ⚡ Bolt: Hoist static arrays to module-level Sets for O(1) lookups
+const INSTAGRAM_RESERVED_PATHS = new Set(['explore', 'reels', 'direct']);
+const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
+
 export interface ParsedUrl {
   platform: Platform;
   id: string;
