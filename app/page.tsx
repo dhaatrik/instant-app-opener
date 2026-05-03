@@ -97,6 +97,20 @@ function PlatformIcon({
   }
 }
 
+// ⚡ Bolt: Hoist supported domains array outside of the component to prevent reallocation on every render
+const SUPPORTED_DOMAINS = [
+  "youtube.com",
+  "youtu.be",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "instagram.com",
+  "facebook.com",
+  "fb.com",
+  "tiktok.com",
+  "spotify.com",
+];
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [debouncedInput, setDebouncedInput] = useState("");
@@ -238,20 +252,8 @@ export default function Home() {
 
       try {
         const urlObj = new URL(urlToTest);
-        const supportedDomains = [
-          "youtube.com",
-          "youtu.be",
-          "twitter.com",
-          "x.com",
-          "linkedin.com",
-          "instagram.com",
-          "facebook.com",
-          "fb.com",
-          "tiktok.com",
-          "spotify.com",
-        ];
 
-        const isSupportedDomain = supportedDomains.some((domain) =>
+        const isSupportedDomain = SUPPORTED_DOMAINS.some((domain) =>
           urlObj.hostname.toLowerCase().includes(domain),
         );
 
