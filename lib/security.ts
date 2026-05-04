@@ -22,8 +22,13 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
     }
 
     let addresses: string[] = [];
-    if (isIP(hostname)) {
-      addresses = [hostname];
+
+    // URL parser includes brackets for IPv6 addresses (e.g., "[::1]"),
+    // but isIP() requires the raw address without brackets.
+    const cleanHostname = hostname.replace(/^\[|\]$/g, '');
+
+    if (isIP(cleanHostname)) {
+      addresses = [cleanHostname];
     } else {
       try {
         const lookup = await dns.lookup(hostname, { all: true });
