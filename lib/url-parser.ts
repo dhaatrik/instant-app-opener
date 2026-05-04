@@ -1,7 +1,10 @@
 export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'spotify' | 'unknown';
 
-const INSTAGRAM_RESERVED_PATHS = new Set(['explore', 'reels', 'direct']);
-const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
+// ⚡ Bolt: Use static arrays instead of Set for small collections (< 10 items)
+// in frequently executed paths (URL parsing). Array.includes() is measurably
+// faster than Set.has() in the Node.js runtime for very small data sets.
+const INSTAGRAM_RESERVED_PATHS = ['explore', 'reels', 'direct'];
+const FACEBOOK_RESERVED_PATHS = ['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel'];
 
 export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
   youtube: {
@@ -193,7 +196,7 @@ export function parseUrl(url: string): ParsedUrl {
       }
       // Profile
       const profileMatch = pathname.match(/\/([^/?]+)/);
-      if (profileMatch && !INSTAGRAM_RESERVED_PATHS.has(profileMatch[1])) {
+      if (profileMatch && !INSTAGRAM_RESERVED_PATHS.includes(profileMatch[1])) {
         return {
           platform: 'instagram',
           id: profileMatch[1],
@@ -224,7 +227,7 @@ export function parseUrl(url: string): ParsedUrl {
           } else {
             // Profile username
             const match = pathname.match(/\/([^/?]+)/);
-            if (match && !FACEBOOK_RESERVED_PATHS.has(match[1])) {
+            if (match && !FACEBOOK_RESERVED_PATHS.includes(match[1])) {
               id = match[1];
             }
           }
