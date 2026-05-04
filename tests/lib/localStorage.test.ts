@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setLocalStorage, getLocalStorage } from '@/lib/localStorage';
 
 describe('localStorage', () => {
@@ -8,6 +8,10 @@ describe('localStorage', () => {
   });
 
   describe('setLocalStorage', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it('should save a string value to localStorage', () => {
       const key = 'testKey';
       const value = 'testValue';
