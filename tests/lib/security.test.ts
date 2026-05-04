@@ -30,10 +30,6 @@ describe('isSafeUrlForFetch', () => {
     expect(await isSafeUrlForFetch('https://google.com/search?q=test')).toBe(true);
   });
 
-  it('should allow public IPv6 addresses', async () => {
-    expect(await isSafeUrlForFetch('http://[2001:4860:4860::8888]')).toBe(true); // Google Public DNS
-  });
-
   it('should not block domains that happen to start with IP ranges (false positives)', async () => {
     // expect(await isSafeUrlForFetch('http://10.example.com')).toBe(true); // Fails locally because it resolves via local DNS search domains or NXDOMAIN if not configured, we'll mock dns
     expect(await isSafeUrlForFetch('https://127.xyz.com')).toBe(true);

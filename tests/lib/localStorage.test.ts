@@ -1,10 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { setLocalStorage, getLocalStorage } from '@/lib/localStorage';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { getLocalStorage, setLocalStorage } from '@/lib/localStorage';
 
 describe('localStorage', () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('setLocalStorage', () => {
@@ -81,14 +85,14 @@ describe('localStorage', () => {
 
     it('should return the default value if the key does not exist', () => {
       const key = 'nonExistentKey';
-      const defaultValue = 'default';
+      const defaultValue = 'defaultValue';
 
       expect(getLocalStorage(key, defaultValue)).toBe(defaultValue);
     });
 
     it('should return the raw string if JSON.parse fails', () => {
       const key = 'testKey';
-      const value = 'not-a-json-string';
+      const value = 'invalid-json';
       localStorage.setItem(key, value);
 
       expect(getLocalStorage(key, 'default')).toBe(value);
@@ -96,16 +100,13 @@ describe('localStorage', () => {
 
     it('should handle errors when localStorage.getItem throws', () => {
       const key = 'testKey';
-      const defaultValue = 'default';
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-        throw new Error('Access denied');
+        throw new Error('Read error');
       });
 
-      const result = getLocalStorage(key, defaultValue);
-
-      expect(result).toBe(defaultValue);
+      expect(getLocalStorage(key, 'default')).toBe('default');
       expect(consoleSpy).toHaveBeenCalledWith('Failed to load from local storage', expect.any(Error));
 
       getItemSpy.mockRestore();
