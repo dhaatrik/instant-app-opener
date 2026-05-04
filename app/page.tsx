@@ -97,6 +97,34 @@ function PlatformIcon({
   }
 }
 
+const SUPPORTED_DOMAINS = [
+  "youtube.com",
+  "youtu.be",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "instagram.com",
+  "facebook.com",
+  "fb.com",
+  "tiktok.com",
+  "spotify.com",
+];
+
+const PLACEHOLDERS = [
+  "Paste YouTube, X, LinkedIn URL...",
+  "Drop the IG reel here...",
+  "Paste that viral X thread...",
+  "Link the 3-hour YouTube essay...",
+  "Drop the TikTok here...",
+  "Paste the Spotify track...",
+];
+
+const LOADING_TEXTS = [
+  "Cooking...",
+  "Checking the vibes...",
+  "Summoning the app...",
+];
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [debouncedInput, setDebouncedInput] = useState("");
@@ -176,20 +204,12 @@ export default function Home() {
 
   // Typewriter placeholder
   useEffect(() => {
-    const placeholders = [
-      "Paste YouTube, X, LinkedIn URL...",
-      "Drop the IG reel here...",
-      "Paste that viral X thread...",
-      "Link the 3-hour YouTube essay...",
-      "Drop the TikTok here...",
-      "Paste the Spotify track...",
-    ];
     let i = 0;
 
     const interval = setInterval(() => {
-      i = (i + 1) % placeholders.length;
+      i = (i + 1) % PLACEHOLDERS.length;
       if (inputRef.current) {
-        inputRef.current.placeholder = placeholders[i];
+        inputRef.current.placeholder = PLACEHOLDERS[i];
       }
     }, 3000);
     return () => clearInterval(interval);
@@ -198,17 +218,12 @@ export default function Home() {
   // Loading text cycler
   useEffect(() => {
     if (!isLoadingPreview) return;
-    const texts = [
-      "Cooking...",
-      "Checking the vibes...",
-      "Summoning the app...",
-    ];
     let i = 0;
 
     const interval = setInterval(() => {
-      i = (i + 1) % texts.length;
+      i = (i + 1) % LOADING_TEXTS.length;
       if (loadingTextRef.current) {
-        loadingTextRef.current.textContent = texts[i];
+        loadingTextRef.current.textContent = LOADING_TEXTS[i];
       }
     }, 800);
     return () => clearInterval(interval);
@@ -238,20 +253,8 @@ export default function Home() {
 
       try {
         const urlObj = new URL(urlToTest);
-        const supportedDomains = [
-          "youtube.com",
-          "youtu.be",
-          "twitter.com",
-          "x.com",
-          "linkedin.com",
-          "instagram.com",
-          "facebook.com",
-          "fb.com",
-          "tiktok.com",
-          "spotify.com",
-        ];
 
-        const isSupportedDomain = supportedDomains.some((domain) =>
+        const isSupportedDomain = SUPPORTED_DOMAINS.some((domain) =>
           urlObj.hostname.toLowerCase().includes(domain),
         );
 
@@ -430,6 +433,10 @@ export default function Home() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowQR(false);
+      }
+
       if (!parsed) return;
 
       // Check if Ctrl or Cmd is pressed
@@ -806,8 +813,15 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
+                      onClick={() => setShowQR(false)}
                     >
-                      <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative">
+                      <div
+                        className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="QR Code"
+                      >
                         <button
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
