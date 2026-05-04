@@ -1,8 +1,7 @@
 export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' | 'tiktok' | 'spotify' | 'unknown';
 
-// ⚡ Bolt: Hoist static arrays to module-level Sets for O(1) lookups
-const INSTAGRAM_EXCLUDED_PATHS = new Set(['explore', 'reels', 'direct']);
-const FACEBOOK_EXCLUDED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
+const INSTAGRAM_RESERVED_PATHS = new Set(['explore', 'reels', 'direct']);
+const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
 
 export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
   youtube: {
@@ -35,10 +34,6 @@ export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } 
   },
   unknown: null
 };
-
-// ⚡ Bolt: Hoist static arrays to module-level Sets for O(1) lookups
-const INSTAGRAM_RESERVED_PATHS = new Set(['explore', 'reels', 'direct']);
-const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
 
 export interface ParsedUrl {
   platform: Platform;
@@ -198,7 +193,7 @@ export function parseUrl(url: string): ParsedUrl {
       }
       // Profile
       const profileMatch = pathname.match(/\/([^/?]+)/);
-      if (profileMatch && !INSTAGRAM_EXCLUDED_PATHS.has(profileMatch[1])) {
+      if (profileMatch && !INSTAGRAM_RESERVED_PATHS.has(profileMatch[1])) {
         return {
           platform: 'instagram',
           id: profileMatch[1],
@@ -229,7 +224,7 @@ export function parseUrl(url: string): ParsedUrl {
           } else {
             // Profile username
             const match = pathname.match(/\/([^/?]+)/);
-            if (match && !FACEBOOK_EXCLUDED_PATHS.has(match[1])) {
+            if (match && !FACEBOOK_RESERVED_PATHS.has(match[1])) {
               id = match[1];
             }
           }
