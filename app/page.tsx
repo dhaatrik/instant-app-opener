@@ -31,69 +31,11 @@ import dynamic from "next/dynamic";
 // It's only needed when the user explicitly clicks the QR code button.
 const QRCodeSVG = dynamic(() => import("qrcode.react").then((mod) => mod.QRCodeSVG), { ssr: false });
 
-function XLogo({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 3.827H5.078z"></path>
-    </svg>
-  );
-}
+import { PlatformIcon } from "@/components/home/PlatformIcon";
+import { QRCodeModal } from "@/components/home/QRCodeModal";
+import { CopyFallbackUI } from "@/components/home/CopyFallbackUI";
+import { ShareFeedbackSection } from "@/components/home/ShareFeedbackSection";
 
-function TikTokLogo({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.13 4.49-2.92 5.89-1.72 1.34-4.08 1.83-6.18 1.25-2.09-.58-3.8-2.12-4.66-4.11-.86-2-1.02-4.32-.42-6.39.6-2.07 2.14-3.77 4.13-4.63 1.99-.86 4.31-1.02 6.38-.42v4.01c-1.05-.38-2.25-.33-3.25.13-1 .46-1.78 1.31-2.16 2.33-.38 1.02-.33 2.25.13 3.25.46 1 1.31 1.78 2.33 2.16 1.02.38 2.25.33 3.25-.13 1-.46 1.78-1.31 2.16-2.33.15-.4.24-.83.26-1.27V.02z" />
-    </svg>
-  );
-}
-
-function SpotifyLogo({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.54.659.301 1.02zm1.44-3.3c-.301.42-.84.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.84.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.781-.18-.6.18-1.2.78-1.38 4.2-1.32 11.28-1.02 15.72 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.599-1.619.3z" />
-    </svg>
-  );
-}
-
-function PlatformIcon({
-  platform,
-  className = "w-6 h-6",
-}: {
-  platform: Platform;
-  className?: string;
-}) {
-  switch (platform) {
-    case "youtube":
-      return <Youtube className={className} />;
-    case "x":
-      return <XLogo className={className} />;
-    case "linkedin":
-      return <Linkedin className={className} />;
-    case "instagram":
-      return <Instagram className={className} />;
-    case "facebook":
-      return <Facebook className={className} />;
-    case "tiktok":
-      return <TikTokLogo className={className} />;
-    case "spotify":
-      return <SpotifyLogo className={className} />;
-    default:
-      return <Link2 className={className} />;
   }
 }
 
@@ -806,189 +748,21 @@ export default function Home() {
                 </div>
 
                 {/* QR Code Modal */}
-                <AnimatePresence>
-                  {showQR && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
-                      onClick={() => setShowQR(false)}
-                    >
-                      <div
-                        className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
-                        onClick={(e) => e.stopPropagation()}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-label="QR Code"
-                      >
-                        <button
-                          onClick={() => setShowQR(false)}
-                          className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
-                          aria-label="Close QR Code"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                        <div id="qr-code-container">
-                          <QRCodeSVG
-                            value={`${appUrl}/open/${encodeDeepLinkId(parsed)}`}
-                            size={200}
-                          />
-                        </div>
-                        <p className="text-black/60 text-sm font-medium">
-                          Scan the Sauce
-                        </p>
-                        <button
-                          onClick={() => {
-                            const svg = document.querySelector(
-                              "#qr-code-container svg",
-                            );
-                            if (svg) {
-                              const svgData =
-                                new XMLSerializer().serializeToString(svg);
-                              const canvas = document.createElement("canvas");
-                              const ctx = canvas.getContext("2d");
-                              const img = new Image();
-                              img.onload = () => {
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                ctx?.drawImage(img, 0, 0);
-                                const pngFile = canvas.toDataURL("image/png");
-                                const downloadLink =
-                                  document.createElement("a");
-                                downloadLink.download =
-                                  "instant-app-opener-qr.png";
-                                downloadLink.href = `${pngFile}`;
-                                downloadLink.click();
-                              };
-                              img.src =
-                                "data:image/svg+xml;base64," +
-                                btoa(unescape(encodeURIComponent(svgData)));
-                            }
-                          }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
-                        >
-                          Download QR
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <QRCodeModal showQR={showQR} setShowQR={setShowQR} appUrl={appUrl} parsed={parsed!} />
 
                 {/* Copy Fallback UI */}
-                <AnimatePresence>
-                  {copyFallback && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                      animate={{ opacity: 1, height: "auto", marginTop: 16 }}
-                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
-                        <p className="text-sm text-yellow-400 flex items-center gap-2">
-                          <AlertCircle className="w-4 h-4" />
-                          Copy failed, that&apos;s an L. Do it manually, bestie:
-                        </p>
-                        <div className="flex gap-2">
-                          <input
-                            ref={fallbackInputRef}
-                            type="text"
-                            readOnly
-                            value={copyFallback}
-                            aria-label="Fallback deep link URL"
-                            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
-                          />
-                          <button
-                            onClick={() => {
-                              if (fallbackInputRef.current) {
-                                fallbackInputRef.current.select();
-                                document.execCommand("copy");
-                                setCopied(true);
-                                setTimeout(() => setCopied(false), 2000);
-                              }
-                            }}
-                            className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white text-sm font-medium transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                          >
-                            <Copy className="w-4 h-4" />
-                            Copy
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <CopyFallbackUI copyFallback={copyFallback} fallbackInputRef={fallbackInputRef} setCopied={setCopied} />
+
+
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
-
       {/* Share App & Feedback Section */}
-      <div className="mt-auto pt-12 pb-4 flex flex-col items-center justify-center z-10 gap-6">
-        <div className="flex flex-col items-center">
-          <p className="text-white/40 text-sm mb-4 text-center max-w-md">
-            Vibing with Instant App Opener? Share the sauce with your friends
-            and mutuals.
-          </p>
-          <button
-            onClick={handleShareApp}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-          >
-            {appShared ? (
-              <Check className="w-4 h-4 text-green-400" />
-            ) : (
-              <Share2 className="w-4 h-4" />
-            )}
-            {appShared ? "Shared!" : "Share Instant App Opener"}
-          </button>
-        </div>
+      <ShareFeedbackSection appShared={appShared} handleShareApp={handleShareApp} showFeedback={showFeedback} setShowFeedback={setShowFeedback} />
 
-        <div className="flex flex-col items-center w-full max-w-md">
-          <button
-            onClick={() => setShowFeedback(!showFeedback)}
-            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Send Feedback
-          </button>
 
-          <AnimatePresence>
-            {showFeedback && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: "auto", marginTop: 16 }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                className="overflow-hidden w-full"
-              >
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4">
-                  <p className="text-sm text-white/60 text-center">
-                    Got suggestions or found a bug? Slide into the
-                    developer&apos;s DMs.
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <a
-                      href="https://x.com/dhaatrik"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                      aria-label="X (Twitter)"
-                    >
-                      <XLogo className="w-5 h-5" />
-                    </a>
-                    <a
-                      href="https://www.linkedin.com/in/dhaatrik/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
 
