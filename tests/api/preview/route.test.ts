@@ -76,4 +76,21 @@ describe('Preview API Route', () => {
     expect(response.status).toBe(500);
     expect(data.error).toBe('Failed to fetch preview');
   });
+
+  it('should return 400 if fetch redirects to an unsafe URL', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      status: 302,
+      headers: {
+        get: (name: string) => name.toLowerCase() === 'location' ? 'http://169.254.169.254/latest/meta-data' : null
+      }
+    });
+
+    const request = new Request('http://localhost/api/preview?url=https://youtube.com/watch?v=123');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.error).toBe('Redirected to invalid or unsafe URL');
+  });
+
 });
