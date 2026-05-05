@@ -15,9 +15,10 @@ export function isSafeUrl(url: string): boolean {
   if (!url) return false;
 
   // Pre-filter: check for any control characters or null bytes that might be used for bypasses
-  // This is a broad check for any character below space (32)
+  // This is a broad check for any character below space (32) and the DEL character (127)
   for (let i = 0; i < url.length; i++) {
-    if (url.charCodeAt(i) < 32) {
+    const charCode = url.charCodeAt(i);
+    if (charCode < 32 || charCode === 127) {
       return false;
     }
   }

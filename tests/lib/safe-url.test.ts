@@ -44,6 +44,8 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('javascript\0:alert(1)')).toBe(false);
     expect(isSafeUrl('java\0script:alert(1)')).toBe(false);
     expect(isSafeUrl('javascript\x01:alert(1)')).toBe(false);
+    expect(isSafeUrl('\x7fjavascript:alert(1)')).toBe(false);
+    expect(isSafeUrl('javascript\x7f:alert(1)')).toBe(false);
   });
 });
 
