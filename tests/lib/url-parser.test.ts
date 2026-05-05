@@ -150,6 +150,19 @@ describe('url-parser', () => {
   });
 
   describe('encodeDeepLinkId and decodeDeepLinkId', () => {
+    it('should return null if the platform in the payload does not match the original URL platform', () => {
+      const originalData = { p: 'youtube', i: 'dQw4w9WgXcQ', u: 'https://youtube.com/watch?v=dQw4w9WgXcQ', d: 'vnd.youtube://dQw4w9WgXcQ' };
+      const tamperedData = { ...originalData, p: 'x' };
+      const encodedTampered = btoa(encodeURIComponent(JSON.stringify(tamperedData))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      expect(decodeDeepLinkId(encodedTampered)).toBeNull();
+    });
+
+    it('should return null if the original URL cannot be identified (unknown platform)', () => {
+      const data = { p: 'youtube', i: 'invalid', u: 'https://example.com/not-youtube', d: 'vnd.youtube://invalid' };
+      const encoded = btoa(encodeURIComponent(JSON.stringify(data))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      expect(decodeDeepLinkId(encoded)).toBeNull();
+    });
+
     it('should be perfect opposites', () => {
       const original = {
         platform: 'youtube' as const,
@@ -178,3 +191,35 @@ describe('url-parser', () => {
     });
   });
 });
+
+  describe('tampered payload validation', () => {
+    it('should return null if the platform in the payload does not match the original URL platform', () => {
+      // Original valid data for a youtube video
+      const originalData = {
+        p: 'youtube', // valid platform
+        i: 'dQw4w9WgXcQ',
+        u: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        d: 'vnd.youtube://dQw4w9WgXcQ'
+      };
+
+      // Tamper with the platform
+      const tamperedData = { ...originalData, p: 'x' };
+      const encodedTampered = btoa(encodeURIComponent(JSON.stringify(tamperedData))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+      expect(decodeDeepLinkId(encodedTampered)).toBeNull();
+    });
+
+    it('should return null if the original URL cannot be identified (unknown platform)', () => {
+      // Payload for an invalid URL
+      const data = {
+        p: 'youtube', // Try to claim it's youtube
+        i: 'invalid',
+        u: 'https://example.com/not-youtube', // This will parse as 'unknown'
+        d: 'vnd.youtube://invalid'
+      };
+
+      const encoded = btoa(encodeURIComponent(JSON.stringify(data))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+      expect(decodeDeepLinkId(encoded)).toBeNull();
+    });
+  });
