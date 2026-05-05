@@ -5,6 +5,7 @@ describe('localStorage', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('setLocalStorage', () => {
