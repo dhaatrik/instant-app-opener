@@ -2,6 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { setLocalStorage, getLocalStorage } from '@/lib/localStorage';
 
 describe('localStorage', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
