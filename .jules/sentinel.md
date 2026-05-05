@@ -31,8 +31,3 @@
 **Vulnerability:** The application incorrectly blocked all valid, public IPv6 URLs (like `http://[2001:4860:4860::8888]`) in the `isSafeUrlForFetch` check. The Next.js/Node `URL` parser retains the bounding brackets for IPv6 addresses in its `hostname` property, but the `net.isIP()` function expects the raw IPv6 string without brackets. This caused `isIP()` to return 0, falling through to `dns.lookup()`, which threw an `ENOTFOUND` error and failed the validation entirely.
 **Learning:** Functions from different core modules (`URL` and `net`) handle IPv6 format differently. The `URL` API requires and preserves the brackets (`[]`), while `net.isIP()` rejects strings containing them.
 **Prevention:** When validating IP addresses extracted from URLs using `net.isIP`, always strip the leading and trailing brackets using `.replace(/^\[|\]$/g, '')` before executing the check.
-## 2026-05-05 - Deprecated `document.execCommand` Replacement
-
-**Vulnerability:** Use of deprecated `document.execCommand("copy")` for clipboard operations, which is unreliable across modern browsers and insecure.
-**Learning:** React event handlers performing asynchronous clipboard operations via `navigator.clipboard.writeText` require proper error handling to fallback gracefully (e.g., manually selecting input text) if clipboard permissions are denied.
-**Prevention:** Enforce use of the modern, Promise-based `navigator.clipboard` API with try-catch blocks instead of legacy, synchronous DOM commands.

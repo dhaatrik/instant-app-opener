@@ -187,7 +187,7 @@ describe('Home Page', () => {
       });
       // Test sets copied state and shows 'Link Copied!' after execCommand
       vi.advanceTimersByTime(0);
-      expect(navigator.clipboard.writeText).toHaveBeenCalled();
+      expect(document.execCommand).toHaveBeenCalledWith('copy');
       expect(screen.getByText('Link Copied!')).toBeInTheDocument();
     } else {
       throw new Error('Fallback copy button not found');
