@@ -899,10 +899,16 @@ export default function Home() {
                             className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
                           />
                           <button
-                            onClick={() => {
-                              if (fallbackInputRef.current) {
-                                fallbackInputRef.current.select();
-                                document.execCommand("copy");
+                            onClick={async () => {
+                              if (copyFallback) {
+                                try {
+                                  await navigator.clipboard.writeText(copyFallback);
+                                } catch (err) {
+                                  console.error("Failed to copy to clipboard:", err);
+                                  if (fallbackInputRef.current) {
+                                    fallbackInputRef.current.select();
+                                  }
+                                }
                                 setCopied(true);
                                 setTimeout(() => setCopied(false), 2000);
                               }
