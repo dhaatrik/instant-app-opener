@@ -5,3 +5,7 @@
 ## 2026-04-25 - Focus-within input wrappers and ARIA Live Regions
 **Learning:** In complex Tailwind components where an inner `<input>` is stripped of its outline (`outline-none`), users lose keyboard focus visibility. Adding `focus-within:ring` to the outer wrapper restores accessibility without breaking design constraints. Furthermore, dynamically rendered error messages (like those appearing via `<AnimatePresence>`) must be decorated with `role="alert"` and `aria-live="polite"` to guarantee screen readers announce validation errors.
 **Action:** Always check parent wrappers of `outline-none` inputs for `focus-within` styling, and verify dynamically appearing feedback uses ARIA live regions.
+
+## 2026-05-05 - ARIA Live Regions for Button Success States
+**Learning:** Found that when buttons dynamically update their text to show success states (like "Copy Link" changing to "Link Copied!" or "Share" changing to "Shared!"), screen reader users receive no audio feedback that the action was successful. This happens because the text changes without the user re-focusing or triggering a page reload.
+**Action:** Always add `aria-live="polite"` to buttons or their internal text wrappers that dynamically update text content to indicate a success state, ensuring the change is announced properly to screen readers.

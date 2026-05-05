@@ -753,7 +753,7 @@ export default function Home() {
                           backgroundAttachment: "fixed",
                         }}
                       />
-                      <div className="relative z-10 flex items-center gap-2">
+                      <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {copied ? (
                           <>
                             <Check className="w-5 h-5" />
@@ -784,7 +784,7 @@ export default function Home() {
                           backgroundAttachment: "fixed",
                         }}
                       />
-                      <div className="relative z-10 flex items-center gap-2">
+                      <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {shared ? (
                           <Check className="w-5 h-5 text-green-400" />
                         ) : (
@@ -940,6 +940,7 @@ export default function Home() {
           <button
             onClick={handleShareApp}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-live="polite"
           >
             {appShared ? (
               <Check className="w-4 h-4 text-green-400" />
