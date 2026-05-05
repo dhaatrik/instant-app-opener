@@ -16,7 +16,7 @@ describe('useIsMobile', () => {
 
   it('should return true for mobile widths', () => {
     window.innerWidth = 500;
-    
+
     // Mock matchMedia to return true for mobile
     window.matchMedia = vi.fn().mockImplementation(query => ({
       matches: true,
@@ -33,7 +33,7 @@ describe('useIsMobile', () => {
 
   it('should return false for desktop widths', () => {
     window.innerWidth = 1024;
-    
+
     // Mock matchMedia to return false for desktop
     window.matchMedia = vi.fn().mockImplementation(query => ({
       matches: false,
@@ -50,7 +50,7 @@ describe('useIsMobile', () => {
 
   it('should clean up event listeners on unmount', () => {
     const removeEventListenerMock = vi.fn();
-    
+
     window.matchMedia = vi.fn().mockImplementation(query => ({
       matches: false,
       media: query,
@@ -60,9 +60,9 @@ describe('useIsMobile', () => {
     }));
 
     const { unmount } = renderHook(() => useIsMobile());
-    
+
     unmount();
-    
+
     expect(removeEventListenerMock).toHaveBeenCalledWith('change', expect.any(Function));
   });
 });
