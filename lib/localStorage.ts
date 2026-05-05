@@ -15,3 +15,13 @@ export function getLocalStorage<T>(key: string, defaultValue: T): T {
   }
   return defaultValue;
 }
+
+export function setLocalStorage<T>(key: string, value: T): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+    } catch (e) {
+      console.error('Failed to save to local storage', e);
+    }
+  }
+}

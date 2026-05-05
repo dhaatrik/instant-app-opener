@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setLocalStorage, getLocalStorage } from '@/lib/localStorage';
 
 describe('localStorage', () => {
@@ -6,6 +6,11 @@ describe('localStorage', () => {
     localStorage.clear();
     vi.clearAllMocks();
   });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
 
   describe('setLocalStorage', () => {
     it('should save a string value to localStorage', () => {
