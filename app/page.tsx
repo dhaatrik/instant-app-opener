@@ -29,15 +29,15 @@ import dynamic from "next/dynamic";
 
 // ⚡ Bolt: Dynamically import QRCodeSVG to reduce initial bundle size
 // It's only needed when the user explicitly clicks the QR code button.
-const QRCodeSVG = dynamic(() => import("qrcode.react").then((mod) => mod.QRCodeSVG), { ssr: false });
+const QRCodeSVG = dynamic(
+  () => import("qrcode.react").then((mod) => mod.QRCodeSVG),
+  { ssr: false },
+);
 
 import { PlatformIcon } from "@/components/home/PlatformIcon";
 import { QRCodeModal } from "@/components/home/QRCodeModal";
 import { CopyFallbackUI } from "@/components/home/CopyFallbackUI";
 import { ShareFeedbackSection } from "@/components/home/ShareFeedbackSection";
-
-  }
-}
 
 const SUPPORTED_DOMAINS = [
   "youtube.com",
@@ -123,8 +123,14 @@ export default function Home() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-          document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+          document.documentElement.style.setProperty(
+            "--mouse-x",
+            `${e.clientX}px`,
+          );
+          document.documentElement.style.setProperty(
+            "--mouse-y",
+            `${e.clientY}px`,
+          );
           ticking = false;
         });
         ticking = true;
@@ -611,7 +617,11 @@ export default function Home() {
                         {previewData?.image ? (
                           <img
                             src={previewData.image}
-                            alt={previewData.title ? `Preview for ${previewData.title}` : "Link preview"}
+                            alt={
+                              previewData.title
+                                ? `Preview for ${previewData.title}`
+                                : "Link preview"
+                            }
                             className="absolute inset-0 w-full h-full object-contain opacity-90"
                           />
                         ) : (
@@ -646,7 +656,10 @@ export default function Home() {
                       {isLoadingPreview ? (
                         <div className="flex items-center gap-3 mt-3">
                           <div className="h-5 w-5 rounded-full border-2 border-white/20 border-t-white/90 animate-spin" />
-                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium">
+                          <p
+                            ref={loadingTextRef}
+                            className="text-white/70 text-base font-medium"
+                          >
                             Cooking...
                           </p>
                         </div>
@@ -748,23 +761,31 @@ export default function Home() {
                 </div>
 
                 {/* QR Code Modal */}
-                <QRCodeModal showQR={showQR} setShowQR={setShowQR} appUrl={appUrl} parsed={parsed!} />
+                <QRCodeModal
+                  showQR={showQR}
+                  setShowQR={setShowQR}
+                  appUrl={appUrl}
+                  parsed={parsed!}
+                />
 
                 {/* Copy Fallback UI */}
-                <CopyFallbackUI copyFallback={copyFallback} fallbackInputRef={fallbackInputRef} setCopied={setCopied} />
-
-
+                <CopyFallbackUI
+                  copyFallback={copyFallback}
+                  fallbackInputRef={fallbackInputRef}
+                  setCopied={setCopied}
+                />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
       {/* Share App & Feedback Section */}
-      <ShareFeedbackSection appShared={appShared} handleShareApp={handleShareApp} showFeedback={showFeedback} setShowFeedback={setShowFeedback} />
-
-
-        </div>
-      </div>
+      <ShareFeedbackSection
+        appShared={appShared}
+        handleShareApp={handleShareApp}
+        showFeedback={showFeedback}
+        setShowFeedback={setShowFeedback}
+      />
 
       {/* Footer */}
       <div className="pb-4 pt-4 text-white/20 text-xs font-mono tracking-widest uppercase text-center px-4 z-10 flex flex-col gap-2">
