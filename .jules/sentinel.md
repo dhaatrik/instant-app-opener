@@ -32,7 +32,7 @@
 **Learning:** Functions from different core modules (`URL` and `net`) handle IPv6 format differently. The `URL` API requires and preserves the brackets (`[]`), while `net.isIP()` rejects strings containing them.
 **Prevention:** When validating IP addresses extracted from URLs using `net.isIP`, always strip the leading and trailing brackets using `.replace(/^\[|\]$/g, '')` before executing the check.
 
-## 2025-05-05 - URL Validation Bypass using DEL character (ASCII 127)
+## 2026-05-05 - URL Validation Bypass using DEL character (ASCII 127)
 **Vulnerability:** The URL pre-filter loop in `lib/safe-url.ts` only blocked control characters below ASCII 32. This allowed attackers to prefix malicious payloads (like `\x7fjavascript:alert(1)`) with the `DEL` character (ASCII 127). The `URL` parser ignores this character when extracting the protocol, resulting in a validation bypass for XSS payloads.
 **Learning:** Checking for `< 32` is insufficient for blocking all non-printable/control characters that can confuse URL parsers. ASCII 127 (`DEL`) behaves similarly to other control characters in browsers and standard URL parsing implementations.
 **Prevention:** Always ensure pre-filters that check for control characters include the `DEL` character (`charCodeAt(i) === 127`) in addition to those below 32, or explicitly allowlist valid characters for URL construction.
