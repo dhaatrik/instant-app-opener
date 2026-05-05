@@ -63,6 +63,9 @@ describe('localStorage', () => {
   });
 
   describe('getLocalStorage', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+    });
     it('should return the saved string value', () => {
       const key = 'testKey';
       const value = 'testValue';
