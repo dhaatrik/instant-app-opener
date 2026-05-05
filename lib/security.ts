@@ -1,6 +1,16 @@
 import dns from 'node:dns/promises';
 import { isIP } from 'node:net';
 
+// DNS Cache to avoid redundant expensive lookups
+interface DnsCacheEntry {
+  addresses: string[];
+  timestamp: number;
+}
+const dnsCache = new Map<string, DnsCacheEntry>();
+const DNS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 1000;
+
+
 export async function isSafeUrlForFetch(url: string): Promise<boolean> {
   try {
     const parsedUrl = new URL(url);
@@ -30,12 +40,34 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
     if (isIP(cleanHostname)) {
       addresses = [cleanHostname];
     } else {
-      try {
-        const lookup = await dns.lookup(hostname, { all: true });
-        addresses = lookup.map(res => res.address);
-      } catch {
-        // If DNS resolution fails, consider it unsafe
-        return false;
+      const now = Date.now();
+      const cached = dnsCache.get(hostname);
+
+      if (cached && now - cached.timestamp < DNS_CACHE_TTL) {
+        addresses = cached.addresses;
+        // Refresh cache position (LRU behavior)
+        dnsCache.delete(hostname);
+        dnsCache.set(hostname, cached);
+      } else {
+        try {
+          const lookup = await dns.lookup(hostname, { all: true });
+          addresses = lookup.map(res => res.address);
+
+          // Add to cache
+          dnsCache.set(hostname, { addresses, timestamp: now });
+
+          // Enforce max cache size
+          if (dnsCache.size > MAX_CACHE_SIZE) {
+            // Map keys are iterable in insertion order, so this gets the oldest entry
+            const oldestKey = dnsCache.keys().next().value;
+            if (oldestKey !== undefined) {
+              dnsCache.delete(oldestKey);
+            }
+          }
+        } catch {
+          // If DNS resolution fails, consider it unsafe
+          return false;
+        }
       }
     }
 
