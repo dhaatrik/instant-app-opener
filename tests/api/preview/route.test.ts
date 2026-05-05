@@ -76,4 +76,23 @@ describe('Preview API Route', () => {
     expect(response.status).toBe(500);
     expect(data.error).toBe('Failed to fetch preview');
   });
+
+  it('should return 500 if there are too many redirects', async () => {
+    // Mock fetch to return a 301 redirect repeatedly
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 301,
+      headers: {
+        get: (key) => key === 'location' ? 'https://youtube.com/redirect' : null
+      },
+    });
+
+    const request = new Request('http://localhost/api/preview?url=https://youtube.com/watch?v=123');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.error).toBe('Failed to fetch preview');
+    expect(global.fetch).toHaveBeenCalledTimes(6);
+  });
 });
