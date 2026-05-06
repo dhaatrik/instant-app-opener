@@ -1,4 +1,6 @@
-const ALLOWED_PROTOCOLS = [
+// ⚡ Bolt: Convert ALLOWED_PROTOCOLS from Array to Set to optimize lookup performance
+// Set.has() provides O(1) time complexity compared to Array.includes() O(n)
+const ALLOWED_PROTOCOLS = new Set([
   'http:',
   'https:',
   'vnd.youtube:',
@@ -9,7 +11,7 @@ const ALLOWED_PROTOCOLS = [
   'snssdk1233:',
   'spotify:',
   'intent:',
-];
+]);
 
 export function isSafeUrl(url: string): boolean {
   if (!url) return false;
@@ -34,7 +36,7 @@ export function isSafeUrl(url: string): boolean {
     if (firstColon !== -1 && (firstSlash === -1 || firstColon < firstSlash)) {
       // It has something that looks like a protocol
       const parsed = new URL(trimmed, 'http://fallback.com');
-      return ALLOWED_PROTOCOLS.includes(parsed.protocol.toLowerCase());
+      return ALLOWED_PROTOCOLS.has(parsed.protocol.toLowerCase());
     }
 
     // It's a relative URL or path

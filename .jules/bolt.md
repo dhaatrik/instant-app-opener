@@ -8,3 +8,6 @@
 ## 2026-05-05 - Memoize URL Parsing in Render Loop
  **Learning:** Instantiating `new URL()` inside a React render loop (e.g., within a `.map` call) can cause significant overhead, especially as the size of the mapped array grows or the component re-renders frequently.
  **Action:** Hoisted the `new URL()` instantiation out of the JSX map using a `useMemo` hook, ensuring it only re-runs when the array dependencies change, eliminating redundant processing in every render cycle.
+## 2026-05-06 - [Convert Array Lookups to Set Lookups for Module Globals]
+**Learning:** Frequent calls to `Array.includes()` on global constants (e.g., allowlists of allowed protocols like `ALLOWED_PROTOCOLS`) in hot paths like `app/open/[id]/page.tsx` causes unnecessary O(n) overhead that compounds with multiple calls.
+**Action:** Convert these module-level `Array` allowlists to `Set` and use `Set.has()`, giving an O(1) time complexity. The negligible one-time instantiation cost is well worth the improved lookup performance during execution.
