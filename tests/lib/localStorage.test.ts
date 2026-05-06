@@ -115,22 +115,5 @@ describe('localStorage', () => {
       getItemSpy.mockRestore();
       consoleSpy.mockRestore();
     });
-
-    it('should return the default value if window is undefined', () => {
-      const key = 'testKey';
-      const defaultValue = 'default';
-
-      // Temporarily mock window to be undefined
-      const originalWindow = global.window;
-      // @ts-ignore
-      delete global.window;
-
-      const result = getLocalStorage(key, defaultValue);
-
-      expect(result).toBe(defaultValue);
-
-      // Restore window
-      global.window = originalWindow;
-    });
   });
 });

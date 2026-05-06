@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Youtube,
@@ -175,6 +175,18 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
+
+  // Memoize parsed drops to prevent URL parsing in render loop
+  const parsedRecentDrops = useMemo(() => {
+    return recentDrops.map(drop => {
+      try {
+        const url = new URL(drop);
+        return { drop, hostname: url.hostname.replace("www.", "") };
+      } catch {
+        return null;
+      }
+    }).filter((item): item is { drop: string, hostname: string } => item !== null);
+  }, [recentDrops]);
 
   useEffect(() => {
     let ticking = false;
@@ -621,21 +633,16 @@ export default function Home() {
                 <span className="text-xs text-white/40 uppercase tracking-widest mr-2">
                   Recent Drops:
                 </span>
-                {recentDrops.map((drop, idx) => {
-                  try {
-                    const url = new URL(drop);
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => setInput(drop)}
-                        className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                      >
-                        {url.hostname.replace("www.", "")}
-                      </button>
-                    );
-                  } catch {
-                    return null;
-                  }
+                {parsedRecentDrops.map(({ drop, hostname }, idx) => {
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setInput(drop)}
+                      className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                    >
+                      {hostname}
+                    </button>
+                  );
                 })}
               </motion.div>
             )}
@@ -746,7 +753,7 @@ export default function Home() {
                           backgroundAttachment: "fixed",
                         }}
                       />
-                      <div className="relative z-10 flex items-center gap-2">
+                      <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {copied ? (
                           <>
                             <Check className="w-5 h-5" />
@@ -777,7 +784,7 @@ export default function Home() {
                           backgroundAttachment: "fixed",
                         }}
                       />
-                      <div className="relative z-10 flex items-center gap-2">
+                      <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {shared ? (
                           <Check className="w-5 h-5 text-green-400" />
                         ) : (
@@ -933,6 +940,7 @@ export default function Home() {
           <button
             onClick={handleShareApp}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-live="polite"
           >
             {appShared ? (
               <Check className="w-4 h-4 text-green-400" />
