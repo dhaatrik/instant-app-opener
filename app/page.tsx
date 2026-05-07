@@ -97,7 +97,9 @@ function PlatformIcon({
   }
 }
 
-const SUPPORTED_DOMAINS = [
+// ⚡ Bolt: Convert SUPPORTED_DOMAINS to a Set to optimize lookup performance to O(1)
+// and prevent domain spoofing via loose .includes() matching.
+const SUPPORTED_DOMAINS = new Set([
   "youtube.com",
   "youtu.be",
   "twitter.com",
@@ -108,7 +110,7 @@ const SUPPORTED_DOMAINS = [
   "fb.com",
   "tiktok.com",
   "spotify.com",
-];
+]);
 
 const PLACEHOLDERS = [
   "Paste YouTube, X, LinkedIn URL...",
@@ -266,9 +268,16 @@ export default function Home() {
       try {
         const urlObj = new URL(urlToTest);
 
-        const isSupportedDomain = SUPPORTED_DOMAINS.some((domain) =>
-          urlObj.hostname.toLowerCase().includes(domain),
-        );
+        const hostname = urlObj.hostname.toLowerCase();
+        let isSupportedDomain = SUPPORTED_DOMAINS.has(hostname);
+
+        if (!isSupportedDomain) {
+          const parts = hostname.split('.');
+          if (parts.length > 2) {
+            const rootDomain = parts.slice(-2).join('.');
+            isSupportedDomain = SUPPORTED_DOMAINS.has(rootDomain);
+          }
+        }
 
         if (!isSupportedDomain) {
           setParsed(null);

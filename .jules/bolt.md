@@ -11,3 +11,7 @@
 ## 2026-05-06 - [Convert Array Lookups to Set Lookups for Module Globals]
 **Learning:** Frequent calls to `Array.includes()` on global constants (e.g., allowlists of allowed protocols like `ALLOWED_PROTOCOLS`) in hot paths like `app/open/[id]/page.tsx` causes unnecessary O(n) overhead that compounds with multiple calls.
 **Action:** Convert these module-level `Array` allowlists to `Set` and use `Set.has()`, giving an O(1) time complexity. The negligible one-time instantiation cost is well worth the improved lookup performance during execution.
+
+## 2026-05-07 - [O(1) Domain Lookup & Spoofing Prevention]
+**Learning:** Iterating through an array of supported domains and using string `.includes()` (e.g., `SUPPORTED_DOMAINS.some(domain => urlObj.hostname.toLowerCase().includes(domain))`) not only creates an O(N) performance bottleneck on every URL parse, but it also creates a security vulnerability where a spoofed domain like `my-youtube.com` would pass validation.
+**Action:** Convert module-level domain allowlists to a `Set`. Extract the hostname and root domain (by slicing the last two parts) from the URL and check exact matches using `Set.has()`. This ensures safe, exact subdomain matching in O(1) time.
