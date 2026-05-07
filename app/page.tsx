@@ -545,6 +545,8 @@ export default function Home() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Paste YouTube, X, TikTok, Spotify URL..."
                 aria-label="Paste app link URL here"
+                aria-invalid={!!error}
+                aria-describedby={error ? "url-error" : undefined}
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
               />
               {/* Icons inside input */}
@@ -608,6 +610,7 @@ export default function Home() {
             <AnimatePresence>
               {error && (
                 <motion.div
+                  id="url-error"
                   initial={{ opacity: 0, y: -10, filter: "blur(4px)" }}
                   animate={{ opacity: 1, y: 16, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
@@ -638,6 +641,7 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setInput(drop)}
+                      aria-label={`Paste recent link from ${hostname}`}
                       className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                     >
                       {hostname}
@@ -873,7 +877,7 @@ export default function Home() {
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
+                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50"
                         >
                           Download QR
                         </button>

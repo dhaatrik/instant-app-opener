@@ -91,7 +91,7 @@ export default function OpenPage() {
         <Loader2 className="w-12 h-12 animate-spin text-white/50" />
         <h2 className="text-xl font-medium text-white/80">{status}</h2>
         {fallbackUrl && (
-          <a href={fallbackUrl} className="text-sm text-white/40 hover:text-white/80 underline underline-offset-4 transition-colors">
+          <a href={fallbackUrl} className="text-sm text-white/40 hover:text-white/80 underline underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-sm">
             Click here if you are not redirected
           </a>
         )}
