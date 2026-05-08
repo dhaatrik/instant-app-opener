@@ -9,3 +9,7 @@
 ## 2026-05-05 - ARIA Live Regions for Button Success States
 **Learning:** Found that when buttons dynamically update their text to show success states (like "Copy Link" changing to "Link Copied!" or "Share" changing to "Shared!"), screen reader users receive no audio feedback that the action was successful. This happens because the text changes without the user re-focusing or triggering a page reload.
 **Action:** Always add `aria-live="polite"` to buttons or their internal text wrappers that dynamically update text content to indicate a success state, ensuring the change is announced properly to screen readers.
+
+## 2026-05-08 - Dynamic Error Message Association for Screen Readers
+**Learning:** Adding `role="alert"` and `aria-live` to dynamic error messages isn't enough; screen reader users might not know which input the error relates to.
+**Action:** Always associate dynamic error messages with their respective input fields using `aria-invalid={true}` and `aria-describedby="error-id"` so screen readers properly announce the error context when the user interacts with the input.
