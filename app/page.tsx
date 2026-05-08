@@ -545,6 +545,8 @@ export default function Home() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Paste YouTube, X, TikTok, Spotify URL..."
                 aria-label="Paste app link URL here"
+                aria-invalid={!!error}
+                aria-describedby={error ? "url-error" : undefined}
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
               />
               {/* Icons inside input */}
@@ -608,6 +610,7 @@ export default function Home() {
             <AnimatePresence>
               {error && (
                 <motion.div
+                  id="url-error"
                   initial={{ opacity: 0, y: -10, filter: "blur(4px)" }}
                   animate={{ opacity: 1, y: 16, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
