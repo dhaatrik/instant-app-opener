@@ -37,7 +37,7 @@
 **Learning:** Checking for `< 32` is insufficient for blocking all non-printable/control characters that can confuse URL parsers. ASCII 127 (`DEL`) behaves similarly to other control characters in browsers and standard URL parsing implementations.
 **Prevention:** Always ensure pre-filters that check for control characters include the `DEL` character (`charCodeAt(i) === 127`) in addition to those below 32, or explicitly allowlist valid characters for URL construction.
 
-## 2026-05-15 - Missing Input Length Limits
+## 2026-05-08 - Missing Input Length Limits
 **Vulnerability:** The application was vulnerable to potential Denial of Service (DoS) and Regular Expression Denial of Service (ReDoS) due to unbounded URL and encoded payload inputs. Specifically, the `/api/preview` endpoint and URL parsing utilities (`parseUrl`, `decodeDeepLinkId`, `isSafeUrl`) processed raw strings without length checks.
 **Learning:** Parsing extremely large strings, particularly through URL constructors, regular expressions, and character-by-character loops, can block the Node.js event thread and exhaust server resources.
 **Prevention:** Always enforce a maximum length limit (e.g., 2048 characters for URLs) on all user-provided strings before performing any expensive parsing, validation, or transformation logic.
