@@ -43,10 +43,23 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
     for (let address of addresses) {
       // Normalize IPv4-mapped IPv6 addresses (e.g., ::ffff:127.0.0.1 or 0:0:0:0:0:ffff:127.0.0.1)
       const lowerAddress = address.toLowerCase();
+      let isIPv4Mapped = false;
       if (lowerAddress.startsWith('::ffff:')) {
         address = address.substring(7);
+        isIPv4Mapped = true;
       } else if (lowerAddress.startsWith('0:0:0:0:0:ffff:')) {
         address = address.substring(15);
+        isIPv4Mapped = true;
+      }
+
+      // Handle hex-formatted IPv4-mapped IPv6 addresses (e.g., ::ffff:7f00:1)
+      if (isIPv4Mapped && address.includes(':') && !address.includes('.')) {
+        const parts = address.split(':');
+        if (parts.length === 2) {
+          const p1 = parseInt(parts[0], 16);
+          const p2 = parseInt(parts[1], 16);
+          address = `${(p1 >> 8) & 255}.${p1 & 255}.${(p2 >> 8) & 255}.${p2 & 255}`;
+        }
       }
 
       const isIPv4 = address.includes('.');
