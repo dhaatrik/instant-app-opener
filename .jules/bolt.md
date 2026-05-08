@@ -11,3 +11,6 @@
 ## 2026-05-06 - [Convert Array Lookups to Set Lookups for Module Globals]
 **Learning:** Frequent calls to `Array.includes()` on global constants (e.g., allowlists of allowed protocols like `ALLOWED_PROTOCOLS`) in hot paths like `app/open/[id]/page.tsx` causes unnecessary O(n) overhead that compounds with multiple calls.
 **Action:** Convert these module-level `Array` allowlists to `Set` and use `Set.has()`, giving an O(1) time complexity. The negligible one-time instantiation cost is well worth the improved lookup performance during execution.
+## 2026-05-08 - [Optimize String Character Scanning with Precompiled Regex]
+**Learning:** In hot paths (like URL pre-filtering in `isSafeUrl`), explicit JavaScript `for` loops using `charCodeAt` to scan for specific characters (e.g., control characters) can cause unnecessary overhead compared to native engine implementations.
+**Action:** Replace explicit JS character scanning loops with precompiled Regular Expressions (e.g., `/[\x00-\x1F\x7F]/`) and use `.test()`. This pushes the scanning down to the optimized C++ Regex engine, yielding measurable performance improvements.
