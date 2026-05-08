@@ -12,6 +12,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
+  // Security: Prevent DoS from overly long inputs
+  if (url.length > 2048) {
+    return NextResponse.json({ error: 'URL is too long' }, { status: 400 });
+  }
+
   if (!(await isSafeUrlForFetch(url))) {
     return NextResponse.json({ error: 'Invalid or unsafe URL' }, { status: 400 });
   }
