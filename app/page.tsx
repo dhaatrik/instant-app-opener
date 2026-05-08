@@ -650,6 +650,7 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setInput(drop)}
+                      aria-label={`Paste recent link from ${hostname}`}
                       className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                     >
                       {hostname}
@@ -885,7 +886,7 @@ export default function Home() {
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
+                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50"
                         >
                           Download QR
                         </button>
