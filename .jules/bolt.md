@@ -15,3 +15,6 @@
 ## 2026-05-07 - [O(1) Domain Lookup & Spoofing Prevention]
 **Learning:** Iterating through an array of supported domains and using string `.includes()` (e.g., `SUPPORTED_DOMAINS.some(domain => urlObj.hostname.toLowerCase().includes(domain))`) not only creates an O(N) performance bottleneck on every URL parse, but it also creates a security vulnerability where a spoofed domain like `my-youtube.com` would pass validation.
 **Action:** Convert module-level domain allowlists to a `Set`. Extract the hostname and root domain (by slicing the last two parts) from the URL and check exact matches using `Set.has()`. This ensures safe, exact subdomain matching in O(1) time.
+## 2026-05-08 - [Optimize String Character Scanning with Precompiled Regex]
+**Learning:** In hot paths (like URL pre-filtering in `isSafeUrl`), explicit JavaScript `for` loops using `charCodeAt` to scan for specific characters (e.g., control characters) can cause unnecessary overhead compared to native engine implementations.
+**Action:** Replace explicit JS character scanning loops with precompiled Regular Expressions (e.g., `/[\x00-\x1F\x7F]/`) and use `.test()`. This pushes the scanning down to the optimized C++ Regex engine, yielding measurable performance improvements.
