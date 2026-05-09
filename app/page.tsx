@@ -97,7 +97,9 @@ function PlatformIcon({
   }
 }
 
-const SUPPORTED_DOMAINS = [
+// ⚡ Bolt: Convert SUPPORTED_DOMAINS to a Set to optimize lookup performance to O(1)
+// and prevent domain spoofing via loose .includes() matching.
+const SUPPORTED_DOMAINS = new Set([
   "youtube.com",
   "youtu.be",
   "twitter.com",
@@ -108,7 +110,7 @@ const SUPPORTED_DOMAINS = [
   "fb.com",
   "tiktok.com",
   "spotify.com",
-];
+]);
 
 const PLACEHOLDERS = [
   "Paste YouTube, X, LinkedIn URL...",
@@ -175,6 +177,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
+  const [qrDownloaded, setQrDownloaded] = useState(false);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -266,9 +269,16 @@ export default function Home() {
       try {
         const urlObj = new URL(urlToTest);
 
-        const isSupportedDomain = SUPPORTED_DOMAINS.some((domain) =>
-          urlObj.hostname.toLowerCase().includes(domain),
-        );
+        const hostname = urlObj.hostname.toLowerCase();
+        let isSupportedDomain = SUPPORTED_DOMAINS.has(hostname);
+
+        if (!isSupportedDomain) {
+          const parts = hostname.split('.');
+          if (parts.length > 2) {
+            const rootDomain = parts.slice(-2).join('.');
+            isSupportedDomain = SUPPORTED_DOMAINS.has(rootDomain);
+          }
+        }
 
         if (!isSupportedDomain) {
           setParsed(null);
@@ -545,6 +555,8 @@ export default function Home() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Paste YouTube, X, TikTok, Spotify URL..."
                 aria-label="Paste app link URL here"
+                aria-invalid={!!error}
+                aria-describedby={error ? "url-error" : undefined}
                 className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
               />
               {/* Icons inside input */}
@@ -608,6 +620,7 @@ export default function Home() {
             <AnimatePresence>
               {error && (
                 <motion.div
+                  id="url-error"
                   initial={{ opacity: 0, y: -10, filter: "blur(4px)" }}
                   animate={{ opacity: 1, y: 16, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
@@ -638,6 +651,7 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setInput(drop)}
+                      aria-label={`Paste recent link from ${hostname}`}
                       className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                     >
                       {hostname}
@@ -803,7 +817,7 @@ export default function Home() {
                       whileHover={{ y: -4, scale: 1.02 }}
                       whileTap={{ y: 2, scale: 0.98 }}
                       onClick={() => setShowQR(true)}
-                      className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)]"
+                      className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       title="Show QR Code"
                       aria-label="Show QR Code"
                     >
@@ -867,15 +881,30 @@ export default function Home() {
                                   "instant-app-opener-qr.png";
                                 downloadLink.href = `${pngFile}`;
                                 downloadLink.click();
+                                setQrDownloaded(true);
+                                setTimeout(() => setQrDownloaded(false), 2000);
                               };
                               img.src =
                                 "data:image/svg+xml;base64," +
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors"
+                          className={`mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 ${
+                            qrDownloaded
+                              ? "bg-green-500 text-white hover:bg-green-600"
+                              : "bg-black text-white hover:bg-black/80"
+                          }`}
                         >
-                          Download QR
+                          <div className="flex items-center justify-center gap-2" aria-live="polite">
+                            {qrDownloaded ? (
+                              <>
+                                <Check className="w-4 h-4" />
+                                <span>Downloaded!</span>
+                              </>
+                            ) : (
+                              <span>Download QR</span>
+                            )}
+                          </div>
                         </button>
                       </div>
                     </motion.div>

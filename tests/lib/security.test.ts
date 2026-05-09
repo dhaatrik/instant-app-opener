@@ -76,6 +76,14 @@ describe('isSafeUrlForFetch', () => {
     expect(await isSafeUrlForFetch('http://172.31.255.255')).toBe(false);
   });
 
+  it('should block IPv4-mapped IPv6 loopback and private addresses', async () => {
+    expect(await isSafeUrlForFetch('http://[::ffff:127.0.0.1]')).toBe(false);
+    expect(await isSafeUrlForFetch('http://[0:0:0:0:0:ffff:127.0.0.1]')).toBe(false);
+    expect(await isSafeUrlForFetch('http://[::ffff:7f00:1]')).toBe(false); // hex format loopback
+    expect(await isSafeUrlForFetch('http://[0:0:0:0:0:ffff:7f00:0001]')).toBe(false); // hex format loopback zero-padded
+    expect(await isSafeUrlForFetch('http://[::ffff:c0a8:0101]')).toBe(false); // hex format private network 192.168.1.1
+  });
+
   it('should block localhost (IPv6)', async () => {
     expect(await isSafeUrlForFetch('http://[::1]')).toBe(false);
     expect(await isSafeUrlForFetch('http://[::]')).toBe(false);

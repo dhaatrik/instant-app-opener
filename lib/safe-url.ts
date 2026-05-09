@@ -13,6 +13,9 @@ const ALLOWED_PROTOCOLS = new Set([
   'intent:',
 ]);
 
+// ⚡ Bolt: Precompiled Regex for control character filtering is faster than a JS loop
+const CONTROL_CHAR_RE = /[\x00-\x1F\x7F]/;
+
 export function isSafeUrl(url: string): boolean {
   if (!url || typeof url !== 'string' || url.length > 2048) {
     return false;
@@ -20,11 +23,8 @@ export function isSafeUrl(url: string): boolean {
 
   // Pre-filter: check for any control characters or null bytes that might be used for bypasses
   // This is a broad check for any character below space (32) and the DEL character (127)
-  for (let i = 0; i < url.length; i++) {
-    const charCode = url.charCodeAt(i);
-    if (charCode < 32 || charCode === 127) {
-      return false;
-    }
+  if (CONTROL_CHAR_RE.test(url)) {
+    return false;
   }
 
   const trimmed = url.trim();

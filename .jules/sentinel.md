@@ -1,13 +1,16 @@
 ## 2026-04-25 - SSRF Protection Enhancement
 **Vulnerability:** IP address formats like decimal (http://2130706433) and hex (http://0x7f000001) were not explicitly checked in `isSafeUrlForFetch`, potentially allowing bypass of the IPv4 checks. Wait, let's verify if `new URL("http://2130706433").hostname` resolves to `127.0.0.1` and gets caught.
+
 ## 2026-04-25 - SSRF DNS Rebinding & Resolver Protection
 **Vulnerability:** The `isSafeUrlForFetch` function only checks the hostname string and does not resolve DNS records. This leaves it vulnerable to DNS-based SSRF, such as domains resolving to `127.0.0.1` (e.g., `localtest.me` or `127.0.0.1.nip.io`). Also, integer IP formats (`http://2130706433`) bypass the IP string checks but are resolved to `127.0.0.1` by node-fetch.
 **Learning:** Checking hostnames string properties is insufficient to prevent SSRF because node-fetch/Next.js resolve IP addresses natively and DNS lookup can resolve seemingly safe domains to internal IPs.
 **Prevention:** In Next.js, doing async DNS resolution inside a synchronous `isSafeUrlForFetch` is problematic (it changes signature to async). Alternatively, relying strictly on an established SSRF protection library or doing async DNS lookups before fetching.
+
 ## 2026-04-27 - SSRF Redirect Bypass (Next.js Fetch)
 **Vulnerability:** The application was vulnerable to a Server-Side Request Forgery (SSRF) bypass due to `fetch()` implicitly following HTTP redirects. Although the initial URL was validated against `isSafeUrlForFetch`, an attacker could supply a safe external URL that responds with a 3xx redirect to a restricted internal IP (e.g., `127.0.0.1`), which the standard `fetch()` would subsequently blindly follow.
 **Learning:** Combining a custom pre-flight `isSafeUrlForFetch` check with standard auto-redirecting `fetch()` creates a Time-of-Check to Time-of-Use (TOCTOU) vulnerability.
 **Prevention:** To prevent SSRF redirect bypasses when utilizing custom URL validation, configure `fetch` with `redirect: 'manual'`, extract the `Location` header manually, resolve relative URLs, and explicitly invoke `isSafeUrlForFetch` on every redirect hop, enforcing a hard limit on the number of redirects.
+
 ## 2026-04-28 - SSRF Bypass via IPv4-mapped IPv6 Addresses
 **Vulnerability:** The application's SSRF protection `isSafeUrlForFetch` correctly identified pure IPv4 and IPv6 loopback addresses, but failed to block IPv4-mapped IPv6 loopbacks (e.g., `::ffff:127.0.0.1` and `0:0:0:0:0:ffff:127.0.0.1`). Attackers could use these prefixed IP formats to bypass the `address.startsWith('127.')` check.
 **Learning:** Checking string prefixes for IPv4 addresses is insufficient if the IP string can be represented in multiple forms, specifically as an IPv4-mapped IPv6 address where the IPv4 string is nested within an IPv6 string.
@@ -22,6 +25,7 @@
 **Vulnerability:** The `isSafeUrl` function used a blacklist of unsafe protocols (`javascript:`, `vbscript:`, `data:`) and a fallback `startsWith` check on trimmed input. This was bypassable using control characters (e.g., `java\0script:`) which some parsers might ignore or handle inconsistently, allowing for XSS or unauthorized deep link execution.
 **Learning:** Blacklist-based validation and simple string prefix checks are fragile against obfuscation techniques like control character injection. `new URL()` behavior can also vary based on whether the input is perceived as absolute or relative.
 **Prevention:** Implement a strict protocol allowlist (e.g., `http:`, `https:`, and specific app schemas) and a broad pre-filter to reject any input containing control characters (ASCII < 32). This ensures that only well-formed, authorized protocols are processed.
+
 ## 2026-04-30 - Prevent Arbitrary URI Scheme Injection via Null Bytes
 **Vulnerability:** The application's `isSafeUrl` function used a blocklist of protocols (e.g., `javascript:`, `vbscript:`, `data:`). Attackers could inject a null byte (`\u0000`) or other control characters within the scheme (e.g., `j\u0000avascript:alert(1)`), causing the URL parser to identify it as a different or relative protocol, bypassing the blocklist, while the browser might still execute the payload.
 **Learning:** Checking the protocol against a blocklist is vulnerable when control characters can manipulate parsing. Blocking all control characters prevents these bypasses without breaking legitimate URLs.
@@ -41,3 +45,8 @@
 **Vulnerability:** The application was vulnerable to potential Denial of Service (DoS) and Regular Expression Denial of Service (ReDoS) due to unbounded URL and encoded payload inputs. Specifically, the `/api/preview` endpoint and URL parsing utilities (`parseUrl`, `decodeDeepLinkId`, `isSafeUrl`) processed raw strings without length checks.
 **Learning:** Parsing extremely large strings, particularly through URL constructors, regular expressions, and character-by-character loops, can block the Node.js event thread and exhaust server resources.
 **Prevention:** Always enforce a maximum length limit (e.g., 2048 characters for URLs) on all user-provided strings before performing any expensive parsing, validation, or transformation logic.
+
+## 2026-05-09 - [CRITICAL] Fix SSRF Bypass via Hex IPv4-mapped IPv6 Addresses
+**Vulnerability:** The application's SSRF protection `isSafeUrlForFetch` failed to properly block IPv4-mapped IPv6 addresses that used hex notation for the embedded IPv4 address (e.g. `::ffff:7f00:1` or `::ffff:c0a8:0101`). Because the hex strings lacked dots (`.`), they bypassed the `isIPv4 = address.includes('.')` check, thus skipping the IPv4 blocklist. However, HTTP clients like node-fetch correctly resolved them to the corresponding mapped IPv4 addresses (e.g. `127.0.0.1` or `192.168.1.1`).
+**Learning:** Checking for `.includes('.')` after stripping `::ffff:` is insufficient for determining if an address is an IPv4-mapped IPv6 address, as the embedded IPv4 address can be represented in hex notation instead of dotted-decimal.
+**Prevention:** When normalizing IPv4-mapped IPv6 addresses, always check for and parse hex-formatted embedded addresses (e.g., strings containing `:` but not `.`) into standard dotted-decimal notation before evaluating them against the blocklist.
