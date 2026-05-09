@@ -41,7 +41,7 @@
 **Learning:** Checking for `.includes('.')` after stripping `::ffff:` is insufficient for determining if an address is an IPv4-mapped IPv6 address, as the embedded IPv4 address can be represented in hex notation instead of dotted-decimal.
 **Prevention:** When normalizing IPv4-mapped IPv6 addresses, always check for and parse hex-formatted embedded addresses (e.g., strings containing `:` but not `.`) into standard dotted-decimal notation before evaluating them against the blocklist.
 
-## 2025-02-28 - Preventing Denial of Service via Resource Exhaustion
+## 2026-05-10 - Preventing Denial of Service via Resource Exhaustion
 **Vulnerability:** URL parsers, deep link decoders, and regex validation checks accepted arbitrarily long strings without bound. This opened the application to Denial of Service (DoS) and Regular Expression Denial of Service (ReDoS) attacks by deliberately feeding oversized payloads, leading to excessive CPU/memory consumption.
 **Learning:** Even fast validation routines and native parsers (like Node's `new URL()`) can become attack vectors if input size is unchecked. Validating the length of input parameters at the very boundary (before processing or parsing) is critical to stopping resource exhaustion attacks early.
 **Prevention:** Always enforce a strict, sensible length limit (e.g., 2048 characters for URLs and encoded data) on all external inputs as the first step in any validation or parsing function, effectively short-circuiting potentially expensive operations.
