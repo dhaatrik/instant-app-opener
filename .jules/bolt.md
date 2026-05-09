@@ -21,3 +21,7 @@
 ## 2026-05-08 - [Optimize String Character Scanning with Precompiled Regex]
 **Learning:** In hot paths (like URL pre-filtering in `isSafeUrl`), explicit JavaScript `for` loops using `charCodeAt` to scan for specific characters (e.g., control characters) can cause unnecessary overhead compared to native engine implementations.
 **Action:** Replace explicit JS character scanning loops with precompiled Regular Expressions (e.g., `/[\x00-\x1F\x7F]/`) and use `.test()`. This pushes the scanning down to the optimized C++ Regex engine, yielding measurable performance improvements.
+
+## 2026-05-09 - [Stream External HTML to Extract Metadata Early]
+**Learning:** When fetching external URLs to extract OpenGraph or metadata tags (which are located in the `<head>`), fetching the entire `fetchResponse.text()` buffers massive HTML bodies into memory, causing high CPU/Memory overhead and latency, especially for heavy pages.
+**Action:** Use `fetchResponse.body.getReader()` to process chunks via `TextDecoder` and `reader.cancel()` the stream the moment `</head>` is parsed or a sensible chunk limit (e.g., 50KB) is reached. This drastically reduces memory overhead, time, and bandwidth consumption in API routes.

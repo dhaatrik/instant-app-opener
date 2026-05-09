@@ -177,6 +177,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const [showQR, setShowQR] = useState(false);
+  const [qrDownloaded, setQrDownloaded] = useState(false);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -816,7 +817,7 @@ export default function Home() {
                       whileHover={{ y: -4, scale: 1.02 }}
                       whileTap={{ y: 2, scale: 0.98 }}
                       onClick={() => setShowQR(true)}
-                      className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)]"
+                      className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       title="Show QR Code"
                       aria-label="Show QR Code"
                     >
@@ -880,15 +881,30 @@ export default function Home() {
                                   "instant-app-opener-qr.png";
                                 downloadLink.href = `${pngFile}`;
                                 downloadLink.click();
+                                setQrDownloaded(true);
+                                setTimeout(() => setQrDownloaded(false), 2000);
                               };
                               img.src =
                                 "data:image/svg+xml;base64," +
                                 btoa(unescape(encodeURIComponent(svgData)));
                             }
                           }}
-                          className="mt-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50"
+                          className={`mt-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 ${
+                            qrDownloaded
+                              ? "bg-green-500 text-white hover:bg-green-600"
+                              : "bg-black text-white hover:bg-black/80"
+                          }`}
                         >
-                          Download QR
+                          <div className="flex items-center justify-center gap-2" aria-live="polite">
+                            {qrDownloaded ? (
+                              <>
+                                <Check className="w-4 h-4" />
+                                <span>Downloaded!</span>
+                              </>
+                            ) : (
+                              <span>Download QR</span>
+                            )}
+                          </div>
                         </button>
                       </div>
                     </motion.div>
