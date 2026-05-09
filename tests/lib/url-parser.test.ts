@@ -147,6 +147,13 @@ describe('url-parser', () => {
         expect(result.id).toBe('');
       });
     });
+
+    it('should handle overly long URLs gracefully (DoS protection)', () => {
+      const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+      const result = parseUrl(longUrl);
+      expect(result.platform).toBe('unknown');
+      expect(result.id).toBe('');
+    });
   });
 
   describe('encodeDeepLinkId and decodeDeepLinkId', () => {
@@ -188,6 +195,11 @@ describe('url-parser', () => {
     it('should handle invalid encoded strings gracefully', () => {
       const decoded = decodeDeepLinkId('invalid-base64');
       expect(decoded).toBeNull();
+    });
+
+    it('should handle overly long encoded strings gracefully (DoS protection)', () => {
+      const longEncoded = 'a'.repeat(2049);
+      expect(decodeDeepLinkId(longEncoded)).toBeNull();
     });
   });
 });

@@ -46,6 +46,18 @@ export interface ParsedUrl {
 }
 
 export function parseUrl(url: string): ParsedUrl {
+  if (!url || url.length > 2048) {
+    return {
+      platform: 'unknown',
+      id: '',
+      originalUrl: url,
+      deepLink: '',
+      fallbackUrl: url,
+      color: 'transparent',
+      glowClass: 'shadow-none border-white/10',
+    };
+  }
+
   try {
     let urlToParse = url.trim();
     if (!urlToParse.startsWith('http://') && !urlToParse.startsWith('https://')) {
@@ -346,6 +358,10 @@ export interface DecodedDeepLinkId {
 }
 
 export function decodeDeepLinkId(encoded: string): DecodedDeepLinkId | null {
+  if (!encoded || encoded.length > 2048) {
+    return null;
+  }
+
   try {
     const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
     const pad = base64.length % 4;

@@ -93,4 +93,9 @@ describe('isSafeUrlForFetch', () => {
     expect(await isSafeUrlForFetch('not-a-url')).toBe(false);
     expect(await isSafeUrlForFetch('')).toBe(false);
   });
+
+  it('should block urls exceeding maximum length (DoS protection)', async () => {
+    const longUrl = 'http://example.com/' + 'a'.repeat(2048);
+    expect(await isSafeUrlForFetch(longUrl)).toBe(false);
+  });
 });
