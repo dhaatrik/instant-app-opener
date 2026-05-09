@@ -69,7 +69,26 @@ export async function GET(request: Request) {
       throw new Error(`Failed to fetch: ${fetchResponse.status}`);
     }
 
-    const html = await fetchResponse.text();
+    // ⚡ Bolt: Optimize by streaming the response and stopping early once we have the head
+    // This prevents downloading and parsing the entire body (which can be huge) when we only need meta tags.
+    let html = '';
+    if (fetchResponse.body) {
+      const reader = fetchResponse.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        html += decoder.decode(value, { stream: true });
+        // Stop early if we found the end of head or reached a reasonable max size (50KB)
+        if (html.includes('</head>') || html.includes('</HEAD>') || html.length > 50000) {
+          reader.cancel().catch(() => {});
+          break;
+        }
+      }
+    } else {
+      html = await fetchResponse.text();
+    }
+
     const $ = cheerio.load(html);
 
     const metaProperties: Record<string, string> = {};
