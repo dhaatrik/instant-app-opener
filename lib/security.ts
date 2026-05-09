@@ -2,6 +2,10 @@ import dns from 'node:dns/promises';
 import { isIP } from 'node:net';
 
 export async function isSafeUrlForFetch(url: string): Promise<boolean> {
+  if (!url || url.length > 2048) {
+    return false;
+  }
+
   try {
     const parsedUrl = new URL(url);
 

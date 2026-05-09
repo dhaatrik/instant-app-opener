@@ -46,7 +46,7 @@ export interface ParsedUrl {
 }
 
 export function parseUrl(url: string): ParsedUrl {
-  if (!url || typeof url !== 'string' || url.length > 2048) {
+  if (!url || url.length > 2048) {
     return {
       platform: 'unknown',
       id: '',
@@ -358,7 +358,7 @@ export interface DecodedDeepLinkId {
 }
 
 export function decodeDeepLinkId(encoded: string): DecodedDeepLinkId | null {
-  if (!encoded || typeof encoded !== 'string' || encoded.length > 2048) {
+  if (!encoded || encoded.length > 2048) {
     return null;
   }
 

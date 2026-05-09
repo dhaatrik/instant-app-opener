@@ -47,6 +47,11 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('\x7fjavascript:alert(1)')).toBe(false);
     expect(isSafeUrl('javascript\x7f:alert(1)')).toBe(false);
   });
+
+  it('should block urls exceeding maximum length (DoS protection)', () => {
+    const longUrl = 'http://example.com/' + 'a'.repeat(2048);
+    expect(isSafeUrl(longUrl)).toBe(false);
+  });
 });
 
 describe('getSafeUrl', () => {
