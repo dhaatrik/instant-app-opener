@@ -316,8 +316,12 @@ export default function Home() {
 
   useEffect(() => {
     if (parsed) {
+      // ⚡ Bolt: Use AbortController to cancel stale requests and prevent race conditions
+      const abortController = new AbortController();
+
       fetch(
         `${appUrl}/api/preview?url=${encodeURIComponent(parsed.originalUrl)}`,
+        { signal: abortController.signal }
       )
         .then((res) => res.json())
         .then((data) => {
@@ -325,8 +329,18 @@ export default function Home() {
             setPreviewData(data);
           }
         })
-        .catch((err) => console.error("Failed to fetch preview:", err))
-        .finally(() => setIsLoadingPreview(false));
+        .catch((err) => {
+          if (err.name !== 'AbortError') {
+            console.error("Failed to fetch preview:", err);
+          }
+        })
+        .finally(() => {
+          if (!abortController.signal.aborted) {
+            setIsLoadingPreview(false);
+          }
+        });
+
+      return () => abortController.abort();
     } else {
       setTimeout(() => {
         setPreviewData(null);

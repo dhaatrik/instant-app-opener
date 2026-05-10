@@ -25,3 +25,7 @@
 ## 2026-05-09 - [Stream External HTML to Extract Metadata Early]
 **Learning:** When fetching external URLs to extract OpenGraph or metadata tags (which are located in the `<head>`), fetching the entire `fetchResponse.text()` buffers massive HTML bodies into memory, causing high CPU/Memory overhead and latency, especially for heavy pages.
 **Action:** Use `fetchResponse.body.getReader()` to process chunks via `TextDecoder` and `reader.cancel()` the stream the moment `</head>` is parsed or a sensible chunk limit (e.g., 50KB) is reached. This drastically reduces memory overhead, time, and bandwidth consumption in API routes.
+
+## 2026-05-10 - [Prevent Stale Network Requests & Race Conditions in useEffect]
+**Learning:** In React, launching an asynchronous network request (`fetch`) inside a `useEffect` without a mechanism to cancel it can lead to race conditions and "stale" state updates. If the dependencies change rapidly (like a debounced input triggering multiple preview fetches), an older request might resolve *after* a newer one, overwriting the UI with outdated data or prematurely hiding the loading state of the newer request. It also wastes client bandwidth.
+**Action:** Always instantiate an `AbortController` when firing asynchronous requests in `useEffect`. Pass `abortController.signal` to the `fetch` options, and return `() => abortController.abort()` as the cleanup function. In the `.catch` and `.finally` blocks, ensure you check `err.name !== 'AbortError'` and `!abortController.signal.aborted` before updating component state.
