@@ -24,3 +24,6 @@
 ## 2026-05-08 - Accessible Dynamic Form Errors
 **Learning:** Adding `role="alert"` or `aria-live="polite"` to an error message container is not enough for screen reader users to properly associate the error with the input field that caused it. They must be explicitly linked so that the screen reader announces the error when the input is focused.
 **Action:** Always associate dynamic error messages with their respective input fields by adding `aria-invalid={true}` to the input when an error exists, giving the error message container an ID, and linking them via `aria-describedby="[error-id]"` on the input.
+## 2026-05-10 - Screen Reader Feedback for Redirect Statuses
+**Learning:** Found that when a page transitions through multiple statuses during an asynchronous redirect (e.g., "Opening app..." -> "Redirecting to web..."), screen readers do not announce these changes by default.
+**Action:** Always add `aria-live="polite"` to text containers that display dynamic loading, transition, or error statuses so that screen reader users receive continuous progress updates.
