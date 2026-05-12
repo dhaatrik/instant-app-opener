@@ -27,3 +27,6 @@
 ## 2026-05-10 - Screen Reader Feedback for Redirect Statuses
 **Learning:** Found that when a page transitions through multiple statuses during an asynchronous redirect (e.g., "Opening app..." -> "Redirecting to web..."), screen readers do not announce these changes by default.
 **Action:** Always add `aria-live="polite"` to text containers that display dynamic loading, transition, or error statuses so that screen reader users receive continuous progress updates.
+## 2024-05-19 - Proper ARIA Attributes for Disclosure Modals and Loading states
+**Learning:** For dynamic elements acting as disclosures (like the Send Feedback panel and QR Code Modal), it is crucial to bind them securely using matching IDs via `aria-controls` to the toggle buttons. Buttons must also toggle the `aria-expanded` state. Additionally, `aria-haspopup="dialog"` is required for buttons that open modals. `aria-live="polite"` should be applied directly to loading elements that update dynamically, ensuring proper screen reader announcements.
+**Action:** Always ensure that `aria-expanded` and `aria-controls` are appropriately linked for disclosure widgets, and apply `aria-live` to dynamically updating texts to maintain UX and a11y compliance.

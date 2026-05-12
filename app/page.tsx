@@ -739,7 +739,7 @@ export default function Home() {
                       {isLoadingPreview ? (
                         <div className="flex items-center gap-3 mt-3">
                           <div className="h-5 w-5 rounded-full border-2 border-white/20 border-t-white/90 animate-spin" />
-                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium">
+                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium" aria-live="polite">
                             Cooking...
                           </p>
                         </div>
@@ -837,6 +837,9 @@ export default function Home() {
                       className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-4 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       title="Show QR Code"
                       aria-label="Show QR Code"
+                      aria-expanded={showQR}
+                      aria-controls="qr-modal"
+                      aria-haspopup="dialog"
                     >
                       <QrCode className="w-5 h-5" />
                     </motion.button>
@@ -854,6 +857,7 @@ export default function Home() {
                       onClick={() => setShowQR(false)}
                     >
                       <div
+                        id="qr-modal"
                         className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
@@ -1012,6 +1016,8 @@ export default function Home() {
           <button
             onClick={() => setShowFeedback(!showFeedback)}
             className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
+            aria-expanded={showFeedback}
+            aria-controls="feedback-panel"
           >
             <MessageSquare className="w-4 h-4" />
             Send Feedback
@@ -1020,6 +1026,7 @@ export default function Home() {
           <AnimatePresence>
             {showFeedback && (
               <motion.div
+                id="feedback-panel"
                 initial={{ opacity: 0, height: 0, marginTop: 0 }}
                 animate={{ opacity: 1, height: "auto", marginTop: 16 }}
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
