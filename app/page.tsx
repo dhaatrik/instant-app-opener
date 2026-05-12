@@ -1031,6 +1031,7 @@ export default function Home() {
                 animate={{ opacity: 1, height: "auto", marginTop: 16 }}
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
                 className="overflow-hidden w-full"
+                id="feedback-panel"
               >
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4">
                   <p className="text-sm text-white/60 text-center">
