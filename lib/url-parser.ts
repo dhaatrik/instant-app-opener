@@ -3,6 +3,9 @@ export type Platform = 'youtube' | 'x' | 'linkedin' | 'instagram' | 'facebook' |
 const INSTAGRAM_RESERVED_PATHS = new Set(['explore', 'reels', 'direct']);
 const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.php', 'share.php', 'story.php', 'pages', 'v', 'reel']);
 
+// ⚡ Bolt: Precompiled Regex for URL path extraction is faster than chained string operations
+const YOUTUBE_PATH_RE = /\/(?:shorts|live|v|embed)\/([^/?]+)/;
+
 export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
   youtube: {
     ios: 'https://apps.apple.com/app/youtube/id544007664',
@@ -73,17 +76,13 @@ export function parseUrl(url: string): ParsedUrl {
     if (isDomain('youtube.com') || isDomain('youtu.be')) {
       let id = '';
       if (isDomain('youtu.be')) {
-        id = pathname.slice(1).split('?')[0];
-      } else if (pathname.includes('/shorts/')) {
-        id = pathname.split('/shorts/')[1].split('/')[0].split('?')[0];
-      } else if (pathname.includes('/live/')) {
-        id = pathname.split('/live/')[1].split('/')[0].split('?')[0];
+        const match = pathname.match(/^\/([^/?]+)/);
+        if (match) id = match[1];
       } else if (pathname.includes('/watch')) {
         id = parsed.searchParams.get('v') || '';
-      } else if (pathname.includes('/v/')) {
-        id = pathname.split('/v/')[1].split('/')[0].split('?')[0];
-      } else if (pathname.includes('/embed/')) {
-        id = pathname.split('/embed/')[1].split('/')[0].split('?')[0];
+      } else {
+        const match = YOUTUBE_PATH_RE.exec(pathname);
+        if (match) id = match[1];
       }
       
       if (id) {
@@ -160,9 +159,10 @@ export function parseUrl(url: string): ParsedUrl {
         };
       }
       // Posts / Feed
-      const postMatch = pathname.match(/\/(?:posts|feed\/update)\/([^/?]+)/);
+      // ⚡ Bolt: Single regex capture avoids chained string operations for performance
+      const postMatch = pathname.match(/\/(?:posts|feed\/update)\/(?:urn:li:activity:)?([^/?]+)/);
       if (postMatch) {
-        const id = postMatch[1].includes('urn:li:activity:') ? postMatch[1].split('urn:li:activity:')[1] : postMatch[1];
+        const id = postMatch[1];
         return {
           platform: 'linkedin',
           id,
