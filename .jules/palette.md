@@ -21,20 +21,12 @@
 ## 2026-05-08 - Dynamic Error Message Association for Screen Readers
 **Learning:** Adding `role="alert"` and `aria-live` to dynamic error messages isn't enough; screen reader users might not know which input the error relates to.
 **Action:** Always associate dynamic error messages with their respective input fields using `aria-invalid={true}` and `aria-describedby="error-id"` so screen readers properly announce the error context when the user interacts with the input.
-
 ## 2026-05-08 - Accessible Dynamic Form Errors
 **Learning:** Adding `role="alert"` or `aria-live="polite"` to an error message container is not enough for screen reader users to properly associate the error with the input field that caused it. They must be explicitly linked so that the screen reader announces the error when the input is focused.
 **Action:** Always associate dynamic error messages with their respective input fields by adding `aria-invalid={true}` to the input when an error exists, giving the error message container an ID, and linking them via `aria-describedby="[error-id]"` on the input.
-
 ## 2026-05-10 - Screen Reader Feedback for Redirect Statuses
 **Learning:** Found that when a page transitions through multiple statuses during an asynchronous redirect (e.g., "Opening app..." -> "Redirecting to web..."), screen readers do not announce these changes by default.
 **Action:** Always add `aria-live="polite"` to text containers that display dynamic loading, transition, or error statuses so that screen reader users receive continuous progress updates.
-
-## 2026-05-11 - Accessible Disclosure Widgets and Modals
-**Learning:** Toggle buttons (like "Send Feedback" or "Show QR Code") that reveal additional content or modals are often inaccessible to screen reader users because they don't announce their state or what they control.
-**Action:** Always add `aria-expanded={isOpen}` to toggle buttons, and use `aria-controls="[panel-id]"` to link them to the panel they reveal. For buttons that open modals, also add `aria-haspopup="dialog"`.
-
 ## 2026-05-12 - Proper ARIA Attributes for Disclosure Modals and Loading states
 **Learning:** For dynamic elements acting as disclosures (like the Send Feedback panel and QR Code Modal), it is crucial to bind them securely using matching IDs via `aria-controls` to the toggle buttons. Buttons must also toggle the `aria-expanded` state. Additionally, `aria-haspopup="dialog"` is required for buttons that open modals. `aria-live="polite"` should be applied directly to loading elements that update dynamically, ensuring proper screen reader announcements.
 **Action:** Always ensure that `aria-expanded` and `aria-controls` are appropriately linked for disclosure widgets, and apply `aria-live` to dynamically updating texts to maintain UX and a11y compliance.
-
