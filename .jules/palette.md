@@ -27,3 +27,7 @@
 ## 2026-05-10 - Screen Reader Feedback for Redirect Statuses
 **Learning:** Found that when a page transitions through multiple statuses during an asynchronous redirect (e.g., "Opening app..." -> "Redirecting to web..."), screen readers do not announce these changes by default.
 **Action:** Always add `aria-live="polite"` to text containers that display dynamic loading, transition, or error statuses so that screen reader users receive continuous progress updates.
+
+## 2026-05-11 - Accessible Disclosure Widgets and Modals
+**Learning:** Toggle buttons (like "Send Feedback" or "Show QR Code") that reveal additional content or modals are often inaccessible to screen reader users because they don't announce their state or what they control.
+**Action:** Always add `aria-expanded={isOpen}` to toggle buttons, and use `aria-controls="[panel-id]"` to link them to the panel they reveal. For buttons that open modals, also add `aria-haspopup="dialog"`.

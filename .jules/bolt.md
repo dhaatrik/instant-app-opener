@@ -30,6 +30,10 @@
 **Learning:** In React, launching an asynchronous network request (`fetch`) inside a `useEffect` without a mechanism to cancel it can lead to race conditions and "stale" state updates. If the dependencies change rapidly (like a debounced input triggering multiple preview fetches), an older request might resolve *after* a newer one, overwriting the UI with outdated data or prematurely hiding the loading state of the newer request. It also wastes client bandwidth.
 **Action:** Always instantiate an `AbortController` when firing asynchronous requests in `useEffect`. Pass `abortController.signal` to the `fetch` options, and return `() => abortController.abort()` as the cleanup function. In the `.catch` and `.finally` blocks, ensure you check `err.name !== 'AbortError'` and `!abortController.signal.aborted` before updating component state.
 
+## 2026-05-11 - [Optimize Hot-Path URL ID Extraction with Regex]
+**Learning:** Repetitive string operations like `.split('/')` and `.includes()` inside hot paths (such as the main URL parsing function `parseUrl`) cause unnecessary intermediate string allocations and significantly degrade performance compared to a native regex evaluation.
+**Action:** Replace chained explicit string operations (e.g. `pathname.split('/v/')[1].split('/')[0].split('?')[0]`) with a single precompiled Regular Expression (e.g. `YOUTUBE_PATH_RE.exec(pathname)`) to perform extraction. This improves parsing performance and avoids unnecessary object allocations.
+
 ## 2026-05-12 - Avoid chained string operations in hot-path URL parsing
 **Learning:** In URL parsing hot paths (like `url-parser.ts`), chained string operations using `.includes()`, `.split()`, and `.slice()` lead to multiple unnecessary array and string allocations, which triggers frequent garbage collection cycles.
 **Action:** Always prefer using precompiled module-level Regular Expressions and a single `.exec()` or `.match()` call to extract URL parameters or paths to optimize CPU and memory footprint in parsers.
