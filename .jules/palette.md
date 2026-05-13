@@ -31,3 +31,7 @@
 ## 2026-05-11 - Accessible Disclosure Widgets and Modals
 **Learning:** Toggle buttons (like "Send Feedback" or "Show QR Code") that reveal additional content or modals are often inaccessible to screen reader users because they don't announce their state or what they control.
 **Action:** Always add `aria-expanded={isOpen}` to toggle buttons, and use `aria-controls="[panel-id]"` to link them to the panel they reveal. For buttons that open modals, also add `aria-haspopup="dialog"`.
+
+## 2026-05-13 - Accessible Loading States with Rapid Text Updates
+**Learning:** When displaying dynamic loading or processing states that cycle through text rapidly (e.g., "Cooking...", "Checking vibes..."), using `aria-live="polite"` directly on the changing text element can spam screen readers and create a frustrating user experience. Alternatively, omitting `aria-live` means the loading state isn't announced at all.
+**Action:** When creating cyclic text loading indicators, apply `aria-hidden="true"` to the dynamic, rapidly updating elements to hide them from the accessibility tree. Then, provide a stable, static fallback text using an `sr-only` class within an `aria-live="polite"` container to ensure screen readers announce the state clearly and concisely just once.
