@@ -37,3 +37,7 @@
 ## 2026-05-12 - Avoid chained string operations in hot-path URL parsing
 **Learning:** In URL parsing hot paths (like `url-parser.ts`), chained string operations using `.includes()`, `.split()`, and `.slice()` lead to multiple unnecessary array and string allocations, which triggers frequent garbage collection cycles.
 **Action:** Always prefer using precompiled module-level Regular Expressions and a single `.exec()` or `.match()` call to extract URL parameters or paths to optimize CPU and memory footprint in parsers.
+
+## 2026-05-13 - [Explicit Caching for Dynamic Route Handlers]
+**Learning:** In Next.js App Router, GET handlers that access `request.url` or `searchParams` automatically opt out of default static caching and become fully dynamic. This means expensive operations (like fetching external URLs to parse metadata) will run redundantly on every request for the same parameters.
+**Action:** Always explicitly return `Cache-Control` headers (e.g., `public, max-age=3600, stale-while-revalidate=86400`) in `NextResponse.json` for dynamic route handlers where the response is deterministic based on the query parameters. This allows the CDN and browser to cache the result, preventing unnecessary backend execution and API calls.
