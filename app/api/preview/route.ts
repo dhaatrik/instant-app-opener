@@ -121,11 +121,19 @@ export async function GET(request: Request) {
     const description = getMetaTag('og:description') || getMetaTag('description');
     const image = getMetaTag('og:image') || getMetaTag('image');
 
-    return NextResponse.json({
-      title: title?.trim() || null,
-      description: description?.trim() || null,
-      image: image?.trim() || null,
-    });
+    return NextResponse.json(
+      {
+        title: title?.trim() || null,
+        description: description?.trim() || null,
+        image: image?.trim() || null,
+      },
+      {
+        headers: {
+          // ⚡ Bolt: Cache external metadata to prevent redundant fetch operations
+          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+        },
+      }
+    );
   } catch (error) {
     console.error('Preview fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch preview' }, { status: 500 });

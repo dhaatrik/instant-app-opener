@@ -37,3 +37,7 @@
 ## 2026-05-12 - Avoid chained string operations in hot-path URL parsing
 **Learning:** In URL parsing hot paths (like `url-parser.ts`), chained string operations using `.includes()`, `.split()`, and `.slice()` lead to multiple unnecessary array and string allocations, which triggers frequent garbage collection cycles.
 **Action:** Always prefer using precompiled module-level Regular Expressions and a single `.exec()` or `.match()` call to extract URL parameters or paths to optimize CPU and memory footprint in parsers.
+
+## 2026-05-14 - Add explicit cache headers to dynamic API Routes
+**Learning:** In Next.js App Router, using `searchParams` in an API route (like `app/api/preview/route.ts`) automatically makes it dynamic, thereby completely bypassing static caching. As a result, endpoints that perform expensive backend operations like external HTML fetching and Cheerio parsing will execute repeatedly for the same URLs.
+**Action:** Always return explicit `Cache-Control` headers (e.g. `public, max-age=3600, stale-while-revalidate=86400`) from dynamic endpoints when the returned data is stateless and repeatable. This engages CDN and browser-level caching to prevent redundant server-side executions.
