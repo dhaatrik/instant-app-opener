@@ -45,15 +45,17 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
 
     // Check if the hostname or any resolved IP is an IPv4 or IPv6 address
     for (let address of addresses) {
-      // Normalize IPv4-mapped IPv6 addresses (e.g., ::ffff:127.0.0.1 or 0:0:0:0:0:ffff:127.0.0.1)
+      // Normalize all variations of IPv4-mapped/compatible IPv6 addresses
+      // (e.g., ::ffff:127.0.0.1, 0:0:0:0:0:ffff:127.0.0.1, ::127.0.0.1, 0::127.0.0.1)
       const lowerAddress = address.toLowerCase();
       let isIPv4Mapped = false;
-      if (lowerAddress.startsWith('::ffff:')) {
-        address = address.substring(7);
-        isIPv4Mapped = true;
-      } else if (lowerAddress.startsWith('0:0:0:0:0:ffff:')) {
-        address = address.substring(15);
-        isIPv4Mapped = true;
+
+      const mappedRegex = /^(?:(?:0{0,4}:)+)?(?:0{0,4}|ffff):([^:]+(?:\.[^:]+)*|[^:]+:[^:]+)$/;
+      const match = lowerAddress.match(mappedRegex);
+
+      if (match && lowerAddress !== '::1' && lowerAddress !== '::' && lowerAddress !== '0:0:0:0:0:0:0:1') {
+          address = match[1];
+          isIPv4Mapped = true;
       }
 
       // Handle hex-formatted IPv4-mapped IPv6 addresses (e.g., ::ffff:7f00:1)

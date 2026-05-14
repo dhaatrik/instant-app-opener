@@ -55,3 +55,8 @@
 **Vulnerability:** URL parsers, deep link decoders, and regex validation checks accepted arbitrarily long strings without bound. This opened the application to Denial of Service (DoS) and Regular Expression Denial of Service (ReDoS) attacks by deliberately feeding oversized payloads, leading to excessive CPU/memory consumption.
 **Learning:** Even fast validation routines and native parsers (like Node's `new URL()`) can become attack vectors if input size is unchecked. Validating the length of input parameters at the very boundary (before processing or parsing) is critical to stopping resource exhaustion attacks early.
 **Prevention:** Always enforce a strict, sensible length limit (e.g., 2048 characters for URLs and encoded data) on all external inputs as the first step in any validation or parsing function, effectively short-circuiting potentially expensive operations.
+
+## 2026-05-14 - [Fix SSRF bypass via IPv4-mapped IPv6 variations]
+**Vulnerability:** The SSRF protection in `isSafeUrlForFetch` missed various zero-compressed representations of IPv4-mapped/compatible IPv6 addresses like `0::127.0.0.1` and `[::127.0.0.1]`, allowing internal IP checks to be bypassed.
+**Learning:** String-based IP parsing is extremely fragile. Attackers can use numerous standard-compliant formatting variations (like omitting the `ffff` segment or using mixed hex/decimal IPv4 encodings within IPv6) that are successfully resolved by modern HTTP clients and network libraries but missed by basic prefix checks.
+**Prevention:** Rather than using simple `.startsWith()` string matching, always apply a robust regular expression or utilize established network IP normalization libraries to extract the inner IPv4 address before applying blocklist rules.
