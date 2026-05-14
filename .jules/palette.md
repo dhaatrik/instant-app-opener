@@ -31,3 +31,7 @@
 ## 2026-05-11 - Accessible Disclosure Widgets and Modals
 **Learning:** Toggle buttons (like "Send Feedback" or "Show QR Code") that reveal additional content or modals are often inaccessible to screen reader users because they don't announce their state or what they control.
 **Action:** Always add `aria-expanded={isOpen}` to toggle buttons, and use `aria-controls="[panel-id]"` to link them to the panel they reveal. For buttons that open modals, also add `aria-haspopup="dialog"`.
+
+## 2026-05-15 - ARIA Live Regions and Rapidly Changing Text
+**Learning:** For rapidly cycling dynamic text (e.g., loading states), applying `aria-live` directly to the changing text results in screen reader spam and a frustrating experience.
+**Action:** Always apply `aria-hidden="true"` to rapidly changing visual text to prevent screen reader spam, and provide a static fallback text within an `sr-only` element inside an `aria-live="polite"` container so the screen reader still gets the context.

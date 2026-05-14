@@ -739,9 +739,10 @@ export default function Home() {
                       {isLoadingPreview ? (
                         <div className="flex items-center gap-3 mt-3">
                           <div className="h-5 w-5 rounded-full border-2 border-white/20 border-t-white/90 animate-spin" />
-                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium">
+                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium" aria-hidden="true">
                             Cooking...
                           </p>
+                          <span className="sr-only" aria-live="polite">Loading preview...</span>
                         </div>
                       ) : previewData?.title ? (
                         <p className="text-white/90 text-base font-medium leading-relaxed">
