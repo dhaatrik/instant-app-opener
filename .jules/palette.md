@@ -35,3 +35,7 @@
 ## 2026-05-13 - Accessible Loading States with Rapid Text Updates
 **Learning:** When displaying dynamic loading or processing states that cycle through text rapidly (e.g., "Cooking...", "Checking vibes..."), using `aria-live="polite"` directly on the changing text element can spam screen readers and create a frustrating user experience. Alternatively, omitting `aria-live` means the loading state isn't announced at all.
 **Action:** When creating cyclic text loading indicators, apply `aria-hidden="true"` to the dynamic, rapidly updating elements to hide them from the accessibility tree. Then, provide a stable, static fallback text using an `sr-only` class within an `aria-live="polite"` container to ensure screen readers announce the state clearly and concisely just once.
+
+## 2026-05-15 - ARIA Live Regions and Rapidly Changing Text
+**Learning:** For rapidly cycling dynamic text (e.g., loading states), applying `aria-live` directly to the changing text results in screen reader spam and a frustrating experience.
+**Action:** Always apply `aria-hidden="true"` to rapidly changing visual text to prevent screen reader spam, and provide a static fallback text within an `sr-only` element inside an `aria-live="polite"` container so the screen reader still gets the context.
