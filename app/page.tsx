@@ -656,8 +656,10 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-wrap items-center justify-center gap-2 mt-6"
+                role="region"
+                aria-labelledby="recent-drops-heading"
               >
-                <span className="text-xs text-white/40 uppercase tracking-widest mr-2">
+                <span id="recent-drops-heading" className="text-xs text-white/40 uppercase tracking-widest mr-2">
                   Recent Drops:
                 </span>
                 {parsedRecentDrops.map(({ drop, hostname }, idx) => {
@@ -739,9 +741,10 @@ export default function Home() {
                       {isLoadingPreview ? (
                         <div className="flex items-center gap-3 mt-3">
                           <div className="h-5 w-5 rounded-full border-2 border-white/20 border-t-white/90 animate-spin" />
-                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium">
+                          <p ref={loadingTextRef} className="text-white/70 text-base font-medium" aria-hidden="true">
                             Cooking...
                           </p>
+                          <span className="sr-only" aria-live="polite">Loading preview...</span>
                         </div>
                       ) : previewData?.title ? (
                         <p className="text-white/90 text-base font-medium leading-relaxed">
@@ -839,6 +842,7 @@ export default function Home() {
                       aria-label="Show QR Code"
                       aria-haspopup="dialog"
                       aria-expanded={showQR}
+                      aria-controls={showQR ? "qr-modal" : undefined}
                     >
                       <QrCode className="w-5 h-5" />
                     </motion.button>
@@ -856,6 +860,7 @@ export default function Home() {
                       onClick={() => setShowQR(false)}
                     >
                       <div
+                        id="qr-modal"
                         className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 relative"
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
@@ -951,7 +956,7 @@ export default function Home() {
                             readOnly
                             value={copyFallback}
                             aria-label="Fallback deep link URL"
-                            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30"
+                            className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30 focus-visible:ring-2 focus-visible:ring-white/50"
                           />
                           <button
                             onClick={() => {
