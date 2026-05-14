@@ -121,18 +121,19 @@ export async function GET(request: Request) {
     const description = getMetaTag('og:description') || getMetaTag('description');
     const image = getMetaTag('og:image') || getMetaTag('image');
 
-    // ⚡ Bolt: Next.js App Router GET handlers using `searchParams` become dynamic and skip caching.
-    // Adding explicit Cache-Control headers caches the result at the CDN/Browser level,
-    // preventing redundant backend execution and external fetching for identical URLs.
-    return NextResponse.json({
-      title: title?.trim() || null,
-      description: description?.trim() || null,
-      image: image?.trim() || null,
-    }, {
-      headers: {
-        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+    return NextResponse.json(
+      {
+        title: title?.trim() || null,
+        description: description?.trim() || null,
+        image: image?.trim() || null,
       },
-    });
+      {
+        headers: {
+          // ⚡ Bolt: Cache external metadata to prevent redundant fetch operations
+          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+        },
+      }
+    );
   } catch (error) {
     console.error('Preview fetch error:', error);
     return NextResponse.json({ error: 'Failed to fetch preview' }, { status: 500 });
