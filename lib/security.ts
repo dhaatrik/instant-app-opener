@@ -1,6 +1,9 @@
 import dns from 'node:dns/promises';
 import { isIP } from 'node:net';
 
+// ⚡ Bolt: Precompiled regex for faster IPv6 prefix scanning
+const IPV6_PRIVATE_RE = /^(?:fc|fd|fe[89ab])/i;
+
 export async function isSafeUrlForFetch(url: string): Promise<boolean> {
   if (!url || url.length > 2048) {
     return false;
@@ -93,12 +96,7 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
           address === '[::]' ||
           address === '::1' ||
           address === '::' ||
-          address.toLowerCase().startsWith('fc') ||
-          address.toLowerCase().startsWith('fd') ||
-          address.toLowerCase().startsWith('fe8') ||
-          address.toLowerCase().startsWith('fe9') ||
-          address.toLowerCase().startsWith('fea') ||
-          address.toLowerCase().startsWith('feb')
+          IPV6_PRIVATE_RE.test(address)
         ) {
           return false;
         }
