@@ -504,6 +504,7 @@ export default function Home() {
         rel="noopener noreferrer"
         className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full"
         aria-label="GitHub Repository"
+        title="GitHub Repository"
       >
         <Github className="w-6 h-6" />
       </a>
@@ -571,7 +572,7 @@ export default function Home() {
                 aria-label="Paste app link URL here"
                 aria-invalid={!!error}
                 aria-describedby={error ? "url-error" : undefined}
-                className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/20 font-light"
+                className="w-full bg-transparent text-xl md:text-2xl p-6 md:p-8 pr-[120px] md:pr-[140px] outline-none placeholder:text-white/40 font-light"
               />
               {/* Icons inside input */}
               <div className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 flex items-center p-1.5 rounded-2xl bg-[#050505]/60 backdrop-blur-xl border border-white/10 shadow-2xl">
@@ -597,6 +598,7 @@ export default function Home() {
                       onClick={handleClear}
                       className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
                       aria-label="Clear input"
+                      title="Clear input"
                     >
                       <X className="w-5 h-5 shrink-0" />
                     </motion.button>
@@ -871,6 +873,7 @@ export default function Home() {
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
                           aria-label="Close QR Code"
+                          title="Close QR Code"
                         >
                           <X className="w-5 h-5" />
                         </button>
