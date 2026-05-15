@@ -41,3 +41,6 @@
 ## 2026-05-14 - Add explicit cache headers to dynamic API Routes
 **Learning:** In Next.js App Router, using `searchParams` in an API route (like `app/api/preview/route.ts`) automatically makes it dynamic, thereby completely bypassing static caching. As a result, endpoints that perform expensive backend operations like external HTML fetching and Cheerio parsing will execute repeatedly for the same URLs.
 **Action:** Always return explicit `Cache-Control` headers (e.g. `public, max-age=3600, stale-while-revalidate=86400`) from dynamic endpoints when the returned data is stateless and repeatable. This engages CDN and browser-level caching to prevent redundant server-side executions.
+## 2026-05-15 - [Use precompiled regex for IP prefix checking]
+**Learning:** In hot paths like IP address checking (`isSafeUrlForFetch`), chaining multiple string operations like `.toLowerCase().startsWith()` allocates strings repeatedly inside the loop, leading to performance bottlenecks.
+**Action:** Replace chained string evaluations with a precompiled regex (e.g. `IPV6_PRIVATE_RE = /^(?:fc|fd|fe[89ab])/i`) for faster string scanning to prevent memory bloat and improve string matching performance.
