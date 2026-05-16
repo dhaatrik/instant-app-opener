@@ -670,6 +670,7 @@ export default function Home() {
                       key={idx}
                       onClick={() => setInput(drop)}
                       aria-label={`Paste recent link from ${hostname}`}
+                      title={drop}
                       className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                     >
                       {hostname}
@@ -1050,6 +1051,7 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       aria-label="X (Twitter)"
+                      title="X (Twitter)"
                     >
                       <XLogo className="w-5 h-5" />
                     </a>
@@ -1059,6 +1061,7 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       aria-label="LinkedIn"
+                      title="LinkedIn"
                     >
                       <Linkedin className="w-5 h-5" />
                     </a>
