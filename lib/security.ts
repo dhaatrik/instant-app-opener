@@ -4,6 +4,12 @@ import { isIP } from 'node:net';
 // ⚡ Bolt: Precompiled regex for faster IPv6 prefix scanning
 const IPV6_PRIVATE_RE = /^(?:fc|fd|fe[89ab])/i;
 
+// ⚡ Bolt: Hoisted from loop to prevent redundant RegExp allocations
+const IPV4_MAPPED_RE = /^(?:(?:0{0,4}:)+)?(?:0{0,4}|ffff):([^:]+(?:\.[^:]+)*|[^:]+:[^:]+)$/;
+
+// ⚡ Bolt: Replaced chained startsWith/match with precompiled RegExp for faster IP evaluation
+const IPV4_PRIVATE_RE = /^(?:127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)/;
+
 export async function isSafeUrlForFetch(url: string): Promise<boolean> {
   if (!url || url.length > 2048) {
     return false;
@@ -53,8 +59,7 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
       const lowerAddress = address.toLowerCase();
       let isIPv4Mapped = false;
 
-      const mappedRegex = /^(?:(?:0{0,4}:)+)?(?:0{0,4}|ffff):([^:]+(?:\.[^:]+)*|[^:]+:[^:]+)$/;
-      const match = lowerAddress.match(mappedRegex);
+      const match = lowerAddress.match(IPV4_MAPPED_RE);
 
       if (match && lowerAddress !== '::1' && lowerAddress !== '::' && lowerAddress !== '0:0:0:0:0:0:0:1') {
           address = match[1];
@@ -74,19 +79,7 @@ export async function isSafeUrlForFetch(url: string): Promise<boolean> {
       const isIPv4 = address.includes('.');
 
       if (isIPv4) {
-        // Block IPv4 private/loopback/link-local ranges
-        if (
-          address.startsWith('127.') || // Loopback
-          address.startsWith('10.') ||  // Class A private
-          address.startsWith('192.168.') || // Class C private
-          address.startsWith('169.254.') || // Link-local
-          address.startsWith('0.') // Current network
-        ) {
-          return false;
-        }
-
-        // Block Class B private network (172.16.x.x - 172.31.x.x)
-        if (address.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+        if (IPV4_PRIVATE_RE.test(address)) {
           return false;
         }
       } else {
