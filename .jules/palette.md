@@ -45,6 +45,6 @@
 ## 2026-05-15 - Native Tooltips for Icon-Only Buttons
 **Learning:** Found multiple icon-only buttons (like the Clear Input cross, GitHub logo, or Close QR Code button) that had proper `aria-label`s for screen readers but lacked `title` attributes. This leaves sighted users without on-hover context, leading to poor UX and uncertainty about button actions.
 **Action:** Always enhance icon-only buttons by adding a `title` attribute matching the `aria-label` to provide immediate, native browser tooltips on hover.
-## $(date +%Y-%m-%d) - Native Tooltips for Context
+## 2026-05-16 - Native Tooltips for Context
 **Learning:** Icon-only feedback links (e.g., social media icons) and truncated UI elements (e.g., shortened hostnames in buttons) can be confusing for sighted users even if they possess `aria-label`s for screen readers. Adding native `title` attributes provides immediate visual context via browser tooltips on hover.
 **Action:** When creating icon-only interactive elements or aggressively truncating text within buttons, ensure a `title` attribute is present alongside the `aria-label` to benefit all users.
