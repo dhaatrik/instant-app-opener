@@ -44,3 +44,6 @@
 ## 2026-05-15 - [Use precompiled regex for IP prefix checking]
 **Learning:** In hot paths like IP address checking (`isSafeUrlForFetch`), chaining multiple string operations like `.toLowerCase().startsWith()` allocates strings repeatedly inside the loop, leading to performance bottlenecks.
 **Action:** Replace chained string evaluations with a precompiled regex (e.g. `IPV6_PRIVATE_RE = /^(?:fc|fd|fe[89ab])/i`) for faster string scanning to prevent memory bloat and improve string matching performance.
+## 2026-05-16 - [Optimize IP Prefix Scanning with RegExp test]
+**Learning:** Chained string operations (like multiple `address.startsWith()` checks) or allocating a RegExp inline inside a loop (like `address.match(/.../)` to return a boolean) in a hot path causes high memory allocation and CPU overhead. Also, using `String.match()` creates an unnecessary Array result.
+**Action:** Always hoist RegExp literals to the module scope and use the `RegExp.test()` method for boolean evaluations instead of chaining `String.startsWith()` or using `String.match()`. This avoids garbage collection pressure and is significantly faster for pattern matching in iterative functions.
