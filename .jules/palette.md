@@ -48,3 +48,7 @@
 ## 2026-05-16 - Native Tooltips for Context
 **Learning:** Icon-only feedback links (e.g., social media icons) and truncated UI elements (e.g., shortened hostnames in buttons) can be confusing for sighted users even if they possess `aria-label`s for screen readers. Adding native `title` attributes provides immediate visual context via browser tooltips on hover.
 **Action:** When creating icon-only interactive elements or aggressively truncating text within buttons, ensure a `title` attribute is present alongside the `aria-label` to benefit all users.
+
+## 2026-05-17 - Trap Initial Focus in Modals
+**Learning:** Screen reader users and keyboard users depend on focus management when a new dialog or modal opens. Simply opening a modal visually without directing focus leaves screen readers unaware of the new context and breaks keyboard navigation.
+**Action:** Always apply `autoFocus` to the primary action or close button inside newly mounted modals (especially those rendered conditionally via `AnimatePresence` or conditional rendering) to trap initial focus effectively.

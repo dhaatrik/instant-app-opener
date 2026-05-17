@@ -503,7 +503,7 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
         className="absolute top-6 right-6 z-50 text-white/40 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full"
-        aria-label="GitHub Repository"
+        aria-label="GitHub Repository (opens in a new tab)"
         title="GitHub Repository"
       >
         <Github className="w-6 h-6" />
@@ -871,6 +871,7 @@ export default function Home() {
                         aria-label="QR Code"
                       >
                         <button
+                          autoFocus
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
                           aria-label="Close QR Code"
@@ -959,6 +960,7 @@ export default function Home() {
                             type="text"
                             readOnly
                             value={copyFallback}
+                            onClick={(e) => e.currentTarget.select()}
                             aria-label="Fallback deep link URL"
                             className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30 focus-visible:ring-2 focus-visible:ring-white/50"
                           />
@@ -1050,7 +1052,7 @@ export default function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                      aria-label="X (Twitter)"
+                      aria-label="X (Twitter) (opens in a new tab)"
                       title="X (Twitter)"
                     >
                       <XLogo className="w-5 h-5" />
@@ -1060,7 +1062,7 @@ export default function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-[#0a66c2] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-                      aria-label="LinkedIn"
+                      aria-label="LinkedIn (opens in a new tab)"
                       title="LinkedIn"
                     >
                       <Linkedin className="w-5 h-5" />
