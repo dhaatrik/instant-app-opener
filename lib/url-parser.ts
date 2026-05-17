@@ -5,6 +5,27 @@ const FACEBOOK_RESERVED_PATHS = new Set(['watch', 'groups', 'events', 'profile.p
 
 // ⚡ Bolt: Precompiled Regex for URL path extraction is faster than chained string operations
 const YOUTUBE_PATH_RE = /\/(?:shorts|live|v|embed)\/([^/?]+)/;
+const YOUTUBE_SHORT_RE = /^\/([^/?]+)/;
+const X_STATUS_RE = /\/(?:#!\/)?[\w]+\/status(?:es)?\/(\d+)/;
+const LINKEDIN_PROFILE_RE = /\/(?:in|company|school)\/([^/?]+)/;
+const LINKEDIN_POST_RE = /\/(?:posts|feed\/update)\/(?:urn:li:activity:)?([^/?]+)/;
+const INSTAGRAM_MEDIA_RE = /\/(?:p|reel|tv)\/([^/?]+)/;
+const INSTAGRAM_STORY_RE = /\/stories\/[^/]+\/(\d+)/;
+const INSTAGRAM_PROFILE_RE = /\/([^/?]+)/;
+const FACEBOOK_WATCH_RE = /\/(?:v\/)?([^/?]+)/;
+const FACEBOOK_POST_RE = /\/(?:posts|permalink|videos|watch)\/([^/?]+)/;
+const FACEBOOK_PROFILE_RE = /\/([^/?]+)/;
+const TIKTOK_VIDEO_RE = /\/video\/(\d+)/;
+const TIKTOK_MOBILE_VIDEO_RE = /\/v\/(\d+)/;
+const TIKTOK_SHORT_RE = /\/([^/?]+)/;
+const SPOTIFY_PATH_RE = /\/(track|album|playlist|episode|show|user|artist)\/([^/?]+)/;
+
+// ⚡ Bolt: Precompiled Regex for base64 string replacements
+const BASE64_PLUS_RE = /\+/g;
+const BASE64_SLASH_RE = /\//g;
+const BASE64_EQUAL_RE = /=+$/;
+const BASE64_MINUS_RE = /-/g;
+const BASE64_UNDERSCORE_RE = /_/g;
 
 export const APP_STORE_LINKS: Record<Platform, { ios: string, android: string } | null> = {
   youtube: {
@@ -76,7 +97,7 @@ export function parseUrl(url: string): ParsedUrl {
     if (isDomain('youtube.com') || isDomain('youtu.be')) {
       let id = '';
       if (isDomain('youtu.be')) {
-        const match = pathname.match(/^\/([^/?]+)/);
+        const match = YOUTUBE_SHORT_RE.exec(pathname);
         if (match) id = match[1];
       } else if (pathname.includes('/watch')) {
         id = parsed.searchParams.get('v') || '';
@@ -100,7 +121,7 @@ export function parseUrl(url: string): ParsedUrl {
 
     // X / Twitter
     if (isDomain('twitter.com') || isDomain('x.com') || isDomain('t.co')) {
-      const match = pathname.match(/\/(?:#!\/)?[\w]+\/status(?:es)?\/(\d+)/);
+      const match = X_STATUS_RE.exec(pathname);
       if (match) {
         return {
           platform: 'x',
@@ -146,7 +167,7 @@ export function parseUrl(url: string): ParsedUrl {
         }
       }
       // Profiles, Companies, Schools
-      const profileMatch = pathname.match(/\/(?:in|company|school)\/([^/?]+)/);
+      const profileMatch = LINKEDIN_PROFILE_RE.exec(pathname);
       if (profileMatch) {
         return {
           platform: 'linkedin',
@@ -160,7 +181,7 @@ export function parseUrl(url: string): ParsedUrl {
       }
       // Posts / Feed
       // ⚡ Bolt: Single regex capture avoids chained string operations for performance
-      const postMatch = pathname.match(/\/(?:posts|feed\/update)\/(?:urn:li:activity:)?([^/?]+)/);
+      const postMatch = LINKEDIN_POST_RE.exec(pathname);
       if (postMatch) {
         const id = postMatch[1];
         return {
@@ -178,7 +199,7 @@ export function parseUrl(url: string): ParsedUrl {
     // Instagram
     if (isDomain('instagram.com') || isDomain('instagr.am')) {
       // Posts, Reels, TV
-      const mediaMatch = pathname.match(/\/(?:p|reel|tv)\/([^/?]+)/);
+      const mediaMatch = INSTAGRAM_MEDIA_RE.exec(pathname);
       if (mediaMatch) {
         return {
           platform: 'instagram',
@@ -191,7 +212,7 @@ export function parseUrl(url: string): ParsedUrl {
         };
       }
       // Stories
-      const storyMatch = pathname.match(/\/stories\/[^/]+\/(\d+)/);
+      const storyMatch = INSTAGRAM_STORY_RE.exec(pathname);
       if (storyMatch) {
         return {
           platform: 'instagram',
@@ -204,7 +225,7 @@ export function parseUrl(url: string): ParsedUrl {
         };
       }
       // Profile
-      const profileMatch = pathname.match(/\/([^/?]+)/);
+      const profileMatch = INSTAGRAM_PROFILE_RE.exec(pathname);
       if (profileMatch && !INSTAGRAM_RESERVED_PATHS.has(profileMatch[1])) {
         return {
           platform: 'instagram',
@@ -224,18 +245,18 @@ export function parseUrl(url: string): ParsedUrl {
       
       if (!id) {
         if (isDomain('fb.watch')) {
-          const watchMatch = pathname.match(/\/(?:v\/)?([^/?]+)/);
+          const watchMatch = FACEBOOK_WATCH_RE.exec(pathname);
           if (watchMatch) {
             id = watchMatch[1];
           }
         } else {
           // Check for /posts/ID or /permalink/ID or /watch/ID
-          const postMatch = pathname.match(/\/(?:posts|permalink|videos|watch)\/([^/?]+)/);
+          const postMatch = FACEBOOK_POST_RE.exec(pathname);
           if (postMatch) {
             id = postMatch[1];
           } else {
             // Profile username
-            const match = pathname.match(/\/([^/?]+)/);
+            const match = FACEBOOK_PROFILE_RE.exec(pathname);
             if (match && !FACEBOOK_RESERVED_PATHS.has(match[1])) {
               id = match[1];
             }
@@ -259,8 +280,8 @@ export function parseUrl(url: string): ParsedUrl {
     // TikTok
     if (isDomain('tiktok.com') || isDomain('tiktok.t.me')) {
       let id = '';
-      const videoMatch = pathname.match(/\/video\/(\d+)/);
-      const mobileVideoMatch = pathname.match(/\/v\/(\d+)/);
+      const videoMatch = TIKTOK_VIDEO_RE.exec(pathname);
+      const mobileVideoMatch = TIKTOK_MOBILE_VIDEO_RE.exec(pathname);
       
       if (videoMatch) {
         id = videoMatch[1];
@@ -268,7 +289,7 @@ export function parseUrl(url: string): ParsedUrl {
         id = mobileVideoMatch[1];
       } else {
         // Handle short links like vm.tiktok.com/ZMxxxxxx/ or vt.tiktok.com
-        const shortMatch = pathname.match(/\/([^/?]+)/);
+        const shortMatch = TIKTOK_SHORT_RE.exec(pathname);
         if (shortMatch && !shortMatch[1].startsWith('@')) {
           id = shortMatch[1];
         } else if (shortMatch && shortMatch[1].startsWith('@')) {
@@ -315,7 +336,7 @@ export function parseUrl(url: string): ParsedUrl {
           };
         }
       }
-      const match = pathname.match(/\/(track|album|playlist|episode|show|user|artist)\/([^/?]+)/);
+      const match = SPOTIFY_PATH_RE.exec(pathname);
       if (match) {
         const type = match[1];
         const id = match[2];
@@ -347,7 +368,7 @@ export function parseUrl(url: string): ParsedUrl {
 
 export function encodeDeepLinkId(parsed: ParsedUrl): string {
   const data = JSON.stringify({ p: parsed.platform, i: parsed.id, u: parsed.originalUrl, d: parsed.deepLink });
-  return btoa(encodeURIComponent(data)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return btoa(encodeURIComponent(data)).replace(BASE64_PLUS_RE, '-').replace(BASE64_SLASH_RE, '_').replace(BASE64_EQUAL_RE, '');
 }
 
 export interface DecodedDeepLinkId {
@@ -363,7 +384,7 @@ export function decodeDeepLinkId(encoded: string): DecodedDeepLinkId | null {
   }
 
   try {
-    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = encoded.replace(BASE64_MINUS_RE, '+').replace(BASE64_UNDERSCORE_RE, '/');
     const pad = base64.length % 4;
     const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
     const decoded = JSON.parse(decodeURIComponent(atob(padded)));
