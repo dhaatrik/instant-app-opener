@@ -273,10 +273,15 @@ export default function Home() {
         let isSupportedDomain = SUPPORTED_DOMAINS.has(hostname);
 
         if (!isSupportedDomain) {
-          const parts = hostname.split('.');
-          if (parts.length > 2) {
-            const rootDomain = parts.slice(-2).join('.');
-            isSupportedDomain = SUPPORTED_DOMAINS.has(rootDomain);
+          // ⚡ Bolt: Optimize by avoiding array allocations from split/slice/join
+          // Find the last two dots to extract the root domain
+          const lastDot = hostname.lastIndexOf('.');
+          if (lastDot !== -1) {
+            const secondToLastDot = hostname.lastIndexOf('.', lastDot - 1);
+            if (secondToLastDot !== -1) {
+              const rootDomain = hostname.substring(secondToLastDot + 1);
+              isSupportedDomain = SUPPORTED_DOMAINS.has(rootDomain);
+            }
           }
         }
 

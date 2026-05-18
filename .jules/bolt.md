@@ -50,3 +50,6 @@
 ## 2026-05-17 - Hoist regular expressions to module scope for URL parsing
 **Learning:** In hot paths like URL parsing (e.g., `parseUrl`) and data encoding/decoding (`encodeDeepLinkId`, `decodeDeepLinkId`), using inline RegExp literals (e.g., `pathname.match(/\/(?:p|reel|tv)\/([^/?]+)/)` or `encoded.replace(/-/g, '+')`) causes the JavaScript engine to reallocate the RegExp object on every execution.
 **Action:** Always hoist `RegExp` literals to the module scope (as constants) and use `.exec()` instead of `.match()` for repeated pattern extractions, and reuse precompiled regex constants for string `.replace()` operations to prevent unnecessary intermediate allocations and reduce garbage collection overhead.
+## 2026-05-18 - [Optimize Domain Parsing in Hot Path]
+**Learning:** In hot-path string extraction (like extracting a root domain from a hostname during fast debounced input processing), chaining operations that allocate arrays (e.g., `hostname.split('.').slice(-2).join('.')`) introduces unnecessary memory overhead and triggers frequent garbage collection.
+**Action:** Always prefer allocation-free string manipulation methods like `lastIndexOf()` and `substring()` over `.split()` when extracting specific parts of a string from the end. This reduces memory pressure and execution time without sacrificing safety.
