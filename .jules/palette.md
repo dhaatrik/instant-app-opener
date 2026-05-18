@@ -52,3 +52,6 @@
 ## 2026-05-17 - Trap Initial Focus in Modals
 **Learning:** Screen reader users and keyboard users depend on focus management when a new dialog or modal opens. Simply opening a modal visually without directing focus leaves screen readers unaware of the new context and breaks keyboard navigation.
 **Action:** Always apply `autoFocus` to the primary action or close button inside newly mounted modals (especially those rendered conditionally via `AnimatePresence` or conditional rendering) to trap initial focus effectively.
+## 2024-11-20 - Global Keyboard Shortcut and Input Polish
+**Learning:** Overly aggressive global keyboard shortcuts (like intercepting Cmd+C) often break basic OS accessibility expectations, such as copying selected text. Modals must use fixed instead of absolute positioning to prevent users from scrolling out of the overlay on long pages.
+**Action:** Always verify `window.getSelection()?.toString()` or `activeElement` input selection ranges before calling `e.preventDefault()` in keyboard event listeners. Always use `fixed inset-0` for full viewport modal backdrops.

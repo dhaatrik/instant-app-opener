@@ -464,6 +464,10 @@ export default function Home() {
     setDebouncedInput("");
     setParsed(null);
     setError(null);
+    // Return focus to input so user can immediately paste a new URL
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   // Keyboard shortcuts
@@ -480,6 +484,18 @@ export default function Home() {
 
       if (isModifierPressed) {
         if (e.key.toLowerCase() === "c") {
+          // Allow standard copy if user has text selected
+          const selection = window.getSelection();
+          const activeElement = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
+
+          const hasInputSelection = activeElement &&
+            (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') &&
+            activeElement.selectionStart !== activeElement.selectionEnd;
+
+          if (selection?.toString() || hasInputSelection) {
+            return; // Let default browser copy behavior happen
+          }
+
           // Prevent default copy if we have a parsed link to copy instead
           e.preventDefault();
           handleCopy();
@@ -859,7 +875,7 @@ export default function Home() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl p-6"
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
                       onClick={() => setShowQR(false)}
                     >
                       <div
