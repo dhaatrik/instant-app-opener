@@ -21,9 +21,11 @@
 ## 2026-05-08 - Dynamic Error Message Association for Screen Readers
 **Learning:** Adding `role="alert"` and `aria-live` to dynamic error messages isn't enough; screen reader users might not know which input the error relates to.
 **Action:** Always associate dynamic error messages with their respective input fields using `aria-invalid={true}` and `aria-describedby="error-id"` so screen readers properly announce the error context when the user interacts with the input.
+
 ## 2026-05-08 - Accessible Dynamic Form Errors
 **Learning:** Adding `role="alert"` or `aria-live="polite"` to an error message container is not enough for screen reader users to properly associate the error with the input field that caused it. They must be explicitly linked so that the screen reader announces the error when the input is focused.
 **Action:** Always associate dynamic error messages with their respective input fields by adding `aria-invalid={true}` to the input when an error exists, giving the error message container an ID, and linking them via `aria-describedby="[error-id]"` on the input.
+
 ## 2026-05-10 - Screen Reader Feedback for Redirect Statuses
 **Learning:** Found that when a page transitions through multiple statuses during an asynchronous redirect (e.g., "Opening app..." -> "Redirecting to web..."), screen readers do not announce these changes by default.
 **Action:** Always add `aria-live="polite"` to text containers that display dynamic loading, transition, or error statuses so that screen reader users receive continuous progress updates.
@@ -39,12 +41,15 @@
 ## 2026-05-15 - ARIA Live Regions and Rapidly Changing Text
 **Learning:** For rapidly cycling dynamic text (e.g., loading states), applying `aria-live` directly to the changing text results in screen reader spam and a frustrating experience.
 **Action:** Always apply `aria-hidden="true"` to rapidly changing visual text to prevent screen reader spam, and provide a static fallback text within an `sr-only` element inside an `aria-live="polite"` container so the screen reader still gets the context.
+
 ## 2026-05-15 - ARIA Live Regions and Single Mutation Cycles
 **Learning:** `aria-live="polite"` requires DOM mutations to trigger announcements. If a dynamic status element is rendered statically and then its contents change, it works. But if an element with dynamic text uses `aria-live="polite"`, changing that to a static `sr-only` element with `aria-live` might actually *prevent* subsequent updates from being announced if the state changes again, because the text in the `sr-only` element is static. So, for a single status that might update occasionally (like "Opening app..." to "Redirecting..."), applying `aria-live="polite"` directly to the dynamic text container *is correct*, unlike rapidly cycling loading animations (e.g., "Cooking...", "Checking vibes...").
 **Action:** Do not mistake slow, meaningful state updates (like redirect statuses) for rapidly cycling loading animations. Apply `aria-live="polite"` directly to the dynamic container for state updates, and only use the `sr-only`/`aria-hidden` pattern for rapidly updating cyclical text.
+
 ## 2026-05-15 - Native Tooltips for Icon-Only Buttons
 **Learning:** Found multiple icon-only buttons (like the Clear Input cross, GitHub logo, or Close QR Code button) that had proper `aria-label`s for screen readers but lacked `title` attributes. This leaves sighted users without on-hover context, leading to poor UX and uncertainty about button actions.
 **Action:** Always enhance icon-only buttons by adding a `title` attribute matching the `aria-label` to provide immediate, native browser tooltips on hover.
+
 ## 2026-05-16 - Native Tooltips for Context
 **Learning:** Icon-only feedback links (e.g., social media icons) and truncated UI elements (e.g., shortened hostnames in buttons) can be confusing for sighted users even if they possess `aria-label`s for screen readers. Adding native `title` attributes provides immediate visual context via browser tooltips on hover.
 **Action:** When creating icon-only interactive elements or aggressively truncating text within buttons, ensure a `title` attribute is present alongside the `aria-label` to benefit all users.
@@ -52,6 +57,7 @@
 ## 2026-05-17 - Trap Initial Focus in Modals
 **Learning:** Screen reader users and keyboard users depend on focus management when a new dialog or modal opens. Simply opening a modal visually without directing focus leaves screen readers unaware of the new context and breaks keyboard navigation.
 **Action:** Always apply `autoFocus` to the primary action or close button inside newly mounted modals (especially those rendered conditionally via `AnimatePresence` or conditional rendering) to trap initial focus effectively.
+
 ## 2026-05-18 - Global Keyboard Shortcut and Input Polish
 **Learning:** Overly aggressive global keyboard shortcuts (like intercepting Cmd+C) often break basic OS accessibility expectations, such as copying selected text. Modals must use fixed instead of absolute positioning to prevent users from scrolling out of the overlay on long pages.
 **Action:** Always verify `window.getSelection()?.toString()` or `activeElement` input selection ranges before calling `e.preventDefault()` in keyboard event listeners. Always use `fixed inset-0` for full viewport modal backdrops.
