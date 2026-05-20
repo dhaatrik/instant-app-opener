@@ -61,6 +61,6 @@
 ## 2026-05-18 - Global Keyboard Shortcut and Input Polish
 **Learning:** Overly aggressive global keyboard shortcuts (like intercepting Cmd+C) often break basic OS accessibility expectations, such as copying selected text. Modals must use fixed instead of absolute positioning to prevent users from scrolling out of the overlay on long pages.
 **Action:** Always verify `window.getSelection()?.toString()` or `activeElement` input selection ranges before calling `e.preventDefault()` in keyboard event listeners. Always use `fixed inset-0` for full viewport modal backdrops.
-## 2025-02-12 - Focus Management during Component Unmounts
+## 2026-05-20 - Focus Management during Component Unmounts
 **Learning:** When interactive elements like the "Paste" or "Recent Drops" buttons are conditionally unmounted upon interaction (e.g., when the input gets a value), keyboard focus is lost, resetting to the top of the page. This breaks keyboard navigation flow.
 **Action:** Always programmatically return focus to a logical next element (like the main text input) using `useRef` and `setTimeout` (to wait for the render cycle) when a focused interactive element unmounts. For modals, store a `prevShowModal` state to properly detect close transitions and return focus to the trigger button.
