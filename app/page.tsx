@@ -176,8 +176,18 @@ export default function Home() {
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
+  const qrBtnRef = useRef<HTMLButtonElement>(null);
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
+
+  const prevShowQRRef = useRef(false);
+
+  useEffect(() => {
+    if (prevShowQRRef.current && !showQR && qrBtnRef.current) {
+      qrBtnRef.current.focus();
+    }
+    prevShowQRRef.current = showQR;
+  }, [showQR]);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -438,6 +448,9 @@ export default function Home() {
       const text = await navigator.clipboard.readText();
       if (text) {
         setInput(text);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
       }
     } catch (err) {
       console.error("Failed to read clipboard contents: ", err);
@@ -689,7 +702,10 @@ export default function Home() {
                   return (
                     <button
                       key={idx}
-                      onClick={() => setInput(drop)}
+                      onClick={() => {
+                        setInput(drop);
+                        setTimeout(() => inputRef.current?.focus(), 0);
+                      }}
                       aria-label={`Paste recent link from ${hostname}`}
                       title={drop}
                       className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors truncate max-w-[150px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
@@ -858,6 +874,7 @@ export default function Home() {
                     </motion.button>
 
                     <motion.button
+                      ref={qrBtnRef}
                       whileHover={{ y: -4, scale: 1.02 }}
                       whileTap={{ y: 2, scale: 0.98 }}
                       onClick={() => setShowQR(true)}
