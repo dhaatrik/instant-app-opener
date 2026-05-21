@@ -180,7 +180,21 @@ export default function Home() {
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
 
+  const [modifierKey, setModifierKey] = useState("⌘");
+
   const prevShowQRRef = useRef(false);
+
+  useEffect(() => {
+    // Wrap state update in a requestAnimationFrame to avoid synchronous state update warnings during initial render/hydration
+    const handlePlatform = () => {
+      const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+      setModifierKey(isMac ? "⌘" : "Ctrl+");
+    };
+
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(handlePlatform);
+    }
+  }, []);
 
   useEffect(() => {
     if (prevShowQRRef.current && !showQR && qrBtnRef.current) {
@@ -835,7 +849,7 @@ export default function Home() {
                             <Copy className="w-5 h-5" />
                             <span>Copy Link</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-black/40 bg-black/5 rounded border border-black/10">
-                              ⌘C
+                              {modifierKey}C
                             </span>
                           </>
                         )}
@@ -866,7 +880,7 @@ export default function Home() {
                             <Share2 className="w-5 h-5" />
                             <span>Share</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
-                              ⌘S
+                              {modifierKey}S
                             </span>
                           </>
                         )}
