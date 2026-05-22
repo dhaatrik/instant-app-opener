@@ -179,6 +179,7 @@ export default function Home() {
   const qrBtnRef = useRef<HTMLButtonElement>(null);
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
+  const [modifierKey, setModifierKey] = useState("⌘");
 
   const [modifierKey, setModifierKey] = useState("⌘");
 
@@ -202,6 +203,15 @@ export default function Home() {
     }
     prevShowQRRef.current = showQR;
   }, [showQR]);
+
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      const isMac = navigator.userAgent.toLowerCase().includes("mac");
+      if (!isMac) {
+        setModifierKey("Ctrl+");
+      }
+    });
+  }, []);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -468,7 +478,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error("Failed to read clipboard contents: ", err);
-      setError("Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).");
+      setError(`Clipboard access blocked. Please paste manually (${modifierKey}V).`);
       setTimeout(() => setError(null), 3000);
     }
   };
