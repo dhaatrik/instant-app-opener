@@ -177,12 +177,14 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingTextRef = useRef<HTMLParagraphElement>(null);
   const qrBtnRef = useRef<HTMLButtonElement>(null);
+  const feedbackBtnRef = useRef<HTMLButtonElement>(null);
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
 
   const [modifierKey, setModifierKey] = useState("⌘");
 
   const prevShowQRRef = useRef(false);
+  const prevShowFeedbackRef = useRef(false);
 
   useEffect(() => {
     // Wrap state update in a requestAnimationFrame to avoid synchronous state update warnings during initial render/hydration
@@ -202,6 +204,13 @@ export default function Home() {
     }
     prevShowQRRef.current = showQR;
   }, [showQR]);
+
+  useEffect(() => {
+    if (prevShowFeedbackRef.current && !showFeedback && feedbackBtnRef.current) {
+      feedbackBtnRef.current.focus();
+    }
+    prevShowFeedbackRef.current = showFeedback;
+  }, [showFeedback]);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -507,6 +516,7 @@ export default function Home() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShowQR(false);
+        setShowFeedback(false);
       }
 
       if (!parsed) return;
@@ -1075,6 +1085,7 @@ export default function Home() {
 
         <div className="flex flex-col items-center w-full max-w-md">
           <button
+            ref={feedbackBtnRef}
             onClick={() => setShowFeedback(!showFeedback)}
             className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white/80 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
             aria-expanded={showFeedback}
@@ -1092,8 +1103,18 @@ export default function Home() {
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
                 className="overflow-hidden w-full"
                 id="feedback-panel"
+                role="region"
+                aria-label="Feedback options"
               >
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4 relative">
+                  <button
+                    onClick={() => setShowFeedback(false)}
+                    className="absolute top-2 right-2 text-white/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full p-1"
+                    aria-label="Close Feedback Panel"
+                    title="Close Feedback Panel"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                   <p className="text-sm text-white/60 text-center">
                     Got suggestions or found a bug? Slide into the
                     developer&apos;s DMs.
