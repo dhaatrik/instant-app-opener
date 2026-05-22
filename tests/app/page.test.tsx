@@ -339,7 +339,7 @@ describe('Home Page', () => {
     });
 
     expect(consoleErrorSpy).toHaveBeenCalled();
-    expect(screen.getByText('Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).')).toBeInTheDocument();
+    expect(screen.getByText('Clipboard access blocked. Please paste manually (⌘V).')).toBeInTheDocument();
 
     expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 3000);
 
