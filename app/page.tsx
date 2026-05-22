@@ -179,9 +179,22 @@ export default function Home() {
   const qrBtnRef = useRef<HTMLButtonElement>(null);
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
+
   const [modifierKey, setModifierKey] = useState("⌘");
 
   const prevShowQRRef = useRef(false);
+
+  useEffect(() => {
+    // Wrap state update in a requestAnimationFrame to avoid synchronous state update warnings during initial render/hydration
+    const handlePlatform = () => {
+      const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+      setModifierKey(isMac ? "⌘" : "Ctrl+");
+    };
+
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(handlePlatform);
+    }
+  }, []);
 
   useEffect(() => {
     if (prevShowQRRef.current && !showQR && qrBtnRef.current) {
@@ -189,15 +202,6 @@ export default function Home() {
     }
     prevShowQRRef.current = showQR;
   }, [showQR]);
-
-  useEffect(() => {
-    window.requestAnimationFrame(() => {
-      const isMac = navigator.userAgent.toLowerCase().includes("mac");
-      if (!isMac) {
-        setModifierKey("Ctrl+");
-      }
-    });
-  }, []);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -464,7 +468,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error("Failed to read clipboard contents: ", err);
-      setError(`Clipboard access blocked. Please paste manually (${modifierKey}V).`);
+      setError("Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).");
       setTimeout(() => setError(null), 3000);
     }
   };

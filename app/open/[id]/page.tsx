@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { decodeDeepLinkId, APP_STORE_LINKS, Platform } from '@/lib/url-parser';
 import { isSafeUrl } from '@/lib/safe-url';
 import { motion } from 'motion/react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function OpenPage() {
   const params = useParams();
@@ -88,7 +88,11 @@ export default function OpenPage() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center gap-6"
       >
-        <Loader2 className="w-12 h-12 animate-spin text-white/50" />
+        {status.includes('Invalid') || status.includes('App not found') ? (
+          <AlertCircle className="w-12 h-12 text-red-400" aria-hidden="true" />
+        ) : (
+          <Loader2 className="w-12 h-12 animate-spin text-white/50" aria-hidden="true" />
+        )}
         <h2 className="text-xl font-medium text-white/80" aria-live="polite">{status}</h2>
         {fallbackUrl && (
           <a href={fallbackUrl} className="text-sm text-white/40 hover:text-white/80 underline underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-sm">
