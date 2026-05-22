@@ -64,3 +64,7 @@
 ## 2026-05-20 - Focus Management during Component Unmounts
 **Learning:** When interactive elements like the "Paste" or "Recent Drops" buttons are conditionally unmounted upon interaction (e.g., when the input gets a value), keyboard focus is lost, resetting to the top of the page. This breaks keyboard navigation flow.
 **Action:** Always programmatically return focus to a logical next element (like the main text input) using `useRef` and `setTimeout` (to wait for the render cycle) when a focused interactive element unmounts. For modals, store a `prevShowModal` state to properly detect close transitions and return focus to the trigger button.
+
+## 2026-05-22 - Dynamically rendering OS specific shortcut hints
+**Learning:** Hardcoding OS-specific shortcuts (like ⌘C and ⌘S) is confusing and exclusionary for Windows and Linux users. However, detecting the OS via `navigator.userAgent` during initial render in a Next.js (SSR) application leads to React hydration mismatch warnings because the server and client initial HTML differ.
+**Action:** Initialize OS-specific shortcut states with a default value (e.g., `⌘`) and update them inside a `useEffect` wrapped in `window.requestAnimationFrame()` to safely detect the OS on the client without triggering hydration errors.

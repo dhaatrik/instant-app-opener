@@ -179,6 +179,7 @@ export default function Home() {
   const qrBtnRef = useRef<HTMLButtonElement>(null);
   const [showQR, setShowQR] = useState(false);
   const [qrDownloaded, setQrDownloaded] = useState(false);
+  const [modifierKey, setModifierKey] = useState("⌘");
 
   const prevShowQRRef = useRef(false);
 
@@ -188,6 +189,15 @@ export default function Home() {
     }
     prevShowQRRef.current = showQR;
   }, [showQR]);
+
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      const isMac = navigator.userAgent.toLowerCase().includes("mac");
+      if (!isMac) {
+        setModifierKey("Ctrl+");
+      }
+    });
+  }, []);
 
   // Memoize parsed drops to prevent URL parsing in render loop
   const parsedRecentDrops = useMemo(() => {
@@ -454,7 +464,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error("Failed to read clipboard contents: ", err);
-      setError("Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).");
+      setError(`Clipboard access blocked. Please paste manually (${modifierKey}V).`);
       setTimeout(() => setError(null), 3000);
     }
   };
@@ -835,7 +845,7 @@ export default function Home() {
                             <Copy className="w-5 h-5" />
                             <span>Copy Link</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-black/40 bg-black/5 rounded border border-black/10">
-                              ⌘C
+                              {modifierKey}C
                             </span>
                           </>
                         )}
@@ -866,7 +876,7 @@ export default function Home() {
                             <Share2 className="w-5 h-5" />
                             <span>Share</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
-                              ⌘S
+                              {modifierKey}S
                             </span>
                           </>
                         )}
