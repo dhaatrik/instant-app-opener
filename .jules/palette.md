@@ -73,3 +73,7 @@
 ## 2026-05-22 - Dynamic OS Keyboard Shortcuts & Error State Polish
 **Learning:** Hardcoding OS-specific keyboard shortcuts (like `⌘C`) creates a confusing experience for Windows/Linux users. Dynamically rendering them based on `navigator.userAgent` greatly improves intuitiveness. Furthermore, leaving a continuous loading spinner active when an asynchronous process enters an error state is visually confusing and implies the process is still running; transitioning to a static error icon provides clear feedback. When implementing client-side OS detection in Next.js to avoid hydration errors, updating state directly inside `useEffect` can trigger React warnings about synchronous `setState` within an effect. Wrapping the state update in `window.requestAnimationFrame()` resolves this.
 **Action:** Always dynamically render modifier keys based on the user's OS, wrap the client-side state update in `requestAnimationFrame` if it runs immediately on mount, and ensure loading states explicitly transition to error icons when a process fails.
+
+## 2026-05-23 - Descriptive Link Texts
+**Learning:** Found a fallback redirect link with the text "Click here if you are not redirected". "Click here" is an accessibility anti-pattern because it provides no context when screen readers list links out of context or for users scanning the page.
+**Action:** Always replace non-descriptive link texts like "Click here" with clear, descriptive actions like "Continue to link if not redirected".
