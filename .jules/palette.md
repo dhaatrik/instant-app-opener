@@ -77,3 +77,7 @@
 ## 2026-05-23 - Descriptive Link Texts
 **Learning:** Found a fallback redirect link with the text "Click here if you are not redirected". "Click here" is an accessibility anti-pattern because it provides no context when screen readers list links out of context or for users scanning the page.
 **Action:** Always replace non-descriptive link texts like "Click here" with clear, descriptive actions like "Continue to link if not redirected".
+
+## 2026-05-24 - Input Polish and Keyboard Shortcut Discoverability
+**Learning:** Found that fallback `<input>` elements relying solely on `onClick={(e) => e.currentTarget.select()}` break the auto-selection experience for keyboard users tabbing into the field. Additionally, hidden global keyboard shortcuts (like `Esc` to clear input, or `Cmd+V` to paste) go undiscovered by users who don't read documentation. Finally, keyboard shortcut handlers must be context-aware; pressing `Escape` globally closed modals, but pressing it while focused on an active input didn't clear the input, causing a disjointed UX.
+**Action:** Always pair `onClick` auto-selection with `onFocus` to guarantee keyboard equity. Always expose hidden global keyboard shortcuts via native `title` and `aria-label` tooltips on their respective UI action buttons. Ensure global keydown handlers check `document.activeElement` to execute context-specific actions (like clearing an input).
