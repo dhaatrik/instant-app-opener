@@ -517,6 +517,10 @@ export default function Home() {
       if (e.key === "Escape") {
         setShowQR(false);
         setShowFeedback(false);
+
+        if (inputRef.current && inputRef.current === document.activeElement && inputRef.current.value) {
+          handleClear();
+        }
       }
 
       if (!parsed) return;
@@ -642,8 +646,8 @@ export default function Home() {
                       exit={{ opacity: 0, scale: 0.5, width: 0 }}
                       onClick={handlePaste}
                       className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
-                      title="Paste"
-                      aria-label="Paste URL"
+                      title={`Paste (${modifierKey}V)`}
+                      aria-label={`Paste URL (${modifierKey}V)`}
                     >
                       <ClipboardPaste className="w-5 h-5 shrink-0" />
                     </motion.button>
@@ -655,8 +659,8 @@ export default function Home() {
                       exit={{ opacity: 0, scale: 0.5, width: 0 }}
                       onClick={handleClear}
                       className="text-white/40 hover:text-white transition-colors rounded-full hover:bg-white/10 p-1.5 mr-1 overflow-hidden flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
-                      aria-label="Clear input"
-                      title="Clear input"
+                      aria-label="Clear input (Esc)"
+                      title="Clear input (Esc)"
                     >
                       <X className="w-5 h-5 shrink-0" />
                     </motion.button>

@@ -209,7 +209,7 @@ describe('Home Page', () => {
     expect(input.value).toBe('https://youtube.com/watch?v=dQw4w9WgXcQ');
 
     // Find the button containing the X icon
-    const clearButton = screen.getByRole('button', { name: 'Clear input' });
+    const clearButton = screen.getByRole('button', { name: /Clear input/i });
     
     if (clearButton) {
       await act(async () => {
@@ -225,7 +225,7 @@ describe('Home Page', () => {
     
     render(<Home />);
     
-    const pasteButton = screen.getByTitle('Paste');
+    const pasteButton = screen.getByRole('button', { name: /Paste URL/i });
     
     await act(async () => {
       fireEvent.click(pasteButton);
@@ -327,7 +327,7 @@ describe('Home Page', () => {
 
     render(<Home />);
 
-    const pasteButton = screen.getByTitle('Paste');
+    const pasteButton = screen.getByRole('button', { name: /Paste URL/i });
 
     await act(async () => {
       fireEvent.click(pasteButton);
