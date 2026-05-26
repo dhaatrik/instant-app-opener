@@ -77,3 +77,7 @@
 ## 2026-05-23 - Descriptive Link Texts
 **Learning:** Found a fallback redirect link with the text "Click here if you are not redirected". "Click here" is an accessibility anti-pattern because it provides no context when screen readers list links out of context or for users scanning the page.
 **Action:** Always replace non-descriptive link texts like "Click here" with clear, descriptive actions like "Continue to link if not redirected".
+
+## 2026-05-24 - Pair `onClick` and `onFocus` for read-only input auto-selection
+**Learning:** When creating a read-only fallback input intended for easy copying (e.g., using `onClick={(e) => e.currentTarget.select()}`), keyboard-only users navigating via 'Tab' miss out on this auto-selection convenience and must manually highlight the text if they don't use the explicit "Copy" button.
+**Action:** Always pair `onClick` auto-selection with an identical `onFocus` handler (`onFocus={(e) => e.currentTarget.select()}`) on fallback read-only text inputs to guarantee navigation parity and keyboard accessibility.

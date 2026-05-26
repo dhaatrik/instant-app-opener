@@ -1023,6 +1023,7 @@ export default function Home() {
                             readOnly
                             value={copyFallback}
                             onClick={(e) => e.currentTarget.select()}
+                            onFocus={(e) => e.currentTarget.select()}
                             aria-label="Fallback deep link URL"
                             className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 outline-none focus:border-white/30 selection:bg-white/30 focus-visible:ring-2 focus-visible:ring-white/50"
                           />
