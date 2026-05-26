@@ -477,7 +477,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error("Failed to read clipboard contents: ", err);
-      setError("Clipboard access blocked. Please paste manually (Cmd/Ctrl+V).");
+      setError(`Clipboard access blocked. Please paste manually (${modifierKey}V).`);
       setTimeout(() => setError(null), 3000);
     }
   };
@@ -844,6 +844,7 @@ export default function Home() {
                       }}
                       onClick={handleCopy}
                       className={`group relative overflow-hidden flex shrink-0 items-center gap-2 px-6 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.3)] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] ${copied ? "bg-green-500 text-white hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(34,197,94,0.4)]" : "bg-white text-black hover:bg-gray-50"}`}
+                      title={`Copy Link (${modifierKey}C)`}
                     >
                       <div
                         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
@@ -875,6 +876,7 @@ export default function Home() {
                       whileTap={{ y: 2, scale: 0.98 }}
                       onClick={handleShare}
                       className="group relative overflow-hidden flex shrink-0 items-center gap-2 px-6 py-4 rounded-xl font-medium transition-all w-full sm:w-auto justify-center bg-white/10 text-white hover:bg-white/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_10px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_12px_24px_rgba(0,0,0,0.6),_0_0_20px_rgba(255,255,255,0.15)] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
+                      title={`Share (${modifierKey}S)`}
                     >
                       <div
                         className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
