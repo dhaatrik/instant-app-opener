@@ -706,7 +706,7 @@ export default function Home() {
                   role="alert"
                   aria-live="polite"
                 >
-                  <AlertCircle className="w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-0" />
+                  <AlertCircle className="w-5 h-5 md:w-6 md:h-6 shrink-0 mt-0.5 md:mt-0" aria-hidden="true" />
                   <span className="text-left md:text-center text-sm md:text-base leading-snug">
                     {error}
                   </span>
@@ -1018,8 +1018,8 @@ export default function Home() {
                       className="overflow-hidden"
                     >
                       <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2">
-                        <p className="text-sm text-yellow-400 flex items-center gap-2">
-                          <AlertCircle className="w-4 h-4" />
+                        <p className="text-sm text-yellow-400 flex items-center gap-2" role="alert" aria-live="polite">
+                          <AlertCircle className="w-4 h-4" aria-hidden="true" />
                           Copy failed, that&apos;s an L. Do it manually, bestie:
                         </p>
                         <div className="flex gap-2">

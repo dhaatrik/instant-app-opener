@@ -84,3 +84,7 @@
 ## 2026-05-25 - Avoid overriding text with aria-label on buttons
 **Learning:** Adding `aria-label` to buttons that already contain visible, descriptive text completely overrides that text for screen readers. If the `aria-label` contains different text (like a keyboard shortcut), blind users won't hear the button's actual primary action.
 **Action:** Never add `aria-label` to a button that already has visible text describing its action, unless it's strictly necessary to provide *more* context that is visually implied but not explicitly written. Use `title` for visual tooltips.
+
+## 2026-05-26 - Accessible Fallback UIs and Decorative Icons
+**Learning:** Found that when conditional Fallback UIs are rendered (such as a manual "Copy failed" state), screen readers may fail to announce the change if the element lacks `role="alert"` or `aria-live`. Additionally, descriptive icons (like `<AlertCircle />`) that sit next to descriptive text should have `aria-hidden="true"` so screen readers do not read out redundant icon descriptions.
+**Action:** Always add `role="alert"` or `aria-live="polite"` to dynamically rendered fallback error messages. Always ensure decorative icons have `aria-hidden="true"` when placed adjacent to text that already explains their purpose.
