@@ -81,6 +81,7 @@
 ## 2026-05-24 - Input Polish and Keyboard Shortcut Discoverability
 **Learning:** Found that fallback `<input>` elements relying solely on `onClick={(e) => e.currentTarget.select()}` break the auto-selection experience for keyboard users tabbing into the field. Additionally, hidden global keyboard shortcuts (like `Esc` to clear input, or `Cmd+V` to paste) go undiscovered by users who don't read documentation. Finally, keyboard shortcut handlers must be context-aware; pressing `Escape` globally closed modals, but pressing it while focused on an active input didn't clear the input, causing a disjointed UX.
 **Action:** Always pair `onClick` auto-selection with `onFocus` to guarantee keyboard equity. Always expose hidden global keyboard shortcuts via native `title` and `aria-label` tooltips on their respective UI action buttons. Ensure global keydown handlers check `document.activeElement` to execute context-specific actions (like clearing an input).
+
 ## 2026-05-25 - Avoid overriding text with aria-label on buttons
 **Learning:** Adding `aria-label` to buttons that already contain visible, descriptive text completely overrides that text for screen readers. If the `aria-label` contains different text (like a keyboard shortcut), blind users won't hear the button's actual primary action.
 **Action:** Never add `aria-label` to a button that already has visible text describing its action, unless it's strictly necessary to provide *more* context that is visually implied but not explicitly written. Use `title` for visual tooltips.
@@ -88,3 +89,7 @@
 ## 2026-05-26 - Accessible Fallback UIs and Decorative Icons
 **Learning:** Found that when conditional Fallback UIs are rendered (such as a manual "Copy failed" state), screen readers may fail to announce the change if the element lacks `role="alert"` or `aria-live`. Additionally, descriptive icons (like `<AlertCircle />`) that sit next to descriptive text should have `aria-hidden="true"` so screen readers do not read out redundant icon descriptions.
 **Action:** Always add `role="alert"` or `aria-live="polite"` to dynamically rendered fallback error messages. Always ensure decorative icons have `aria-hidden="true"` when placed adjacent to text that already explains their purpose.
+
+## 2026-05-28 - ARIA Labels and Accessible SVGs
+**Learning:** Found an SVG QR code nested inside a modal without any role or descriptive text, meaning screen readers ignore the graphic. Additionally, considered adding an `aria-label` to the "Download QR" button for screen readers but realized this is an anti-pattern as it overwrites visible text.
+**Action:** For purely visual elements like generated SVG QR codes, wrap them in a container (e.g., `<div>`) with `role="img"` and a descriptive `aria-label` to ensure they are properly interpreted. Use the `title` attribute for buttons that already contain visible text to add supplementary context (like a native tooltip) instead of overriding with an `aria-label`.
