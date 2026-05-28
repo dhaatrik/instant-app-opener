@@ -947,7 +947,11 @@ export default function Home() {
                         >
                           <X className="w-5 h-5" />
                         </button>
-                        <div id="qr-code-container">
+                        <div
+                          id="qr-code-container"
+                          role="img"
+                          aria-label="Generated QR code for deep link"
+                        >
                           <QRCodeSVG
                             value={`${appUrl}/open/${encodeDeepLinkId(parsed)}`}
                             size={200}
@@ -991,6 +995,7 @@ export default function Home() {
                               ? "bg-green-500 text-white hover:bg-green-600"
                               : "bg-black text-white hover:bg-black/80"
                           }`}
+                          title={qrDownloaded ? "Downloaded!" : "Download QR Code"}
                         >
                           <div className="flex items-center justify-center gap-2" aria-live="polite">
                             {qrDownloaded ? (
