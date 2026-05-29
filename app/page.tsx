@@ -856,12 +856,12 @@ export default function Home() {
                       <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {copied ? (
                           <>
-                            <Check className="w-5 h-5" />
+                            <Check className="w-5 h-5" aria-hidden="true" />
                             <span>Link Copied!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-5 h-5" />
+                            <Copy className="w-5 h-5" aria-hidden="true" />
                             <span>Copy Link</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-black/40 bg-black/5 rounded border border-black/10">
                               {modifierKey}C
@@ -888,12 +888,12 @@ export default function Home() {
                       <div className="relative z-10 flex items-center gap-2" aria-live="polite">
                         {shared ? (
                           <>
-                            <Check className="w-5 h-5 text-green-400" />
+                            <Check className="w-5 h-5 text-green-400" aria-hidden="true" />
                             <span>Shared!</span>
                           </>
                         ) : (
                           <>
-                            <Share2 className="w-5 h-5" />
+                            <Share2 className="w-5 h-5" aria-hidden="true" />
                             <span>Share</span>
                             <span className="hidden md:inline-flex items-center justify-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-bold text-white/40 bg-white/5 rounded border border-white/10">
                               {modifierKey}S
@@ -942,8 +942,8 @@ export default function Home() {
                           autoFocus
                           onClick={() => setShowQR(false)}
                           className="absolute top-2 right-2 text-black/40 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50 rounded-full p-1"
-                          aria-label="Close QR Code"
-                          title="Close QR Code"
+                          aria-label="Close QR Code (Esc)"
+                          title="Close QR Code (Esc)"
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -1000,7 +1000,7 @@ export default function Home() {
                           <div className="flex items-center justify-center gap-2" aria-live="polite">
                             {qrDownloaded ? (
                               <>
-                                <Check className="w-4 h-4" />
+                                <Check className="w-4 h-4" aria-hidden="true" />
                                 <span>Downloaded!</span>
                               </>
                             ) : (
@@ -1052,12 +1052,12 @@ export default function Home() {
                             <div className="flex items-center gap-2" aria-live="polite">
                               {copied ? (
                                 <>
-                                  <Check className="w-4 h-4 text-green-400" />
+                                  <Check className="w-4 h-4 text-green-400" aria-hidden="true" />
                                   <span>Copied!</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-4 h-4" />
+                                  <Copy className="w-4 h-4" aria-hidden="true" />
                                   <span>Copy</span>
                                 </>
                               )}
@@ -1087,9 +1087,9 @@ export default function Home() {
             aria-live="polite"
           >
             {appShared ? (
-              <Check className="w-4 h-4 text-green-400" />
+              <Check className="w-4 h-4 text-green-400" aria-hidden="true" />
             ) : (
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-4 h-4" aria-hidden="true" />
             )}
             {appShared ? "Shared!" : "Share Instant App Opener"}
           </button>
@@ -1103,7 +1103,7 @@ export default function Home() {
             aria-expanded={showFeedback}
             aria-controls="feedback-panel"
           >
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare className="w-4 h-4" aria-hidden="true" />
             Send Feedback
           </button>
 
@@ -1122,8 +1122,8 @@ export default function Home() {
                   <button
                     onClick={() => setShowFeedback(false)}
                     className="absolute top-2 right-2 text-white/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-full p-1"
-                    aria-label="Close Feedback Panel"
-                    title="Close Feedback Panel"
+                    aria-label="Close Feedback Panel (Esc)"
+                    title="Close Feedback Panel (Esc)"
                   >
                     <X className="w-5 h-5" />
                   </button>
